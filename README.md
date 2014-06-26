@@ -9,7 +9,7 @@ Concept
 
 python backbacker.py config=~/config.cfg job=~/job.bb
 
-config.cfg
+backbacker.cfg
    log_type=file|syslog|...
    log_file=/var/log/backup.log
 
