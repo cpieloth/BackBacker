@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import argparse
 from argparse import RawTextHelpFormatter
 import logging as log
