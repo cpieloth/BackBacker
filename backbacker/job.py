@@ -5,11 +5,15 @@ import backbacker.tasks as task
 
 
 class Job:
+    """
+    A job is a collection of commands and tasks which are executed sequentially,
+    e.g. to backup a web server with all files, database and so on.
+    """
 
     def __init__(self):
         self._commands = []
 
-    def addCommand(self, cmd):
+    def add_command(self, cmd):
         self._commands.append(cmd)
 
     def execute(self):
@@ -37,7 +41,7 @@ class Job:
                 if p.matches(line):
                     # TODO read parameters
                     cmd = p.instance({})
-                    job.addCommand(cmd)
+                    job.add_command(cmd)
                     continue
 
         job_file.close()
