@@ -23,7 +23,10 @@ class Command:
 
     @classmethod
     def instance(cls, params):
-        """Abstract method, returns an initialized instance of a specific command."""
+        """
+        Abstract method, returns an initialized instance of a specific command.
+        Can throw a ParameterError, if parameters are missing.
+        """
         raise Exception('Instance method not implemented for: ' + str(cls))
 
     @classmethod

@@ -9,7 +9,7 @@ Concept
 
 Run backup job:
 ```
-$python backbacker.py config=~/config.cfg job=~/job.bb
+$python backbacker.py config=~/backbacker.cfg job=~/myjob.bb
 ```
 
 Config file:
@@ -21,9 +21,7 @@ log_file=/var/log/backup.log
 
 Job script with one instruction per line:
 ```
-$cat job.bb
-mount_smb: mnt_folder=/media/backup; config=~/smb.cfg
-git_bundle: src=~/project.git; dest=/media/backup
-redmine: dest=/media/backup; folder=/var/www/redmine; dbname=redmine; dbuser=redmine; dbpasswd=redmine
-umount: mnt_folder=/media/backup;
+$cat myjob.bb
+git_bundle: src_dir=/home/user/workspace/BackBacker; dest_dir=/tmp;
+tar.gz: src_dir=/home/user/workspace/BackBacker; dest_dir=/tmp;
 ```
