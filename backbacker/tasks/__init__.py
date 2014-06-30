@@ -1,6 +1,6 @@
 __author__ = 'Christof Pieloth'
 
-from backbacker.tasks.redmineam import RedmineAM
+from backbacker.tasks.redmine import RedmineAM
 
 
 def task_prototypes():
