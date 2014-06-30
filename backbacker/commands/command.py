@@ -65,8 +65,7 @@ class SystemCommand(Command):
     def check_version(cmd):
         """Checks if  'cmd --version' is callable."""
         try:
-            subprocess.call([cmd, '--version'], stdout=subprocess.PIPE)
-            return True
+            return subprocess.call([cmd, '--version'], stdout=subprocess.PIPE)
         except OSError as err:
             Command.cls_log.error('Error on calling ' + cmd + ': ' + str(err))
             return False

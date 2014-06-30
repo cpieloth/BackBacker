@@ -33,8 +33,7 @@ class Service(SystemCommand):
             return False
 
         try:
-            subprocess.call([self.cmd, self.param_service, self.param_command], stdout=subprocess.PIPE)
-            return True
+            return subprocess.call([self.cmd, self.param_service, self.param_command], stdout=subprocess.PIPE)
         except OSError as err:
             self.log.error('Error on calling \'service ' + self.param_service + ' ' + self.param_command + '\': ' + str(err))
             return False

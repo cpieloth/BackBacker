@@ -1,5 +1,9 @@
 __author__ = 'Christof Pieloth'
 
-from . import task
+from backbacker.tasks.redmine import Redmine
 
-from . import redmine
+
+def task_prototypes():
+    """Returns prototypes of all known tasks."""
+    prototypes = [Redmine.prototype()]
+    return prototypes

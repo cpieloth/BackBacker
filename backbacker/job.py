@@ -2,8 +2,8 @@ __author__ = 'Christof Pieloth'
 
 import logging
 
-import backbacker.commands as cmds
-import backbacker.tasks as task
+from backbacker.commands import command_prototypes
+from backbacker.tasks import task_prototypes
 from backbacker.errors import ParameterError
 
 
@@ -28,6 +28,7 @@ class Job:
             try:
                 if not cmd.execute():
                     errors += 1
+                    Job.log.error('Error on executing ' + cmd.name + '!')
             except Exception as ex:
                 errors += 1
                 Job.log.error('Unknown error:\n' + str(ex))
@@ -38,13 +39,8 @@ class Job:
     @staticmethod
     def read_job(fname):
         prototypes = []
-        # Add commands
-        prototypes.append(cmds.compress_gzip.CompressGZip.prototype())
-        prototypes.append(cmds.git_bundle.GitBundle.prototype())
-        prototypes.append(cmds.service.ServiceStart.prototype())
-        prototypes.append(cmds.service.ServiceStop.prototype())
-        # Add tasks
-        prototypes.append(task.redmine.Redmine.prototype())
+        prototypes.extend(command_prototypes())
+        prototypes.extend(task_prototypes())
 
         job_file = None
         job = None
