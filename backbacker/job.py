@@ -26,7 +26,9 @@ class Job:
         errors = 0
         for cmd in self._commands:
             try:
-                if not cmd.execute():
+                if cmd.execute():
+                    self.log.info(cmd.name + ' executed.')
+                else:
                     errors += 1
                     Job.log.error('Error on executing ' + cmd.name + '!')
             except Exception as ex:

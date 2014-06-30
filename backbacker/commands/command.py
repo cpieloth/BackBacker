@@ -61,11 +61,22 @@ class SystemCommand(Command):
         """Checks if this command is available on the system, uses argument --version."""
         return SystemCommand.check_version(self.cmd)
 
+    def execute(self):
+        if not self.is_available():
+            self.log.error('Not available!')
+            return False
+
+        return self._execute_command()
+
+    def _execute_command(self):
+        """Abstract method, implements the specific functionality."""
+        self.log.error('No yet implemented: ' + str(self.name))
+        return False
+
     @staticmethod
     def check_version(cmd):
         """Checks if  'cmd --version' is callable."""
         try:
-            return subprocess.call([cmd, '--version'], stdout=subprocess.PIPE)
-        except OSError as err:
-            Command.cls_log.error('Error on calling ' + cmd + ': ' + str(err))
+            return subprocess.call([cmd, '--version'], stdout=subprocess.PIPE) == 0
+        except OSError:
             return False

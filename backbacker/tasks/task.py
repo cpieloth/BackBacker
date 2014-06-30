@@ -39,7 +39,7 @@ class Task:
 
     def _execute_task(self):
         """Abstract method, implements the specific functionality."""
-        self.log.debug('No yet implemented: ' + str(self.name))
+        self.log.error('No yet implemented: ' + str(self.name))
         return False
 
     def _post_execute(self):

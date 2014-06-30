@@ -32,7 +32,7 @@ class CompressGZip(SystemCommand):
     def param_dest(self, dest):
         self.__param_dest = dest
 
-    def execute(self):
+    def _execute_command(self):
         if not os.access(self.param_src, os.R_OK):
             self.log.error('No read access to: ' + self.param_src)
             return False

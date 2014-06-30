@@ -59,7 +59,7 @@ class MySqlDumpGZip(SystemCommand):
         success = success and SystemCommand.check_version(MySqlDumpGZip.CMD_GZIP)
         return success
 
-    def execute(self):
+    def _execute_command(self):
         if not os.access(self.arg_dest, os.W_OK):
             self.log.error('No write access to: ' + self.arg_dest)
             return False
@@ -68,7 +68,7 @@ class MySqlDumpGZip(SystemCommand):
         mysqldump = 'mysqldump -u ' + self.arg_dbuser + ' --password=' + self.arg_dbpasswd + ' ' + self.arg_dbname
         gzip = 'gzip > ' + dest
 
-        if call([mysqldump + ' | ' + gzip], shell=True):
+        if call([mysqldump + ' | ' + gzip], shell=True) == 0:
             return True
         else:
             self.log.error('Error while dumping MySQL DB.')

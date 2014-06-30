@@ -23,7 +23,7 @@ class Service(SystemCommand):
     def param_command(self):
         return self._param_command
 
-    def execute(self):
+    def _execute_command(self):
         if not self.param_service:
             self.log.error('Bad service name: ' + str(self.param_service))
             return False
