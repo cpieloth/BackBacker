@@ -1,6 +1,5 @@
 __author__ = 'Christof Pieloth'
 
-import logging as log
 import subprocess
 
 from backbacker.commands.command import SystemCommand
@@ -26,18 +25,18 @@ class Service(SystemCommand):
 
     def execute(self):
         if not self.param_service:
-            log.error('Bad service name: ' + str(self.param_service))
+            self.log.error('Bad service name: ' + str(self.param_service))
             return False
 
         if not self.param_command == 'start' and not self.param_command == 'stop':
-            log.error('Bad command: ' + str(self.param_command))
+            self.log.error('Bad command: ' + str(self.param_command))
             return False
 
         try:
             subprocess.call([self.cmd, self.param_service, self.param_command], stdout=subprocess.PIPE)
             return True
         except OSError as err:
-            log.error('Error on calling \'service ' + self.param_service + ' ' + self.param_command + '\': ' + str(err))
+            self.log.error('Error on calling \'service ' + self.param_service + ' ' + self.param_command + '\': ' + str(err))
             return False
 
 

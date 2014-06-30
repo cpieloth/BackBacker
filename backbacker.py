@@ -2,14 +2,12 @@
 
 import argparse
 from argparse import RawTextHelpFormatter
-import logging as log
-import sys
+import logging
+from backbacker.config import Config
 from backbacker.job import Job
 
 
 def main():
-    log.basicConfig(level=log.DEBUG, stream=sys.stdout)
-
     # Prepare CLI arguments
     parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter)
     parser.name = 'BackBacker'
@@ -21,20 +19,26 @@ def main():
                     'This is free software, and you are welcome to redistribute it\n' \
                     'under certain conditions; see LICENSE file.'
 
-    # Collect CLI arguments
+    # Read config
     args = parser.parse_args()
-    if not args.config:
-        log.warn('No config file specified. using default settings.')
+    if args.config:
+        cfg = Config.read_config(args.config)
+    else:
+        print('No config file specified. Using default settings.')
+        cfg = Config()
+    cfg.apply_logging()
 
+    log = logging.getLogger('BackBacker')
     log.info('Backup started ...')
-    # TODO read config file
 
+    # Read job
     try:
         job = Job.read_job(args.job)
     except IOError as err:
         log.fatal('Could not read job file: ' + str(err))
         return 1
 
+    # Execute job
     errors = 0
     try:
         errors = job.execute()
@@ -44,6 +48,7 @@ def main():
 
     log.info('Backup finished with ' + str(errors) + ' errors.')
     return errors
+
 
 if __name__ == '__main__':
     main()

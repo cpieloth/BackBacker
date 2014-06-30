@@ -1,6 +1,7 @@
 __author__ = 'Christof Pieloth'
 
-import logging as log
+import logging
+
 
 # TODO subclass from command
 class Task:
@@ -8,11 +9,17 @@ class Task:
 
     def __init__(self, name):
         self._name = name
+        self._log = logging.getLogger(self._name)
 
     @property
     def name(self):
         """Name of the command. Is used to interpret the job script."""
         return self._name
+
+    @property
+    def log(self):
+        """Logger for this task."""
+        return self._log
 
     def _pre_execute(self):
         """Abstract method, is executed before execute_task."""
@@ -27,12 +34,12 @@ class Task:
             success = success or self._post_execute()
         except Exception as ex:
             success = False
-            log.error('Unexpected error: ' + str(ex))
+            self.log.error('Unexpected error: ' + str(ex))
         return success
 
     def _execute_task(self):
         """Abstract method, implements the specific functionality."""
-        log.debug('No yet implemented: ' + str(self.name))
+        self.log.debug('No yet implemented: ' + str(self.name))
         return False
 
     def _post_execute(self):

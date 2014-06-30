@@ -1,6 +1,5 @@
 __author__ = 'Christof Pieloth'
 
-import logging as log
 import os
 from subprocess import call
 
@@ -35,10 +34,10 @@ class CompressGZip(SystemCommand):
 
     def execute(self):
         if not os.access(self.param_src, os.R_OK):
-            log.error('No read access to: ' + self.param_src)
+            self.log.error('No read access to: ' + self.param_src)
             return False
         if not os.access(self.param_dest, os.W_OK):
-            log.error('No write access to: ' + self.param_dest)
+            self.log.error('No write access to: ' + self.param_dest)
             return False
 
         os.chdir(self.param_src)

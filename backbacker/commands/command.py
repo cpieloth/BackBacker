@@ -1,24 +1,31 @@
 __author__ = 'Christof Pieloth'
 
-import logging as log
+import logging
 import subprocess
 
 
 class Command:
     """A command is a basic and often an atomic functionality for a backup job, e.g. copying a file."""
 
+    cls_log = logging.getLogger(__name__)
+
     def __init__(self, name):
         self._name = name.lower()
-        pass
+        self._log = logging.getLogger(self._name)
 
     @property
     def name(self):
         """Name of the command. Is used to interpret the job script."""
         return self._name
 
+    @property
+    def log(self):
+        """Logger for this command."""
+        return self._log
+
     def execute(self):
         """Abstract method, implements the specific functionality."""
-        log.debug('No yet implemented: ' + str(self.name))
+        self.log.debug('No yet implemented: ' + str(self.name))
         return False
 
     @classmethod
@@ -61,5 +68,5 @@ class SystemCommand(Command):
             subprocess.call([cmd, '--version'], stdout=subprocess.PIPE)
             return True
         except OSError as err:
-            log.error('Error on calling ' + cmd + ': ' + str(err))
+            Command.cls_log.error('Error on calling ' + cmd + ': ' + str(err))
             return False
