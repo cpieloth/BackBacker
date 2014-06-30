@@ -29,9 +29,10 @@ class Task:
         """Runs pre_execute, execute_task, post_execute."""
         try:
             success = self._pre_execute()
-            if success:
-                success = success or self._execute_task()
-            success = success or self._post_execute()
+            if not success:
+                return False
+            success = success and self._execute_task()
+            success = success and self._post_execute()
         except Exception as ex:
             success = False
             self.log.error('Unexpected error: ' + str(ex))
