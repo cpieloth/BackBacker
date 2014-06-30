@@ -2,7 +2,6 @@
 
 import argparse
 from argparse import RawTextHelpFormatter
-import logging
 from backbacker.config import Config
 from backbacker.job import Job
 
@@ -19,6 +18,8 @@ def main():
                     'This is free software, and you are welcome to redistribute it\n' \
                     'under certain conditions; see LICENSE file.'
 
+    print('Backup started ...')
+
     # Read config
     args = parser.parse_args()
     if args.config:
@@ -28,25 +29,18 @@ def main():
         cfg = Config()
     cfg.apply_logging()
 
-    log = logging.getLogger('BackBacker')
-    log.info('Backup started ...')
-
     # Read job
-    try:
-        job = Job.read_job(args.job)
-    except IOError as err:
-        log.fatal('Could not read job file: ' + str(err))
-        return 1
+    job = Job.read_job(args.job)
 
     # Execute job
     errors = 0
-    try:
-        errors = job.execute()
-    except Exception as ex:
-        log.error('Unexpected error during job execution: ' + str(ex))
+    if job:
+        errors += job.execute()
+    else:
+        print('Could not create job. Backup cancelled!')
         errors += 1
 
-    log.info('Backup finished with ' + str(errors) + ' errors.')
+    print('Backup finished with errors: ' + str(errors))
     return errors
 
 
