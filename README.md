@@ -23,26 +23,30 @@ $ python backbacker.py -j jobs/example.bb
 Installation & Usage
 --------------------
 
-1. Clone repository
+* Clone repository.
 ```
 $ git clone https://github.com/cpieloth/BackBacker.git BackBacker
 ```
-2. Create a new branch for your backup jobs
+* Create a new branch for your backup jobs.
 ```
 $ cd BackBacker
 $ git checkout -b jobs
 ```
-3. Modify config (optional)
+* Modify config (optional).
 ```
 $ vi configs/backbacker.cfg
 ```
-4. Create a job
+* Create a job.
 ```
 $ cp jobs/example.bb jobs/myjob.bb
 $ vi jobs/myjob.bb
 ```
-5. Commit your setup (optional)
-6. Run your backup job (NOTE: Use absolute paths!)
+* Commit your setup (optional).
+* Run your backup job (NOTE: Use absolute paths!)
 ```
 $ python backbacker.py -c configs/backbacker.cfg -j jobs/myjob.bb
+```
+* Create a cron job (optional). 
+```
+$ crontab -e
 ```
