@@ -12,9 +12,9 @@ class Parameter:
 
     DATE_FORMAT = 'datefmt'
 
-    DB_NAME = 'db_name'
-    DB_USER = 'db_user'
-    DB_PASSWD = 'db_passwd'
+    DB_NAME = 'name'
+    USER = 'user'
+    PASSWD = 'db_passwd'
 
 
 class Constants:

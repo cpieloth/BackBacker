@@ -118,14 +118,14 @@ class RedmineAM(Task):
             task.arg_dbname = params[Parameter.DB_NAME]
         else:
             raise ParameterError(Parameter.DB_NAME + ' parameter is missing!')
-        if Parameter.DB_USER in params:
-            task.arg_dbuser = params[Parameter.DB_USER]
+        if Parameter.USER in params:
+            task.arg_dbuser = params[Parameter.USER]
         else:
-            raise ParameterError(Parameter.DB_USER + ' parameter is missing!')
-        if Parameter.DB_PASSWD in params:
-            task.arg_dbpasswd = params[Parameter.DB_PASSWD]
+            raise ParameterError(Parameter.USER + ' parameter is missing!')
+        if Parameter.PASSWD in params:
+            task.arg_dbpasswd = params[Parameter.PASSWD]
         else:
-            raise ParameterError(Parameter.DB_PASSWD + ' parameter is missing!')
+            raise ParameterError(Parameter.PASSWD + ' parameter is missing!')
         return task
 
     @classmethod
