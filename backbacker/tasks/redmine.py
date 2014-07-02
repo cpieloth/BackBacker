@@ -40,10 +40,6 @@ class RedmineAM(Task):
     def arg_dest(self, dest):
         self.__arg_dest = dest
 
-    @arg_dest.setter
-    def arg_dest(self, value):
-        self.__arg_dest = value
-
     @property
     def arg_dbname(self):
         return self.__arg_dbname
