@@ -27,7 +27,7 @@ Installation & Usage
 ```
 $ git clone https://github.com/cpieloth/BackBacker.git BackBacker
 ```
-* Create a new branch for your backup jobs.
+* Create a new branch for your backup jobs (optional).
 ```
 $ cd BackBacker
 $ git checkout -b jobs
@@ -36,7 +36,7 @@ $ git checkout -b jobs
 ```
 $ vi configs/backbacker.cfg
 ```
-* Create a job.
+* Create a backup job.
 ```
 $ cp jobs/example.bb jobs/myjob.bb
 $ vi jobs/myjob.bb
