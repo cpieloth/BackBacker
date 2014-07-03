@@ -11,7 +11,7 @@ Job script with one instruction per line:
 ```
 $ cat jobs/example.bb
 git_bundle: src_dir=/home/user/workspace/BackBacker; dest_dir=/tmp;
-tar.gz: src_dir=/home/user/workspace/BackBacker; dest_dir=/tmp;
+gzip: src_dir=/home/user/workspace/BackBacker; dest_dir=/tmp;
 ```
 
 Run backup job:
