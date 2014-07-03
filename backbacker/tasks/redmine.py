@@ -3,7 +3,7 @@ __author__ = 'Christof Pieloth'
 import os
 
 from backbacker.tasks.task import Task
-from backbacker.commands.compress_gzip import CompressGZip
+from backbacker.commands.compress import GZip
 from backbacker.commands.mysql_dump_gzip import MySqlDumpGZip
 from backbacker.commands.service import ServiceStart
 from backbacker.commands.service import ServiceStop
@@ -22,7 +22,7 @@ class RedmineAM(Task):
         self.__arg_dbuser = ''
         self.__arg_dbpasswd = ''
         self.__cmd_sqldump = MySqlDumpGZip()
-        self.__cmd_targz = CompressGZip()
+        self.__cmd_targz = GZip()
 
     @property
     def arg_src(self):
