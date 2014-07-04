@@ -17,41 +17,38 @@ class Config:
     LOG_FORMAT_DATE = "%Y-%m-%dT%H:%M:%S"
 
     def __init__(self):
-        self._log_type = Config.ARG_LOG_TYPE_CONSOLE
-        self._log_file = ''
-        self._log_format = Config.LOG_FORMAT_CONSOLE
-        self._log_datefmt = Config.LOG_FORMAT_DATE
+        self.__log_type = Config.ARG_LOG_TYPE_CONSOLE
+        self.__log_file = ''
+        self.__log_format = Config.LOG_FORMAT_CONSOLE
+        self.__log_datefmt = Config.LOG_FORMAT_DATE
 
     @property
     def log_datefmt(self):
-        return self._log_datefmt
+        return self.__log_datefmt
 
     @property
     def log_format(self):
-        return self._log_format
+        return self.__log_format
 
     @log_format.setter
     def log_format(self, value):
-        self.log_format = value
+        self.__log_format = value
 
     @property
     def log_type(self):
-        return self._log_type
+        return self.__log_type
 
     @log_type.setter
     def log_type(self, value):
-        if value == Config.ARG_LOG_TYPE_CONSOLE:
-            self._log_type = value
-        elif value == Config.ARG_LOG_TYPE_FILE:
-            self._log_type = value
+        self.__log_type = value
 
     @property
     def log_file(self):
-        return self._log_file
+        return self.__log_file
 
     @log_file.setter
     def log_file(self, value):
-        self._log_file = value
+        self.__log_file = value
 
     def apply_logging(self):
         """Initializes the logging."""
