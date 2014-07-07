@@ -4,7 +4,7 @@ import logging
 import sys
 
 
-class Config:
+class Config(object):
     """Stores global settings."""
     PARAM_LOG_TYPE = 'log_type'
     ARG_LOG_TYPE_CONSOLE = 'console'

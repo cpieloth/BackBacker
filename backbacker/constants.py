@@ -1,7 +1,7 @@
 __author__ = 'Christof Pieloth'
 
 
-class Parameter:
+class Parameter(object):
     SRC_DIR = 'src_dir'
     DEST_DIR = 'dest_dir'
     DIR = 'dir'
@@ -19,7 +19,7 @@ class Parameter:
     PASSWD = 'passwd'
 
 
-class Constants:
+class Constants(object):
     DATE_PREFIX_SEPARATOR = '_'
     KEEP_BACKUPS = 5
     FILE_DATE_FORMAT = '%Y%m%dT%H%M%S'

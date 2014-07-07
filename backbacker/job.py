@@ -7,7 +7,7 @@ from backbacker.tasks import task_prototypes
 from backbacker.errors import ParameterError
 
 
-class Job:
+class Job(object):
     """
     A job is a collection of commands and tasks which are executed sequentially,
     e.g. to backup a web server with all files, database and so on.

@@ -4,7 +4,7 @@ import logging
 
 
 # TODO subclass from command
-class Task:
+class Task(object):
     """A task combines more than one command or task to one unit."""
 
     def __init__(self, name):

@@ -4,7 +4,7 @@ import logging
 import subprocess
 
 
-class Command:
+class Command(object):
     """A command is a basic and often an atomic functionality for a backup job, e.g. copying a file."""
 
     cls_log = logging.getLogger(__name__)

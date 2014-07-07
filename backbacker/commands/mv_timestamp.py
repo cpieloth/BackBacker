@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 __author__ = 'Christof Pieloth'
 
 from datetime import datetime
