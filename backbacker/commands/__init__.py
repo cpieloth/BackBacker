@@ -9,7 +9,7 @@ from .mv_timestamp import MoveTimestamp
 from .mysql_dump_gzip import MySqlDumpGZip
 from .service import ServiceStart
 from .service import ServiceStop
-
+from .backup_rotation import BackupRotation
 
 def command_prototypes():
     """Returns prototypes of all known commands."""
@@ -23,4 +23,5 @@ def command_prototypes():
     prototypes.append(ServiceStart.prototype())
     prototypes.append(ServiceStop.prototype())
     prototypes.append(UMount.prototype())
+    prototypes.append(BackupRotation.prototype())
     return prototypes

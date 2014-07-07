@@ -13,13 +13,11 @@ from backbacker.errors import ParameterError
 class MoveTimestamp(Command):
     """Moves/renames all files in a folder to a destination by adding a timestamp prefix."""
 
-    DEFAULT_DATE_FORMAT = '%Y%m%dT%H%M%S'
-
     def __init__(self):
         Command.__init__(self, 'mv_timestamp')
         self.__arg_src = ''
         self.__arg_dest = ''
-        self.__arg_datefmt = MoveTimestamp.DEFAULT_DATE_FORMAT
+        self.__arg_datefmt = Constants.FILE_DATE_FORMAT
 
     @property
     def arg_src(self):
@@ -57,7 +55,7 @@ class MoveTimestamp(Command):
             date_str = datetime.now().strftime(self.arg_datefmt)
         except Exception as ex:
             self.log.error('Could not create date string! Using default format:\n' + str(ex))
-            date_str = datetime.now().strftime(MoveTimestamp.DEFAULT_DATE_FORMAT)
+            date_str = datetime.now().strftime(Constants.FILE_DATE_FORMAT)
 
         # Collecting file to avoid conflict if src_dir eq. dest_dir.
         files = []
