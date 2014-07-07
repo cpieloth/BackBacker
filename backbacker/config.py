@@ -41,6 +41,10 @@ class Config(object):
     @log_type.setter
     def log_type(self, value):
         self.__log_type = value
+        if self.log_type == Config.ARG_LOG_TYPE_CONSOLE:
+            self.log_format = Config.LOG_FORMAT_CONSOLE
+        elif self.log_type == Config.ARG_LOG_TYPE_FILE:
+            self.log_format = Config.LOG_FORMAT_FILE
 
     @property
     def log_file(self):
@@ -53,11 +57,9 @@ class Config(object):
     def apply_logging(self):
         """Initializes the logging."""
         if self.log_type == Config.ARG_LOG_TYPE_CONSOLE:
-            self.log_format = Config.LOG_FORMAT_CONSOLE
             logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=self.log_format,
                                 datefmt=self.log_datefmt)
         elif self.log_type == Config.ARG_LOG_TYPE_FILE:
-            self.log_format = Config.LOG_FORMAT_FILE
             logging.basicConfig(level=logging.DEBUG, filename=self.log_file, format=self.log_format,
                                 datefmt=self.log_datefmt)
 
