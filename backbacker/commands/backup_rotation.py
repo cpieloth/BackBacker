@@ -1,8 +1,9 @@
 __author__ = 'Gunnar Nitsche'
 
-import os
 from datetime import datetime
 from glob import glob
+import os
+import sys
 
 from backbacker.commands.command import Command
 from backbacker.constants import Parameter
@@ -11,13 +12,14 @@ from backbacker.errors import ParameterError
 
 
 class BackupRotation(Command):
-    """Deletes old backups"""
+    """Deletes old backups using a timestamp as rotation condition."""
+
+    DATE_PREFIX_SEP = Constants.DATE_PREFIX_SEPARATOR
 
     def __init__(self):
         Command.__init__(self, 'backup_rotation')
         self.__arg_src = ''
         self.__arg_date_pattern = Constants.FILE_DATE_FORMAT
-        self.__arg_date_prefix_sep = Constants.DATE_PREFIX_SEPARATOR
         self.__arg_keep_backups = Constants.KEEP_BACKUPS
 
     @property
@@ -42,7 +44,14 @@ class BackupRotation(Command):
 
     @arg_keep_backups.setter
     def arg_keep_backups(self, value):
-        self.__arg_keep_backups = value
+        try:
+            self.__arg_keep_backups = int(value)
+        except Exception:
+            self.log.error('Could not cast to int: ' + str(value))
+            self.__arg_keep_backups = sys.maxsize
+        if self.__arg_keep_backups == 0:
+            self.log.warn('rotation == 0 are ignored!')
+            self.__arg_keep_backups = sys.maxsize
 
     def execute(self):
         if not os.access(self.arg_src, os.R_OK):
@@ -52,17 +61,17 @@ class BackupRotation(Command):
             self.log.error('No write access for: ' + self.arg_src)
             return False
 
-        dates = [x.split(self.__arg_date_prefix_sep)[0] for x in os.listdir(self.arg_src)
+        dates = [x.split(BackupRotation.DATE_PREFIX_SEP)[0] for x in os.listdir(self.arg_src)
                  if os.path.isfile(os.path.join(self.arg_src, x))]
         dates = set(dates)
         dates = [datetime.strptime(x, self.arg_date_pattern) for x in dates]
-        dates.sort()
 
-        if len(dates) > self.__arg_keep_backups:
+        if len(dates) > self.arg_keep_backups:
+            dates.sort()
             files = []
 
-            for dpfx in dates[:-self.__arg_keep_backups]:
-                spfx = dpfx.strftime(self.__arg_date_pattern) + self.__arg_date_prefix_sep + '*'
+            for dpfx in dates[:-self.arg_keep_backups]:
+                spfx = dpfx.strftime(self.arg_date_pattern) + BackupRotation.DATE_PREFIX_SEP + '*'
                 files.extend(glob(os.path.join(self.arg_src, spfx)))
 
             for dfile in files:
