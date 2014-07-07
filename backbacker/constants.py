@@ -14,7 +14,7 @@ class Parameter:
 
     ROTATE = 'rotate'
 
-    DB_NAME = 'name'
+    DB_NAME = 'db_name'
     USER = 'user'
     PASSWD = 'passwd'
 
