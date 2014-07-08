@@ -72,9 +72,6 @@ class RedmineAM(Task):
             self.log.error('No write access to: ' + self.arg_dest)
             return False
 
-        if not self.__cmd_targz.is_available():
-            return False
-
         if not self.__cmd_sqldump.is_available():
             return False
 
