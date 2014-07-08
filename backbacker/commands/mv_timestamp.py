@@ -2,6 +2,7 @@ __author__ = 'Christof Pieloth'
 
 from datetime import datetime
 import os
+import shutil
 from backbacker.commands.command import Command
 from backbacker.constants import Constants
 from backbacker.constants import Parameter
@@ -67,7 +68,8 @@ class MoveTimestamp(Command):
             fname = os.path.basename(file_in)
             file_out = os.path.join(self.arg_dest, date_str + Constants.DATE_PREFIX_SEPARATOR + fname)
             try:
-                os.rename(file_in, file_out)
+                # Using shutil.move() instead of os.rename() to enable operation over different filesystems.
+                shutil.move(file_in, file_out)
             except Exception as ex:
                 self.log.error('Could not move file: ' + file_in + '\n' + str(ex))
                 errors += 1
