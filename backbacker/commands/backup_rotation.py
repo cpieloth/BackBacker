@@ -27,8 +27,8 @@ class BackupRotation(Command):
         return self.__arg_src
 
     @arg_src.setter
-    def arg_src(self, src):
-        self.__arg_src = src
+    def arg_src(self, value):
+        self.__arg_src = os.path.expanduser(value)
 
     @property
     def arg_date_pattern(self):
@@ -46,7 +46,7 @@ class BackupRotation(Command):
     def arg_keep_backups(self, value):
         try:
             self.__arg_keep_backups = int(value)
-        except Exception:
+        except ValueError:
             self.log.error('Could not cast to int: ' + str(value))
             self.__arg_keep_backups = sys.maxsize
         if self.__arg_keep_backups == 0:

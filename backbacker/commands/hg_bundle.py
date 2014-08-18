@@ -21,7 +21,7 @@ class HgBundle(SystemCommand):
 
     @arg_src.setter
     def arg_src(self, value):
-        self.__arg_src = value
+        self.__arg_src = os.path.expanduser(value)
 
     @property
     def arg_dest(self):
@@ -29,7 +29,7 @@ class HgBundle(SystemCommand):
 
     @arg_dest.setter
     def arg_dest(self, value):
-        self.__arg_dest = value
+        self.__arg_dest = os.path.expanduser(value)
 
     def _execute_command(self):
         if not os.access(self.arg_src, os.R_OK):

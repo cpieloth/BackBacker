@@ -21,16 +21,16 @@ class GZip(Command):
         return self.__arg_src
 
     @arg_src.setter
-    def arg_src(self, src):
-        self.__arg_src = src
+    def arg_src(self, value):
+        self.__arg_src = os.path.expanduser(value)
 
     @property
     def arg_dest(self):
         return self.__arg_dest
 
     @arg_dest.setter
-    def arg_dest(self, dest):
-        self.__arg_dest = dest
+    def arg_dest(self, value):
+        self.__arg_dest = os.path.expanduser(value)
 
     def execute(self):
         if not os.access(self.arg_src, os.R_OK):

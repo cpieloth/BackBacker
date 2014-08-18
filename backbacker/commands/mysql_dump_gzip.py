@@ -26,7 +26,7 @@ class MySqlDumpGZip(SystemCommand):
 
     @arg_dest.setter
     def arg_dest(self, value):
-        self.__arg_dest = value
+        self.__arg_dest = os.path.expanduser(value)
 
     @property
     def arg_dbname(self):

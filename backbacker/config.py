@@ -1,6 +1,7 @@
 __author__ = 'Christof Pieloth'
 
 import logging
+import os
 import sys
 
 
@@ -52,7 +53,7 @@ class Config(object):
 
     @log_file.setter
     def log_file(self, value):
-        self.__log_file = value
+        self.__log_file = os.path.expanduser(value)
 
     def apply_logging(self):
         """Initializes the logging."""
