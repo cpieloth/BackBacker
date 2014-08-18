@@ -67,28 +67,26 @@ class Config(object):
     def read_config(fname):
         """Reads and creates a config from a file."""
         cfg = Config()
-        cfg_file = None
         try:
             cfg_file = open(fname, 'r')
-
-            for line in cfg_file:
-                if line[0] == '#':
-                    continue
-                pair = line.split('=')
-                if len(pair) != 2:
-                    print('Could not read config line:\n' + str(line))
-                    continue
-                param = pair[0].lower().strip()
-                arg = pair[1].strip()
-                if param == Config.PARAM_LOG_TYPE:
-                    cfg.log_type = arg
-                elif param == Config.PARAM_LOG_FILE:
-                    cfg.log_file = arg
-                else:
-                    print('Unknown property: ' + str(param))
         except IOError as err:
             print('Error on reading config file!\n' + str(err))
-        finally:
-            if cfg_file:
-                cfg_file.close()
+        else:
+            with cfg_file:
+                for line in cfg_file:
+                    if line[0] == '#':
+                        continue
+                    pair = line.split('=')
+                    if len(pair) != 2:
+                        print('Could not read config line:\n' + str(line))
+                        continue
+                    param = pair[0].lower().strip()
+                    arg = pair[1].strip()
+                    if param == Config.PARAM_LOG_TYPE:
+                        cfg.log_type = arg
+                    elif param == Config.PARAM_LOG_FILE:
+                        cfg.log_file = arg
+                    else:
+                        print('Unknown property: ' + str(param))
+
         return cfg

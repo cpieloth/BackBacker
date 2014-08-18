@@ -44,32 +44,28 @@ class Job(object):
         prototypes.extend(command_prototypes())
         prototypes.extend(task_prototypes())
 
-        job_file = None
         job = None
         try:
             job_file = open(fname, 'r')
-            job = Job()
-            for line in job_file:
-                if line[0] == '#':
-                    continue
-                for p in prototypes:
-                    if p.matches(line):
-                        params = Job.read_parameter(line)
-                        try:
-                            cmd = p.instance(params)
-                            job.add_command(cmd)
-                        except ParameterError as err:
-                            Job.log.error("Command '" + p.name + "' is skipped: " + str(err))
-                        continue
         except IOError as err:
-            job.log.critical('Error on reading job file:\n' + str(err))
-            job = None
-        except Exception as ex:
-            Job.log.critical('Unknown error: \n' + str(ex))
-            job = None
-        finally:
-            if job_file:
-                job_file.close()
+            Job.log.critical('Error on reading job file:\n' + str(err))
+        else:
+            with job_file:
+                job = Job()
+                for line in job_file:
+                    if line[0] == '#':
+                        continue
+                    for p in prototypes:
+                        if p.matches(line):
+                            try:
+                                params = Job.read_parameter(line)
+                                cmd = p.instance(params)
+                                job.add_command(cmd)
+                            except ParameterError as err:
+                                Job.log.error("Command '" + p.name + "' is skipped: " + str(err))
+                            except Exception as ex:
+                                Job.log.critical('Unknown error: \n' + str(ex))
+                            continue
 
         return job
 
