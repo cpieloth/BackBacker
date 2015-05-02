@@ -59,3 +59,11 @@ Coding Style
 * https://www.python.org/dev/peps/pep-0257
 * http://editorconfig.org
 * See .editorconfig in project root
+
+
+TODO
+----
+
+* rsync
+* scp
+* variables in job script, e.g. ${BACKUP_DIR} is replaced by pre-processing config file.
