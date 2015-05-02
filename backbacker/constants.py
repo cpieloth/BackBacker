@@ -18,6 +18,8 @@ class Parameter(object):
 
     # Database
     DB_NAME = 'db_name'
+    DB_SCHEMA = 'db_schema'
+    DB_TABLE = 'db_table'
 
     # Misc
     DATE_FORMAT = 'datefmt'
