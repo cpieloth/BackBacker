@@ -17,6 +17,7 @@ class Rsync(SystemCommand):
     DELETE_DEST = '--delete'
     BACKUP_DELETE = '-b'
     BACKUP_DELETE_DIR = '--backup-dir='
+    REMOTE_SHELL = '-e'
 
     def __init__(self):
         SystemCommand.__init__(self, 'rsync', 'rsync')
@@ -24,6 +25,7 @@ class Rsync(SystemCommand):
         self.__arg_dest = ''
         self.__arg_backup_dir = ''
         self.__arg_mirror = False
+        self.__arg_rsh = ''
 
     @property
     def arg_src(self):
@@ -57,13 +59,22 @@ class Rsync(SystemCommand):
     def arg_backup_dir(self, value):
         self.__arg_backup_dir = os.path.expanduser(value)
 
+    @property
+    def arg_rsh(self):
+        return self.__arg_rsh
+
+    @arg_rsh.setter
+    def arg_rsh(self, value):
+        self.__arg_rsh = value
+
     def execute(self):
-        if not os.access(self.arg_src, os.R_OK):
-            self.log.error('No read access to: ' + self.arg_src)
-            return False
-        if not os.access(self.arg_dest, os.W_OK):
-            self.log.error('No write access to: ' + self.arg_dest)
-            return False
+        if self.arg_rsh == '':
+            if not os.access(self.arg_src, os.R_OK):
+                self.log.error('No read access to: ' + self.arg_src)
+                return False
+            if not os.access(self.arg_dest, os.W_OK):
+                self.log.error('No write access to: ' + self.arg_dest)
+                return False
 
         cmd = [self.cmd, Rsync.ALL]
         if self.arg_mirror:
@@ -71,6 +82,8 @@ class Rsync(SystemCommand):
             if self.arg_backup_dir != '':
                 cmd.append(Rsync.BACKUP_DELETE)
                 cmd.append(Rsync.BACKUP_DELETE_DIR + self.arg_backup_dir)
+        if self.arg_rsh != '':
+            cmd.append(Rsync.REMOTE_SHELL + ' ' + self.arg_rsh)
         cmd.append(self.arg_src)
         cmd.append(self.arg_dest)
 
@@ -94,6 +107,8 @@ class Rsync(SystemCommand):
             cmd.arg_mirror = True
         if Parameter.BACKUP_DIR in params:
             cmd.arg_backup_dir = params[Parameter.BACKUP_DIR]
+        if Parameter.SHELL in params:
+            cmd.arg_rsh = params[Parameter.SHELL]
         return cmd
 
     @classmethod

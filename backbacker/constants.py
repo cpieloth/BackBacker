@@ -26,6 +26,7 @@ class Parameter(object):
     DATE_FORMAT = 'datefmt'
     ROTATE = 'rotate'
     MIRROR = 'mirror'
+    SHELL = 'shell'
 
 
 class Constants(object):
