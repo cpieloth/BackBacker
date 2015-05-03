@@ -80,4 +80,6 @@ class Job(object):
             par = pair.split('=')
             if len(par) == 2:
                 params[par[0]] = par[1]
+            if len(par) == 1:
+                params[par[0]] = True
         return params

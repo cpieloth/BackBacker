@@ -8,6 +8,7 @@ from .mount import UMount
 from .mv_timestamp import MoveTimestamp
 from .mysql_dump_gzip import MySqlDumpGZip
 from .pgsql_dump_gzip import PgSqlDumpGZip
+from .rsync import Rsync
 from .service import ServiceStart
 from .service import ServiceStop
 from .backup_rotation import BackupRotation
@@ -23,6 +24,7 @@ def command_prototypes():
     prototypes.append(MoveTimestamp.prototype())
     prototypes.append(MySqlDumpGZip.prototype())
     prototypes.append(PgSqlDumpGZip.prototype())
+    prototypes.append(Rsync.prototype())
     prototypes.append(ServiceStart.prototype())
     prototypes.append(ServiceStop.prototype())
     prototypes.append(UMount.prototype())

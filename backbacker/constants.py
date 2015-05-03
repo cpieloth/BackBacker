@@ -7,6 +7,7 @@ class Parameter(object):
     SRC_DIR = 'src_dir'
     DEST_DIR = 'dest_dir'
     DIR = 'dir'
+    BACKUP_DIR = 'backup_dir'
     CONFIG_FILE = 'cfg_file'
 
     # Network
@@ -24,6 +25,7 @@ class Parameter(object):
     # Misc
     DATE_FORMAT = 'datefmt'
     ROTATE = 'rotate'
+    MIRROR = 'mirror'
 
 
 class Constants(object):

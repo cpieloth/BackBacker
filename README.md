@@ -64,6 +64,5 @@ Coding Style
 TODO
 ----
 
-* rsync
 * scp
 * variables in job script, e.g. ${BACKUP_DIR} is replaced by pre-processing config file.
