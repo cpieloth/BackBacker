@@ -8,7 +8,7 @@ import sys
 version = re.search('^__version__\s*=\s*"(.*)"', open('backbacker/backbacker.py').read(), re.M).group(1)
 
 if sys.version_info < (3,):
-    print('Python 2 is not supported!')
+    print('Python %i is not supported!' % sys.version_info[0])
     sys.exit(1)
 
 setup(
