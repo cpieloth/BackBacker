@@ -7,7 +7,7 @@ from .config import Config
 from .job import Job
 
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 
 
 def init_logging(cfg):
@@ -26,7 +26,7 @@ def parse_arguments():
     parser.name = 'BackBacker'
     parser.description = 'BackBacker is a light backup tool ' \
         'with a "declarative" job file based on simple commands with arguments.'
-    parser.epilog = 'BackBacker  Copyright (C) 2014  Christof Pieloth\n' \
+    parser.epilog = 'BackBacker  Copyright (C) 2015  Christof Pieloth\n' \
                     'This program comes with ABSOLUTELY NO WARRANTY; see LICENSE file.\n' \
                     'This is free software, and you are welcome to redistribute it\n' \
                     'under certain conditions; see LICENSE file.'
