@@ -16,7 +16,7 @@ gzip: src_dir=/home/user/workspace/BackBacker; dest_dir=/tmp;
 
 Run backup job:
 ```
-$ backbacker -j jobs/example.bb
+$ backbacker jobs/example.bb
 ```
 
 
@@ -38,12 +38,12 @@ $ vi configs/backbacker.cfg
 ```
 * Create a backup job:
 ```
-$ cp jobs/example.bb jobs/myjob.bb   
+$ cp jobs/example.bb jobs/myjob.bb
 $ vi jobs/myjob.bb
 ```
 * Run your backup job (NOTE: Use absolute paths!)
 ```
-$ backbacker -c configs/backbacker.cfg -j jobs/myjob.bb
+$ backbacker -c configs/backbacker.cfg jobs/myjob.bb
 ```
 * Create a cron job (optional):
 ```

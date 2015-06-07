@@ -22,7 +22,7 @@ def main():
 
     parser.add_argument('--version', action='version', version='BackBacker ' + __version__)
     parser.add_argument("-c", "--config", help="Config file.")
-    parser.add_argument("-j", "--job", help="Job file.", required=True)
+    parser.add_argument("job_file", help="Job file.")
 
     # Read config
     args = parser.parse_args()
@@ -34,7 +34,7 @@ def main():
     cfg.apply_logging()
 
     # Read job
-    job = Job.read_job(args.job)
+    job = Job.read_job(args.job_file)
 
     # Execute job
     errors = 0
