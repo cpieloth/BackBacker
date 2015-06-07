@@ -13,7 +13,7 @@ class GZip(Command):
     """Compresses a folder to a tar.gz archive."""
 
     def __init__(self):
-        Command.__init__(self, 'gzip')
+        super().__init__('gzip')
         self.__arg_src = ''
         self.__arg_dest = ''
 

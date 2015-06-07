@@ -13,7 +13,7 @@ class MountSamba(SystemCommand):
     """Mounts a samba network share."""
 
     def __init__(self):
-        SystemCommand.__init__(self, 'mount_smb', 'mount')
+        super().__init__('mount_smb', 'mount')
         self.__arg_cfg = ''
         self.__arg_url = ''
         self.__arg_dest = ''

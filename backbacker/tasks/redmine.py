@@ -16,7 +16,7 @@ class RedmineAM(Task):
     """Does a backup from Redmine running with Apache2 and MySQL."""
 
     def __init__(self):
-        Task.__init__(self, 'redmine_am')
+        super().__init__('redmine_am')
         self.__arg_src = ''
         self.__arg_dest = ''
         self.__arg_dbname = ''

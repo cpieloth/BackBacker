@@ -15,7 +15,7 @@ class MySqlDumpGZip(SystemCommand):
     CMD_GZIP = 'gzip'
 
     def __init__(self):
-        SystemCommand.__init__(self, 'mysqldump_gzip', 'mysqldump')
+        super().__init__('mysqldump_gzip', 'mysqldump')
         self.__arg_dest = ''
         self.__arg_dbname = ''
         self.__arg_dbuser = ''

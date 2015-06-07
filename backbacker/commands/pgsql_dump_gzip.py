@@ -13,7 +13,7 @@ class PgSqlDumpGZip(SystemCommand):
     """Does a PostgreSQL database dump and gzips the output."""
 
     def __init__(self):
-        SystemCommand.__init__(self, 'pgsqldump_gzip', 'pg_dump')
+        super().__init__('pgsqldump_gzip', 'pg_dump')
         self.__arg_dest = ''
         self.__arg_dbname = ''
         self.__arg_dbuser = ''

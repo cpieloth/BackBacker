@@ -22,7 +22,7 @@ class Rsync(SystemCommand):
     REMOTE_SHELL = '-e'
 
     def __init__(self):
-        SystemCommand.__init__(self, 'rsync', 'rsync')
+        super().__init__('rsync', 'rsync')
         self.__arg_src = ''
         self.__arg_dest = ''
         self.__arg_backup_dir = ''

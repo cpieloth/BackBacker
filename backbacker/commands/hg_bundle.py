@@ -13,7 +13,7 @@ class HgBundle(SystemCommand):
     """Bundles a hg repository."""
 
     def __init__(self):
-        SystemCommand.__init__(self, 'hg_bundle', 'hg')
+        super().__init__('hg_bundle', 'hg')
         self.__arg_src = ''
         self.__arg_dest = ''
 

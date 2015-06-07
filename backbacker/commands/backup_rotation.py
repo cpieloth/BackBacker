@@ -18,7 +18,7 @@ class BackupRotation(Command):
     DATE_PREFIX_SEP = Constants.DATE_PREFIX_SEPARATOR
 
     def __init__(self):
-        Command.__init__(self, 'backup_rotation')
+        super().__init__('backup_rotation')
         self.__arg_src = ''
         self.__arg_date_pattern = Constants.FILE_DATE_FORMAT
         self.__arg_keep_backups = Constants.KEEP_BACKUPS

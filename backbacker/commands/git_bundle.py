@@ -13,7 +13,7 @@ class GitBundle(SystemCommand):
     """Bundles a git repository."""
 
     def __init__(self):
-        SystemCommand.__init__(self, 'git_bundle', 'git')
+        super().__init__('git_bundle', 'git')
         self.__arg_src = ''
         self.__arg_dest = ''
 

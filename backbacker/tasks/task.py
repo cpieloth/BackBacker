@@ -1,25 +1,13 @@
 __author__ = 'Christof Pieloth'
 
-import logging
+from backbacker.commands.command import Command
 
 
-# TODO subclass from command
-class Task(object):
+class Task(Command):
     """A task combines more than one command or task to one unit."""
 
     def __init__(self, name):
-        self._name = name
-        self._log = logging.getLogger(self._name)
-
-    @property
-    def name(self):
-        """Name of the command. Is used to interpret the job script."""
-        return self._name
-
-    @property
-    def log(self):
-        """Logger for this task."""
-        return self._log
+        super().__init__(name)
 
     def _pre_execute(self):
         """Abstract method, is executed before execute_task."""
@@ -56,7 +44,3 @@ class Task(object):
     def prototype(cls):
         """Abstract method, returns an instance of a specific command, e.g. for matches() or is_available()"""
         raise Exception('Prototype method not implemented for: ' + str(cls))
-
-    def matches(self, cmd):
-        """Checks if this command should be used for execution."""
-        return cmd.lower().startswith(self.name)

@@ -7,7 +7,7 @@ from .command import SystemCommand
 
 class Service(SystemCommand):
     def __init__(self, name, command):
-        SystemCommand.__init__(self, name, 'service')
+        super().__init__(name, 'service')
         self._arg_service = ''
         self._arg_command = command
 

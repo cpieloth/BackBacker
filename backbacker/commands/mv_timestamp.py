@@ -15,7 +15,7 @@ class MoveTimestamp(Command):
     """Moves/renames all files in a folder to a destination by adding a timestamp prefix."""
 
     def __init__(self):
-        Command.__init__(self, 'mv_timestamp')
+        super().__init__('mv_timestamp')
         self.__arg_src = ''
         self.__arg_dest = ''
         self.__arg_datefmt = Constants.FILE_DATE_FORMAT
