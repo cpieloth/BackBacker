@@ -11,8 +11,8 @@ Concept
 Job script with one instruction per line:
 ```
 $ cat examples/job.bb
-git_bundle: src_dir=/home/user/workspace/BackBacker; dest_dir=/tmp;
-gzip: src_dir=/home/user/workspace/BackBacker; dest_dir=/tmp;
+git_bundle: src_dir=~/BackBacker; dest_dir=/tmp;
+gzip: src_dir=~/BackBacker; dest_dir=/tmp;
 ```
 
 Run backup job:
