@@ -2,6 +2,7 @@ BackBacker - A light backup tool.
 =================================
 
 BackBacker is a light backup tool with a "declarative" job file based on simple commands with arguments.
+BackBacker requires Python 3, but a backport to Python 2 can be done easily.
 
 
 Concept
@@ -9,7 +10,7 @@ Concept
 
 Job script with one instruction per line:
 ```
-$ cat jobs/example.bb
+$ cat examples/job.bb
 git_bundle: src_dir=/home/user/workspace/BackBacker; dest_dir=/tmp;
 gzip: src_dir=/home/user/workspace/BackBacker; dest_dir=/tmp;
 ```
