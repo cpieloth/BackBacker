@@ -2,13 +2,14 @@ __author__ = 'Christof Pieloth'
 
 import os
 
-from backbacker.tasks.task import Task
 from backbacker.commands.compress import GZip
 from backbacker.commands.mysql_dump_gzip import MySqlDumpGZip
 from backbacker.commands.service import ServiceStart
 from backbacker.commands.service import ServiceStop
 from backbacker.errors import ParameterError
 from backbacker.constants import Parameter
+
+from .task import Task
 
 
 class RedmineAM(Task):

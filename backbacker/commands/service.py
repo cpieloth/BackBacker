@@ -2,7 +2,7 @@ __author__ = 'Christof Pieloth'
 
 import subprocess
 
-from backbacker.commands.command import SystemCommand
+from .command import SystemCommand
 
 
 class Service(SystemCommand):

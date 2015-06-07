@@ -5,10 +5,11 @@ from glob import glob
 import os
 import sys
 
-from backbacker.commands.command import Command
 from backbacker.constants import Parameter
 from backbacker.constants import Constants
 from backbacker.errors import ParameterError
+
+from .command import Command
 
 
 class BackupRotation(Command):

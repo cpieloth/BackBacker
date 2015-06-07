@@ -16,37 +16,36 @@ gzip: src_dir=/home/user/workspace/BackBacker; dest_dir=/tmp;
 
 Run backup job:
 ```
-$ python backbacker.py -j jobs/example.bb
+$ backbacker -j jobs/example.bb
 ```
 
 
 Installation & Usage
 --------------------
 
-* Clone repository.
+* Clone repository:
 ```
 $ git clone https://github.com/cpieloth/BackBacker.git BackBacker
 ```
-* Create a new branch for your backup jobs (optional).
+* Install BackBacker:
 ```
 $ cd BackBacker
-$ git checkout -b jobs
+$ python setup.py install
 ```
-* Modify config (optional).
+* Modify config (optional):
 ```
 $ vi configs/backbacker.cfg
 ```
-* Create a backup job.
+* Create a backup job:
 ```
-$ cp jobs/example.bb jobs/myjob.bb
+$ cp jobs/example.bb jobs/myjob.bb   
 $ vi jobs/myjob.bb
 ```
-* Commit your setup (optional).
 * Run your backup job (NOTE: Use absolute paths!)
 ```
-$ python backbacker.py -c configs/backbacker.cfg -j jobs/myjob.bb
+$ backbacker -c configs/backbacker.cfg -j jobs/myjob.bb
 ```
-* Create a cron job (optional). 
+* Create a cron job (optional):
 ```
 $ crontab -e
 ```

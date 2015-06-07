@@ -3,10 +3,12 @@ __author__ = 'Christof Pieloth'
 from datetime import datetime
 import os
 import shutil
-from backbacker.commands.command import Command
+
 from backbacker.constants import Constants
 from backbacker.constants import Parameter
 from backbacker.errors import ParameterError
+
+from .command import Command
 
 
 class MoveTimestamp(Command):

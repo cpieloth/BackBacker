@@ -3,9 +3,10 @@ __author__ = 'Christof Pieloth'
 import os
 import tarfile
 
-from backbacker.commands.command import Command
 from backbacker.errors import ParameterError
 from backbacker.constants import Parameter
+
+from .command import Command
 
 
 class GZip(Command):

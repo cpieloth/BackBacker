@@ -3,9 +3,10 @@ __author__ = 'Christof Pieloth'
 import os
 from subprocess import call
 
-from backbacker.commands.command import SystemCommand
 from backbacker.constants import Parameter
 from backbacker.errors import ParameterError
+
+from .command import SystemCommand
 
 
 class PgSqlDumpGZip(SystemCommand):
