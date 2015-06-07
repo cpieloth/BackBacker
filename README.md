@@ -30,12 +30,12 @@ $ git clone https://github.com/cpieloth/BackBacker.git BackBacker
 * Install BackBacker:
 ```
 $ cd BackBacker
-$ python setup.py install
+$ python3 setup.py install
 ```
 * Create a config (optional):
 ```
-$ cp examples/config.cfg examples/myconfig.cfg
-$ vi examples/myconfig.cfg
+$ cp examples/config.ini examples/myconfig.ini
+$ vi examples/myconfig.ini
 ```
 * Create a backup job:
 ```
@@ -44,7 +44,7 @@ $ vi examples/myjob.bb
 ```
 * Run your backup job
 ```
-$ backbacker -c examples/myconfig.cfg examples/myjob.bb
+$ backbacker -c examples/myconfig.ini examples/myjob.bb
 ```
 * Create a cron job (optional):
 ```

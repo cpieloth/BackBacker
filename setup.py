@@ -2,9 +2,14 @@ __author__ = 'Christof Pieloth'
 
 import re
 from setuptools import find_packages, setup
+import sys
 
 
 version = re.search('^__version__\s*=\s*"(.*)"', open('backbacker/backbacker.py').read(), re.M).group(1)
+
+if sys.version_info < (3,):
+    print('Python 2 is not supported!')
+    sys.exit(1)
 
 setup(
     name='BackBacker',

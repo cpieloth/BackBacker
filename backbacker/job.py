@@ -22,7 +22,6 @@ class Job(object):
         self._commands.append(cmd)
 
     def execute(self):
-        Job.log.info('Starting ...')
         errors = 0
         for cmd in self._commands:
             try:
@@ -34,8 +33,6 @@ class Job(object):
             except Exception as ex:
                 errors += 1
                 Job.log.error('Unknown error:\n' + str(ex))
-
-        Job.log.info('Finished with errors: ' + str(errors))
         return errors
 
     @staticmethod

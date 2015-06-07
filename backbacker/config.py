@@ -1,17 +1,20 @@
 __author__ = 'Christof Pieloth'
 
-import logging
+import configparser
 import os
 import sys
 
 
 class Config(object):
     """Stores global settings."""
+    SECTION_LOGGING = 'logging'
+
     PARAM_LOG_TYPE = 'log_type'
     ARG_LOG_TYPE_CONSOLE = 'console'
     ARG_LOG_TYPE_FILE = 'file'
 
     PARAM_LOG_FILE = 'log_file'
+    DEFAULT_LOG_FILE = '/tmp/backbacker.log'
 
     LOG_FORMAT_CONSOLE = '[%(levelname)s] %(name)s: %(message)s'
     LOG_FORMAT_FILE = '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
@@ -41,11 +44,15 @@ class Config(object):
 
     @log_type.setter
     def log_type(self, value):
+        value = value.lower().strip()
         self.__log_type = value
         if self.log_type == Config.ARG_LOG_TYPE_CONSOLE:
             self.log_format = Config.LOG_FORMAT_CONSOLE
         elif self.log_type == Config.ARG_LOG_TYPE_FILE:
             self.log_format = Config.LOG_FORMAT_FILE
+        else:
+            self.log_type = Config.ARG_LOG_TYPE_CONSOLE
+            print('Unknown log type! Logging to console instead.', file=sys.stderr)
 
     @property
     def log_file(self):
@@ -55,39 +62,18 @@ class Config(object):
     def log_file(self, value):
         self.__log_file = os.path.expanduser(value)
 
-    def apply_logging(self):
-        """Initializes the logging."""
-        if self.log_type == Config.ARG_LOG_TYPE_CONSOLE:
-            logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=self.log_format,
-                                datefmt=self.log_datefmt)
-        elif self.log_type == Config.ARG_LOG_TYPE_FILE:
-            logging.basicConfig(level=logging.DEBUG, filename=self.log_file, format=self.log_format,
-                                datefmt=self.log_datefmt)
-
     @staticmethod
     def read_config(fname):
         """Reads and creates a config from a file."""
         cfg = Config()
-        try:
-            cfg_file = open(fname, 'r')
-        except IOError as err:
-            print('Error on reading config file!\n' + str(err))
-        else:
-            with cfg_file:
-                for line in cfg_file:
-                    if line[0] == '#':
-                        continue
-                    pair = line.split('=')
-                    if len(pair) != 2:
-                        print('Could not read config line:\n' + str(line))
-                        continue
-                    param = pair[0].lower().strip()
-                    arg = pair[1].strip()
-                    if param == Config.PARAM_LOG_TYPE:
-                        cfg.log_type = arg
-                    elif param == Config.PARAM_LOG_FILE:
-                        cfg.log_file = arg
-                    else:
-                        print('Unknown property: ' + str(param))
+
+        cfg_parser = configparser.ConfigParser()
+        files = cfg_parser.read(fname)
+        if not files or len(files) == 0:
+            print('Error on reading config file!', file=sys.stderr)
+            return cfg
+
+        cfg.log_type = cfg_parser.get(Config.SECTION_LOGGING, Config.PARAM_LOG_TYPE, fallback=Config.ARG_LOG_TYPE_CONSOLE)
+        cfg.log_file = cfg_parser.get(Config.SECTION_LOGGING, Config.PARAM_LOG_FILE, fallback=Config.DEFAULT_LOG_FILE)
 
         return cfg
