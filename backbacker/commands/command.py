@@ -51,17 +51,17 @@ class Command(object):
             parser.description = cls.help()
         else:
             parser = parser.add_parser(cls.name(), help=cls.help())
-        cls._register_arguments(parser)
+        cls.register_arguments(parser)
         parser.set_defaults(func=cls.__execute)
         return parser
 
     @classmethod
-    def _register_arguments(cls, parser):
+    def register_arguments(cls, parser):
         """
         Registers arguments for this command.
 
-        :param parser: ArgumentParser instance.
-        :return: Prepared ArgumentParser.
+        :param parser: Argument parser instance.
+        :return: Prepared parser.
         """
         raise NotImplementedError('This method must be implemented by each command.')
 
@@ -201,7 +201,7 @@ class ExampleCommand(Command):
         return 'This is an example command.'
 
     @classmethod
-    def _register_arguments(cls, parser):
+    def register_arguments(cls, parser):
         parser.add_argument('--value', help='Example value.', required=True)
 
     @classmethod
