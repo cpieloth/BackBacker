@@ -1,3 +1,8 @@
+"""
+A command is the core component of BackBacker.
+A concrete command implements the back-up logic.
+"""
+
 import abc
 import logging
 from backbacker.sub_commands import SubCommand
@@ -10,7 +15,7 @@ log = logging.getLogger(__name__)
 class Command(abc.ABC):
     """
     A command is a basic and often an atomic functionality for a backup job, e.g. copying a file.
-    This class can be used for API access.
+    Implementations can be used for API access.
     """
 
     @abc.abstractmethod

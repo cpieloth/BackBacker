@@ -2,9 +2,10 @@ import logging
 import os
 import tarfile
 
-from backbacker.commands.command import Command
+from backbacker.command import Command
 from backbacker.constants import Parameter
 from backbacker.errors import ParameterError
+
 
 __author__ = 'Christof Pieloth'
 

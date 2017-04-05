@@ -56,7 +56,7 @@ class Job(object):
                         if p.matches(line):
                             try:
                                 params = Job.read_parameter(line)
-                                cmd = p.instance(params)
+                                cmd = p._instance(params)
                                 job.add_command(cmd)
                             except ParameterError as err:
                                 log.error("Command '" + p.name + "' is skipped: " + str(err))

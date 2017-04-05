@@ -1,6 +1,6 @@
 import logging
 
-from backbacker.commands.command import Command
+from backbacker.command import Command
 
 __author__ = 'Christof Pieloth'
 

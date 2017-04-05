@@ -1,7 +1,8 @@
 import logging
 import subprocess
 
-from backbacker.commands.command import SystemCommand
+from backbacker.command import SystemCommand
+
 
 __author__ = 'Christof Pieloth'
 

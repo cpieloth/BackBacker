@@ -4,24 +4,22 @@ import abc
 import logging
 import sys
 
-from backbacker.config import Config
-from backbacker.job import Job
-
 __author__ = 'christof.pieloth'
 
 log = logging.getLogger(__name__)
 
 
 def init_logging(cfg):
-        """Initializes the logging."""
-        if not cfg:
-            logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
-        elif cfg.log_type == Config.ARG_LOG_TYPE_CONSOLE:
-            logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=cfg.log_format,
-                                datefmt=cfg.log_datefmt)
-        elif cfg.log_type == Config.ARG_LOG_TYPE_FILE:
-            logging.basicConfig(level=logging.DEBUG, filename=cfg.log_file, format=cfg.log_format,
-                                datefmt=cfg.log_datefmt)
+    """Initializes the logging."""
+    from backbacker.config import Config
+    if not cfg:
+        logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+    elif cfg.log_type == Config.ARG_LOG_TYPE_CONSOLE:
+        logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=cfg.log_format,
+                            datefmt=cfg.log_datefmt)
+    elif cfg.log_type == Config.ARG_LOG_TYPE_FILE:
+        logging.basicConfig(level=logging.DEBUG, filename=cfg.log_file, format=cfg.log_format,
+                            datefmt=cfg.log_datefmt)
 
 
 class SubCommand(abc.ABC):
@@ -102,13 +100,15 @@ class JobCmd(SubCommand):
 
     @classmethod
     def _add_arguments(cls, parser):
-        parser.add_argument("-c", "--config", help="Config file.")
-        parser.add_argument("job_file", help="Job file.")
+        parser.add_argument('-c', '--config', help='Config file.')
+        parser.add_argument('job_file', help='Job file.')
         return parser
 
     @classmethod
     def exec(cls, args):
         """Execute the command."""
+        from backbacker.job import Job
+
         init_logging(args.config)
 
         # Read job
@@ -126,3 +126,7 @@ class JobCmd(SubCommand):
             log.error('Backup finished with %i errors!' % errors)
 
         return errors
+
+
+def register_sub_commands(subparser):
+    JobCmd.init_subparser(subparser)
