@@ -1,6 +1,5 @@
+from backbacker.backbacker import main
+
 __author__ = 'christof'
-
-from .backbacker import main
-
 
 main()

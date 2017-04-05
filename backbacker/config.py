@@ -1,8 +1,8 @@
-__author__ = 'Christof Pieloth'
-
 import configparser
 import os
 import sys
+
+__author__ = 'Christof Pieloth'
 
 
 class Config(object):

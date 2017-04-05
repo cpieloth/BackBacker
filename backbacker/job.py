@@ -1,10 +1,10 @@
-__author__ = 'Christof Pieloth'
-
 import logging
 
-from .commands import command_prototypes
-from .tasks import task_prototypes
-from .errors import ParameterError
+from backbacker.commands import command_prototypes
+from backbacker.tasks import task_prototypes
+from backbacker.errors import ParameterError
+
+__author__ = 'Christof Pieloth'
 
 log = logging.getLogger(__name__)
 
