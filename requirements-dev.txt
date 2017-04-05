@@ -1,0 +1,8 @@
+# Requirement for development
+-r requirements.txt
+coverage
+markdown
+pep8
+pep257
+pylint
+Sphinx
