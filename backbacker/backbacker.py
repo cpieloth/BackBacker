@@ -1,28 +1,19 @@
+"""Entry point for CLI usage."""
+
 import argparse
-from argparse import RawTextHelpFormatter
-import logging
 import sys
 
-from .config import Config
-from .job import Job
+import backbacker.sub_commands
 
 
-__version__ = "1.0.0"
+def main(argv=sys.argv):
+    """
+    Start the Example tool.
 
-
-def init_logging(cfg):
-        """Initializes the logging."""
-        if cfg.log_type == Config.ARG_LOG_TYPE_CONSOLE:
-            logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=cfg.log_format,
-                                datefmt=cfg.log_datefmt)
-        elif cfg.log_type == Config.ARG_LOG_TYPE_FILE:
-            logging.basicConfig(level=logging.DEBUG, filename=cfg.log_file, format=cfg.log_format,
-                                datefmt=cfg.log_datefmt)
-
-
-def parse_arguments():
-    parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter)
-    parser.prog = 'backbacker'
+    :return: 0 on success.
+    """
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
+    parser.prog = argv[0]
     parser.name = 'BackBacker'
     parser.description = 'BackBacker is a light backup tool ' \
         'with a "declarative" job file based on simple commands with arguments.'
@@ -30,40 +21,17 @@ def parse_arguments():
                     'This program comes with ABSOLUTELY NO WARRANTY; see LICENSE file.\n' \
                     'This is free software, and you are welcome to redistribute it\n' \
                     'under certain conditions; see LICENSE file.'
+    parser.add_argument('--version', action='version', version='BackBacker ' + backbacker.__version__)
 
-    parser.add_argument('--version', action='version', version='BackBacker ' + __version__)
-    parser.add_argument("-c", "--config", help="Config file.")
-    parser.add_argument("job_file", help="Job file.")
+    subparser = parser.add_subparsers(title='BackBacker Commands', description='Valid example commands.')
+    backbacker.sub_commands.JobCmd.init_subparser(subparser)
 
-    return parser.parse_args()
+    args = parser.parse_args(argv[1:])
+    try:
+        # Check if a sub-command is given, otherwise print help.
+        getattr(args, 'func')
+    except AttributeError:
+        parser.print_help()
+        return 2
 
-
-def main():
-    args = parse_arguments()
-
-    # Read config
-    if args.config:
-        cfg = Config.read_config(args.config)
-    else:
-        print('No config file specified. Using default settings.')
-        cfg = Config()
-
-    # Init logging
-    init_logging(cfg)
-    log = logging.getLogger('BackBacker')
-
-    # Read job
-    job = Job.read_job(args.job_file)
-    if not job:
-        log.critical('Could not create job. Backup cancelled!')
-        return 1
-
-    # Execute job
-    log.info('Start backup ...')
-    errors = job.execute()
-    if errors == 0:
-        log.info('Backup successfully finished.')
-    else:
-        log.error('Backup finished with %i errors!' % errors)
-
-    return errors
+    return args.func(args)
