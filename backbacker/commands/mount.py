@@ -1,19 +1,21 @@
-__author__ = 'Christof Pieloth'
-
+import logging
 import os
 from subprocess import call
 
+from backbacker.commands.command import SystemCommand
 from backbacker.constants import Parameter
 from backbacker.errors import ParameterError
 
-from .command import SystemCommand
+__author__ = 'Christof Pieloth'
+
+log = logging.getLogger(__name__)
 
 
 class MountSamba(SystemCommand):
     """Mounts a samba network share."""
 
     def __init__(self):
-        super().__init__('mount_smb', 'mount')
+        super().__init__('mount')
         self.__arg_cfg = ''
         self.__arg_url = ''
         self.__arg_dest = ''
@@ -44,10 +46,10 @@ class MountSamba(SystemCommand):
 
     def _execute_command(self):
         if not os.access(self.arg_cfg, os.R_OK):
-            self.log.error('No read access to: ' + self.arg_cfg)
+            log.error('No read access to: ' + self.arg_cfg)
             return False
         if not os.access(self.arg_dest, os.W_OK):
-            self.log.error('No write access to: ' + self.arg_dest)
+            log.error('No write access to: ' + self.arg_dest)
             return False
 
         if call([self.cmd, '-t', 'cifs', '-o', 'credentials=' + self.arg_cfg, self.arg_url, self.arg_dest]) == 0:
@@ -81,7 +83,7 @@ class UMount(SystemCommand):
     """Unmounts a mounting point."""
 
     def __init__(self):
-        SystemCommand.__init__(self, 'umount', 'umount')
+        SystemCommand.__init__(self, 'umount')
         self.__arg_dir = ''
 
     @property
@@ -94,7 +96,7 @@ class UMount(SystemCommand):
 
     def _execute_command(self):
         if not os.access(self.arg_dir, os.W_OK):
-            self.log.error('No write access to: ' + self.arg_dir)
+            log.error('No write access to: ' + self.arg_dir)
             return False
 
         if call([self.cmd, self.arg_dir]) == 0:

@@ -1,13 +1,17 @@
-__author__ = 'Christof Pieloth'
+import logging
 
 from backbacker.commands.command import Command
+
+__author__ = 'Christof Pieloth'
+
+log = logging.getLogger(__name__)
 
 
 class Task(Command):
     """A task combines more than one command or task to one unit."""
 
-    def __init__(self, name):
-        super().__init__(name)
+    def __init__(self):
+        super().__init__()
 
     def _pre_execute(self):
         """Abstract method, is executed before execute_task."""
@@ -23,12 +27,12 @@ class Task(Command):
             success = success and self._post_execute()
         except Exception as ex:
             success = False
-            self.log.error('Unexpected error: ' + str(ex))
+            log.error('Unexpected error: ' + str(ex))
         return success
 
     def _execute_task(self):
         """Abstract method, implements the specific functionality."""
-        self.log.error('No yet implemented: ' + str(self.name))
+        log.error('No yet implemented: ' + str(self.name))
         return False
 
     def _post_execute(self):

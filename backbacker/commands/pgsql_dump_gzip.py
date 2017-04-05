@@ -1,19 +1,21 @@
-__author__ = 'Christof Pieloth'
-
+import logging
 import os
 from subprocess import call
 
+from backbacker.commands.command import SystemCommand
 from backbacker.constants import Parameter
 from backbacker.errors import ParameterError
 
-from .command import SystemCommand
+__author__ = 'Christof Pieloth'
+
+log = logging.getLogger(__name__)
 
 
 class PgSqlDumpGZip(SystemCommand):
     """Does a PostgreSQL database dump and gzips the output."""
 
     def __init__(self):
-        super().__init__('pgsqldump_gzip', 'pg_dump')
+        super().__init__('pg_dump')
         self.__arg_dest = ''
         self.__arg_dbname = ''
         self.__arg_dbuser = ''
@@ -74,7 +76,7 @@ class PgSqlDumpGZip(SystemCommand):
 
     def _execute_command(self):
         if not os.access(self.arg_dest, os.W_OK):
-            self.log.error('No write access to: ' + self.arg_dest)
+            log.error('No write access to: ' + self.arg_dest)
             return False
         dest = os.path.join(self.arg_dest, self.arg_dbname + '.sql.gz')
 
@@ -90,12 +92,12 @@ class PgSqlDumpGZip(SystemCommand):
         # database and output
         pg_dump += ' ' + self.arg_dbname
         pg_dump += ' > ' + dest
-        self.log.info(pg_dump)
+        log.info(pg_dump)
 
         if call([pg_dump], shell=True) == 0:
             return True
         else:
-            self.log.error('Error while dumping PostgreSQL DB.')
+            log.error('Error while dumping PostgreSQL DB.')
             return False
 
     @classmethod

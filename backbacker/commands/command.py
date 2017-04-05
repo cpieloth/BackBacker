@@ -1,16 +1,15 @@
-__author__ = 'Christof Pieloth'
-
 import argparse
 import logging
+
+__author__ = 'Christof Pieloth'
+
+log = logging.getLogger(__name__)
 
 
 class Command(object):
     """
     A command is a basic and often an atomic functionality for a backup job, e.g. copying a file.
     """
-
-    def __init__(self):
-        self.log = logging.getLogger(self.name())
 
     @classmethod
     def name(cls):
@@ -106,7 +105,7 @@ class SystemCommand(Command):
 
     def execute(self):
         if not self.is_available():
-            self.log.error('Not available!')
+            log.error('Not available!')
             return False
 
         return self._execute_command()
@@ -163,7 +162,7 @@ class Task(Command):
             success = success and self._post_execute()
         except Exception as ex:
             success = False
-            self.log.error('Unexpected error: ' + str(ex))
+            log.error('Unexpected error: ' + str(ex))
         return success
 
     def _execute_task(self):

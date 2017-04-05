@@ -1,12 +1,14 @@
-__author__ = 'Christof Pieloth'
-
+import logging
 import os
 from subprocess import call
 
+from backbacker.commands.command import SystemCommand
 from backbacker.constants import Parameter
 from backbacker.errors import ParameterError
 
-from .command import SystemCommand
+__author__ = 'Christof Pieloth'
+
+log = logging.getLogger(__name__)
 
 
 class Rsync(SystemCommand):
@@ -22,7 +24,7 @@ class Rsync(SystemCommand):
     REMOTE_SHELL = '-e'
 
     def __init__(self):
-        super().__init__('rsync', 'rsync')
+        super().__init__('rsync')
         self.__arg_src = ''
         self.__arg_dest = ''
         self.__arg_backup_dir = ''
@@ -72,10 +74,10 @@ class Rsync(SystemCommand):
     def execute(self):
         if self.arg_rsh == '':
             if not os.access(self.arg_src, os.R_OK):
-                self.log.error('No read access to: ' + self.arg_src)
+                log.error('No read access to: ' + self.arg_src)
                 return False
             if not os.access(self.arg_dest, os.W_OK):
-                self.log.error('No write access to: ' + self.arg_dest)
+                log.error('No write access to: ' + self.arg_dest)
                 return False
 
         cmd = [self.cmd, Rsync.ALL]

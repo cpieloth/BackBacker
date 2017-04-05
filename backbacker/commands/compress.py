@@ -1,19 +1,21 @@
-__author__ = 'Christof Pieloth'
-
+import logging
 import os
 import tarfile
 
-from backbacker.errors import ParameterError
+from backbacker.commands.command import Command
 from backbacker.constants import Parameter
+from backbacker.errors import ParameterError
 
-from .command import Command
+__author__ = 'Christof Pieloth'
+
+log = logging.getLogger(__name__)
 
 
 class GZip(Command):
     """Compresses a folder to a tar.gz archive."""
 
     def __init__(self):
-        super().__init__('gzip')
+        super().__init__()
         self.__arg_src = ''
         self.__arg_dest = ''
 
@@ -35,10 +37,10 @@ class GZip(Command):
 
     def execute(self):
         if not os.access(self.arg_src, os.R_OK):
-            self.log.error('No read access to: ' + self.arg_src)
+            log.error('No read access to: ' + self.arg_src)
             return False
         if not os.access(self.arg_dest, os.W_OK):
-            self.log.error('No write access to: ' + self.arg_dest)
+            log.error('No write access to: ' + self.arg_dest)
             return False
 
         dest_file = os.path.basename(self.arg_src) + '.tar.gz'
@@ -49,7 +51,7 @@ class GZip(Command):
             tar = tarfile.open(dest, 'w|gz')
             tar.add(self.arg_src)
         except Exception as ex:
-            self.log.error('Could not compress: ' + self.arg_src + '\n' + str(ex))
+            log.error('Could not compress: ' + self.arg_src + '\n' + str(ex))
             success = False
         finally:
             if tar:

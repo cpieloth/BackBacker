@@ -1,12 +1,14 @@
-__author__ = 'Christof Pieloth'
-
+import logging
 import os
 from subprocess import call
 
+from backbacker.commands.command import SystemCommand
 from backbacker.constants import Parameter
 from backbacker.errors import ParameterError
 
-from .command import SystemCommand
+__author__ = 'Christof Pieloth'
+
+log = logging.getLogger(__name__)
 
 
 class MySqlDumpGZip(SystemCommand):
@@ -15,7 +17,7 @@ class MySqlDumpGZip(SystemCommand):
     CMD_GZIP = 'gzip'
 
     def __init__(self):
-        super().__init__('mysqldump_gzip', 'mysqldump')
+        super().__init__('mysqldump')
         self.__arg_dest = ''
         self.__arg_dbname = ''
         self.__arg_dbuser = ''
@@ -60,7 +62,7 @@ class MySqlDumpGZip(SystemCommand):
 
     def _execute_command(self):
         if not os.access(self.arg_dest, os.W_OK):
-            self.log.error('No write access to: ' + self.arg_dest)
+            log.error('No write access to: ' + self.arg_dest)
             return False
         dest = os.path.join(self.arg_dest, self.arg_dbname + '.sql.gz')
 
@@ -70,7 +72,7 @@ class MySqlDumpGZip(SystemCommand):
         if call([mysqldump + ' | ' + gzip], shell=True) == 0:
             return True
         else:
-            self.log.error('Error while dumping MySQL DB.')
+            log.error('Error while dumping MySQL DB.')
             return False
 
     @classmethod

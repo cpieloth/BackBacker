@@ -1,5 +1,4 @@
-__author__ = 'Christof Pieloth'
-
+import logging
 import os
 
 from backbacker.commands.compress import GZip
@@ -11,12 +10,16 @@ from backbacker.constants import Parameter
 
 from .task import Task
 
+__author__ = 'Christof Pieloth'
+
+log = logging.getLogger(__name__)
+
 
 class RedmineAM(Task):
     """Does a backup from Redmine running with Apache2 and MySQL."""
 
     def __init__(self):
-        super().__init__('redmine_am')
+        super().__init__()
         self.__arg_src = ''
         self.__arg_dest = ''
         self.__arg_dbname = ''
@@ -67,10 +70,10 @@ class RedmineAM(Task):
 
     def _pre_execute(self):
         if not os.access(self.arg_src, os.R_OK):
-            self.log.error('No read access to: ' + self.arg_src)
+            log.error('No read access to: ' + self.arg_src)
             return False
         if not os.access(self.arg_dest, os.W_OK):
-            self.log.error('No write access to: ' + self.arg_dest)
+            log.error('No write access to: ' + self.arg_dest)
             return False
 
         if not self.__cmd_sqldump.is_available():

@@ -1,13 +1,16 @@
-__author__ = 'Christof Pieloth'
-
+import logging
 import subprocess
 
-from .command import SystemCommand
+from backbacker.commands.command import SystemCommand
+
+__author__ = 'Christof Pieloth'
+
+log = logging.getLogger(__name__)
 
 
 class Service(SystemCommand):
-    def __init__(self, name, command):
-        super().__init__(name, 'service')
+    def __init__(self, command):
+        super().__init__('service')
         self._arg_service = ''
         self._arg_command = command
 
@@ -25,17 +28,17 @@ class Service(SystemCommand):
 
     def _execute_command(self):
         if not self.arg_service:
-            self.log.error('Bad service name: ' + str(self.arg_service))
+            log.error('Bad service name: ' + str(self.arg_service))
             return False
 
         if not self.arg_command == 'start' and not self.arg_command == 'stop':
-            self.log.error('Bad command: ' + str(self.arg_command))
+            log.error('Bad command: ' + str(self.arg_command))
             return False
 
         try:
             return subprocess.call([self.cmd, self.arg_service, self.arg_command], stdout=subprocess.PIPE) == 0
         except OSError as err:
-            self.log.error(
+            log.error(
                 'Error on calling \'service ' + self.arg_service + ' ' + self.arg_command + '\': ' + str(err))
             return False
 
@@ -44,7 +47,7 @@ class ServiceStart(Service):
     """Starts a service using 'service' command."""
 
     def __init__(self):
-        Service.__init__(self, 'service_start', 'start')
+        Service.__init__(self, 'start')
 
     @classmethod
     def instance(cls, params):
@@ -62,7 +65,7 @@ class ServiceStop(Service):
     """Stops a service using 'service' command."""
 
     def __init__(self):
-        Service.__init__(self, 'service_stop', 'stop')
+        Service.__init__(self, 'stop')
 
     @classmethod
     def instance(cls, params):

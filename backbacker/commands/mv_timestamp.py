@@ -1,21 +1,23 @@
-__author__ = 'Christof Pieloth'
-
 from datetime import datetime
+import logging
 import os
 import shutil
 
+from backbacker.commands.command import Command
 from backbacker.constants import Constants
 from backbacker.constants import Parameter
 from backbacker.errors import ParameterError
 
-from .command import Command
+__author__ = 'Christof Pieloth'
+
+log = logging.getLogger(__name__)
 
 
 class MoveTimestamp(Command):
     """Moves/renames all files in a folder to a destination by adding a timestamp prefix."""
 
     def __init__(self):
-        super().__init__('mv_timestamp')
+        super().__init__()
         self.__arg_src = ''
         self.__arg_dest = ''
         self.__arg_datefmt = Constants.FILE_DATE_FORMAT
@@ -46,16 +48,16 @@ class MoveTimestamp(Command):
 
     def execute(self):
         if not os.access(self.arg_src, os.R_OK):
-            self.log.error('No read access to: ' + self.arg_src)
+            log.error('No read access to: ' + self.arg_src)
             return False
         if not os.access(self.arg_dest, os.W_OK):
-            self.log.error('No write access to: ' + self.arg_dest)
+            log.error('No write access to: ' + self.arg_dest)
             return False
 
         try:
             date_str = datetime.now().strftime(self.arg_datefmt)
         except Exception as ex:
-            self.log.error('Could not create date string! Using default format:\n' + str(ex))
+            log.error('Could not create date string! Using default format:\n' + str(ex))
             date_str = datetime.now().strftime(Constants.FILE_DATE_FORMAT)
 
         # Collecting file to avoid conflict if src_dir eq. dest_dir.
@@ -73,7 +75,7 @@ class MoveTimestamp(Command):
                 # Using shutil.move() instead of os.rename() to enable operation over different filesystems.
                 shutil.move(file_in, file_out)
             except Exception as ex:
-                self.log.error('Could not move file: ' + file_in + '\n' + str(ex))
+                log.error('Could not move file: ' + file_in + '\n' + str(ex))
                 errors += 1
 
         if errors == 0:

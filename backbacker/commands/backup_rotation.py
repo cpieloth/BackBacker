@@ -1,15 +1,18 @@
-__author__ = 'Gunnar Nitsche'
-
 from datetime import datetime
+import logging
 from glob import glob
 import os
 import sys
 
+from backbacker.commands.command import Command
 from backbacker.constants import Parameter
 from backbacker.constants import Constants
 from backbacker.errors import ParameterError
 
-from .command import Command
+
+__author__ = 'Gunnar Nitsche'
+
+log = logging.getLogger(__name__)
 
 
 class BackupRotation(Command):
@@ -18,7 +21,7 @@ class BackupRotation(Command):
     DATE_PREFIX_SEP = Constants.DATE_PREFIX_SEPARATOR
 
     def __init__(self):
-        super().__init__('backup_rotation')
+        super().__init__()
         self.__arg_src = ''
         self.__arg_date_pattern = Constants.FILE_DATE_FORMAT
         self.__arg_keep_backups = Constants.KEEP_BACKUPS
@@ -48,18 +51,18 @@ class BackupRotation(Command):
         try:
             self.__arg_keep_backups = int(value)
         except ValueError:
-            self.log.error('Could not cast to int: ' + str(value))
+            log.error('Could not cast to int: ' + str(value))
             self.__arg_keep_backups = sys.maxsize
         if self.__arg_keep_backups == 0:
-            self.log.warn('rotation == 0 are ignored!')
+            log.warn('rotation == 0 are ignored!')
             self.__arg_keep_backups = sys.maxsize
 
     def execute(self):
         if not os.access(self.arg_src, os.R_OK):
-            self.log.error('No read access for: ' + self.arg_src)
+            log.error('No read access for: ' + self.arg_src)
             return False
         if not os.access(self.arg_src, os.W_OK):
-            self.log.error('No write access for: ' + self.arg_src)
+            log.error('No write access for: ' + self.arg_src)
             return False
 
         dates = [x.split(BackupRotation.DATE_PREFIX_SEP)[0] for x in os.listdir(self.arg_src)
@@ -91,12 +94,12 @@ class BackupRotation(Command):
         if Parameter.ROTATE in params:
             cmd.arg_keep_backups = params[Parameter.ROTATE]
         else:
-            cls.cls_log.warn('Rotate not specified! Using default: ' + Constants.KEEP_BACKUPS)
+            log.warn('Rotate not specified! Using default: ' + Constants.KEEP_BACKUPS)
 
         if Parameter.DATE_FORMAT in params:
             cmd.arg_date_pattern = params[Parameter.DATE_FORMAT]
         else:
-            cls.cls_log.warn('No date format defined! Using default: ' + cmd.arg_date_pattern)
+            log.warn('No date format defined! Using default: ' + cmd.arg_date_pattern)
 
         return cmd
 
