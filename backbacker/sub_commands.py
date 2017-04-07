@@ -92,7 +92,7 @@ class SubCommand(abc.ABC):
 
 
 class JobCmd(SubCommand):
-    """Run all commands of a job file."""
+    """A job is a collection of commands and tasks which are executed sequentially."""
 
     @classmethod
     def _name(cls):
@@ -107,25 +107,32 @@ class JobCmd(SubCommand):
     @classmethod
     def exec(cls, args):
         """Execute the command."""
-        from backbacker.job import Job
+        from backbacker.backbacker import main
 
         init_logging(args.config)
 
-        # Read job
-        job = Job.read_job(args.job_file)
-        if not job:
-            log.critical('Could not create job. Backup cancelled!')
-            return 1
+        commands = cls.read_job_file(args.job_file)
+        for command in commands:
+            argv = ['nop']
+            argv.extend(command.split(' '))
+            rc = main(argv)
+            if rc != 0:
+                log.error('Error executing command: %s', command)
+                return rc
 
-        # Execute job
-        log.info('Start backup ...')
-        errors = job.execute()
-        if errors == 0:
-            log.info('Backup successfully finished.')
-        else:
-            log.error('Backup finished with %i errors!' % errors)
+        return 0
 
-        return errors
+    @staticmethod
+    def read_job_file(fname):
+        commands = list()
+        with open(fname, 'r') as file:
+            for line in file:
+                if line[0] == '#':
+                    continue
+
+                commands.append(line.strip())
+
+        return commands
 
 
 def register_sub_commands(subparser):
