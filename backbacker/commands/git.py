@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 
 class GitBundle(SystemCommand):
-    """Bundles a git repository."""
+    """Bundle a git repository."""
 
     def __init__(self, repo=None, dst_dir=None):
         super().__init__('git')
@@ -62,7 +62,7 @@ class GitBundle(SystemCommand):
 
 
 class GitBundleCliCommand(CliCommand):
-    """Bundles a git repository."""
+    """Bundle a git repository."""
 
     @classmethod
     def _add_arguments(cls, subparsers):
@@ -76,3 +76,46 @@ class GitBundleCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         return GitBundle(args.repo, args.dst_dir)
+
+
+class GitClone(SystemCommand):
+    """Clone a git repository."""
+
+    def __init__(self, repo=None, dst_dir=None):
+        super().__init__('git')
+        self.repo = repo
+        self._dst_dir = dst_dir
+
+        # perform checks
+        self.dst_dir = self._dst_dir
+
+    @property
+    def dst_dir(self):
+        """Absolute path to clone the repository to."""
+        return self._dst_dir
+
+    @dst_dir.setter
+    def dst_dir(self, value):
+        self._dst_dir = os.path.abspath(os.path.expanduser(value))
+
+    def _execute_command(self):
+        os.mkdir(self.dst_dir)
+        os.chdir(self.dst_dir)
+        subprocess.check_call([self.cmd, 'clone', self.repo, self.dst_dir])
+
+
+class GitCloneCliCommand(CliCommand):
+    """Clone a git repository."""
+
+    @classmethod
+    def _add_arguments(cls, subparsers):
+        subparsers.add_argument('-r', '--repo', help='git repository to clone.', required=True)
+        subparsers.add_argument('-d', '--dst_dir', help='Destination directory.', required=True)
+
+    @classmethod
+    def _name(cls):
+        return 'git_clone'
+
+    @classmethod
+    def _instance(cls, args):
+        return GitClone(args.repo, args.dst_dir)
