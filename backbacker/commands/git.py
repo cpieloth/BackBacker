@@ -13,10 +13,10 @@ log = logging.getLogger(__name__)
 class GitBundle(SystemCommand):
     """Bundles a git repository."""
 
-    def __init__(self, repo=None, file=None):
+    def __init__(self, repo=None, dst_dir=None):
         super().__init__('git')
         self._repo = repo
-        self._dst_dir = file
+        self._dst_dir = dst_dir
 
         # perform checks
         self.repo = self._repo
