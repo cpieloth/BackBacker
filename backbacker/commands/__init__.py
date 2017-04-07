@@ -40,5 +40,7 @@ def register_sub_commands(subparser):
     """
     from backbacker.commands.example import ExampleCliCommand
     from backbacker.commands.git import GitBundleCliCommand
+    from backbacker.commands.mercurial import HgBundleCliCommand
     ExampleCliCommand.init_subparser(subparser)
     GitBundleCliCommand.init_subparser(subparser)
+    HgBundleCliCommand.init_subparser(subparser)
