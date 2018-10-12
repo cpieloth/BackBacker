@@ -1,4 +1,3 @@
-# from backbacker.commands.mv_timestamp import MoveTimestamp
 # from backbacker.commands.mysql_dump_gzip import MySqlDumpGZip
 # from backbacker.commands.pgsql_dump_gzip import PgSqlDumpGZip
 # from backbacker.commands.rsync import Rsync
@@ -11,7 +10,6 @@ __author__ = 'Christof Pieloth'
 def command_prototypes():
     """Returns prototypes of all known commands."""
     prototypes = list()
-    # prototypes.append(MoveTimestamp.prototype())
     # prototypes.append(MySqlDumpGZip.prototype())
     # prototypes.append(PgSqlDumpGZip.prototype())
     # prototypes.append(Rsync.prototype())
@@ -34,6 +32,7 @@ def register_sub_commands(subparser):
     from backbacker.commands.github import GithubCloneCliCommand
     from backbacker.commands.mercurial import HgBundleCliCommand
     from backbacker.commands.mount import MountSambaCliCommand, UmountCliCommand
+    from backbacker.commands.mv_timestamp import MoveTimestampCliCommand
 
     BackupRotationCliCommand.init_subparser(subparser)
     ExampleCliCommand.init_subparser(subparser)
@@ -44,3 +43,4 @@ def register_sub_commands(subparser):
     HgBundleCliCommand.init_subparser(subparser)
     MountSambaCliCommand.init_subparser(subparser)
     UmountCliCommand.init_subparser(subparser)
+    MoveTimestampCliCommand.init_subparser(subparser)
