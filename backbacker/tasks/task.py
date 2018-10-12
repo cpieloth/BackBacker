@@ -19,6 +19,7 @@ class Task(Command):
 
     def execute(self):
         """Runs pre_execute, execute_task, post_execute."""
+        # FIXME(cpieloth): Check pre_execute, execute_task, post_execute, execute for return code vs exception!
         try:
             success = self._pre_execute()
             if not success:

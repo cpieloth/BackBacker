@@ -1,11 +1,11 @@
 import logging
 import os
 
+from backbacker.command import CliCommand
 from backbacker.commands.compress import GZip
 from backbacker.commands.mysql_dump_gzip import MySqlDumpGZip
 from backbacker.commands.service import ServiceStart
 from backbacker.commands.service import ServiceStop
-from backbacker.errors import ParameterError
 from backbacker.constants import Parameter
 
 from .task import Task
@@ -20,63 +20,39 @@ class RedmineAM(Task):
 
     def __init__(self):
         super().__init__()
-        self.__arg_src = ''
-        self.__arg_dest = ''
-        self.__arg_dbname = ''
-        self.__arg_dbuser = ''
-        self.__arg_dbpasswd = ''
-        self.__cmd_sqldump = MySqlDumpGZip()
-        self.__cmd_targz = GZip()
+        self._src_dir = None
+        self._dst_dir = None
+        self.db_name = None
+        self.db_user = None
+        self.db_passwd = None
+        self._cmd_sqldump = MySqlDumpGZip()
+        self._cmd_targz = GZip()
 
     @property
-    def arg_src(self):
-        return self.__arg_src
+    def src_dir(self):
+        return self._src_dir
 
-    @arg_src.setter
-    def arg_src(self, value):
-        self.__arg_src = os.path.expanduser(value)
-
-    @property
-    def arg_dest(self):
-        return self.__arg_dest
-
-    @arg_dest.setter
-    def arg_dest(self, value):
-        self.__arg_dest = os.path.expanduser(value)
+    @src_dir.setter
+    def src_dir(self, value):
+        self._src_dir = os.path.expanduser(value)
 
     @property
-    def arg_dbname(self):
-        return self.__arg_dbname
+    def dst_dir(self):
+        return self._dst_dir
 
-    @arg_dbname.setter
-    def arg_dbname(self, value):
-        self.__arg_dbname = value
-
-    @property
-    def arg_dbuser(self):
-        return self.__arg_dbuser
-
-    @arg_dbuser.setter
-    def arg_dbuser(self, value):
-        self.__arg_dbuser = value
-
-    @property
-    def arg_dbpasswd(self):
-        return self.__arg_dbpasswd
-
-    @arg_dbpasswd.setter
-    def arg_dbpasswd(self, value):
-        self.__arg_dbpasswd = value
+    @dst_dir.setter
+    def dst_dir(self, value):
+        self._dst_dir = os.path.expanduser(value)
 
     def _pre_execute(self):
-        if not os.access(self.arg_src, os.R_OK):
-            log.error('No read access to: ' + self.arg_src)
+        if not os.access(self.src_dir, os.R_OK):
+            log.error('No read access to: ' + self.src_dir)
             return False
-        if not os.access(self.arg_dest, os.W_OK):
-            log.error('No write access to: ' + self.arg_dest)
+        if not os.access(self.dst_dir, os.W_OK):
+            log.error('No write access to: ' + self.dst_dir)
             return False
 
-        if not self.__cmd_sqldump.is_available():
+        if not self._cmd_sqldump.is_available():
             return False
 
         cmd = ServiceStop()
@@ -84,18 +60,20 @@ class RedmineAM(Task):
         return cmd.execute()
 
     def _execute_task(self):
+        # FIXME(cpieloth): Check pre_execute, execute_task, post_execute for return code vs exception!
+
         success = True
         # Compress redmine folder
-        self.__cmd_targz.arg_src = self.arg_src
-        self.__cmd_targz.arg_dest = self.arg_dest
-        success = success and self.__cmd_targz.execute()
+        self._cmd_targz.src_dir = self.src_dir
+        self._cmd_targz.dst_dir = self.dst_dir
+        success = success and self._cmd_targz.execute()
 
         # Dump database
-        self.__cmd_sqldump.arg_dest = self.arg_dest
-        self.__cmd_sqldump.arg_dbname = self.arg_dbname
-        self.__cmd_sqldump.arg_dbuser = self.arg_dbuser
-        self.__cmd_sqldump.arg_dbpasswd = self.arg_dbpasswd
-        success = success and self.__cmd_sqldump.execute()
+        self._cmd_sqldump.arg_dest = self.dst_dir
+        self._cmd_sqldump.arg_dbname = self.db_name
+        self._cmd_sqldump.arg_dbuser = self.db_user
+        self._cmd_sqldump.arg_dbpasswd = self.db_passwd
+        success = success and self._cmd_sqldump.execute()
 
         return success
 
@@ -104,31 +82,33 @@ class RedmineAM(Task):
         cmd.arg_service = 'apache2'
         return cmd.execute()
 
-    @classmethod
-    def instance(cls, params):
-        task = RedmineAM()
-        if Parameter.SRC_DIR in params:
-            task.arg_src = params[Parameter.SRC_DIR]
-        else:
-            raise ParameterError(Parameter.SRC_DIR + ' parameter is missing!')
-        if Parameter.DEST_DIR in params:
-            task.arg_dest = params[Parameter.DEST_DIR]
-        else:
-            raise ParameterError(Parameter.DEST_DIR + ' parameter is missing!')
-        if Parameter.DB_NAME in params:
-            task.arg_dbname = params[Parameter.DB_NAME]
-        else:
-            raise ParameterError(Parameter.DB_NAME + ' parameter is missing!')
-        if Parameter.USER in params:
-            task.arg_dbuser = params[Parameter.USER]
-        else:
-            raise ParameterError(Parameter.USER + ' parameter is missing!')
-        if Parameter.PASSWD in params:
-            task.arg_dbpasswd = params[Parameter.PASSWD]
-        else:
-            raise ParameterError(Parameter.PASSWD + ' parameter is missing!')
-        return task
+
+class RedmineAMCliCommand(CliCommand):
 
     @classmethod
-    def prototype(cls):
-        return RedmineAM()
+    def _add_arguments(cls, subparsers):
+        # TODO(cpieloth): improve help
+        subparsers.add_argument('--{}'.format(Parameter.SRC_DIR), help='source dir', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='destination dir', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.DB_NAME), help='db name', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.USER), help='user', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.PASSWD), help='password', required=True)
+
+    @classmethod
+    def _name(cls):
+        return 'redmine_am'
+
+    @classmethod
+    def _help(cls):
+        return RedmineAM.__doc__
+
+    @classmethod
+    def _instance(cls, args):
+        instance = RedmineAM()
+        instance.src_dir = args[Parameter.SRC_DIR]
+        instance.dst_dir = args[Parameter.DEST_DIR]
+        instance.db_name = args[Parameter.DB_NAME]
+        instance.db_user = args[Parameter.USER]
+        instance.db_passwd = args[Parameter.PASSWD]
+        return instance
+

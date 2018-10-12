@@ -13,6 +13,7 @@ def main(argv=sys.argv):
     from backbacker import __version__
     from backbacker.sub_commands import register_sub_commands as register_base_commands
     from backbacker.commands import register_sub_commands as register_backup_command
+    from backbacker.tasks import register_sub_commands as register_backup_tasks
 
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.prog = argv[0]
@@ -28,6 +29,7 @@ def main(argv=sys.argv):
     subparser = parser.add_subparsers(title='BackBacker Commands', description='Valid example commands.')
     register_base_commands(subparser)
     register_backup_command(subparser)
+    register_backup_tasks(subparser)
 
     args = parser.parse_args(argv[1:])
     try:
