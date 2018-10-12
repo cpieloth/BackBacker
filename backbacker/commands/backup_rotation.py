@@ -70,8 +70,6 @@ class BackupRotation(Command):
             for dfile in files:
                 os.remove(dfile)
 
-        return True
-
 
 class BackupRotationCliCommand(CliCommand):
 
