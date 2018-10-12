@@ -1,11 +1,8 @@
 import logging
 import os
-from subprocess import call
 import subprocess
 
 from backbacker.command import SystemCommand, CliCommand
-from backbacker.constants import Parameter
-from backbacker.errors import ParameterError
 
 
 __author__ = 'Christof Pieloth'
@@ -65,7 +62,6 @@ class HgBundle(SystemCommand):
 
 
 class HgBundleCliCommand(CliCommand):
-    """Bundles a Mercurial repository."""
 
     @classmethod
     def _add_arguments(cls, subparsers):
@@ -75,6 +71,10 @@ class HgBundleCliCommand(CliCommand):
     @classmethod
     def _name(cls):
         return 'hg_bundle'
+
+    @classmethod
+    def _help(cls):
+        return HgBundle.__doc__
 
     @classmethod
     def _instance(cls, args):
