@@ -2,9 +2,8 @@ import logging
 import os
 from subprocess import call
 
-from backbacker.command import SystemCommand
+from backbacker.command import SystemCommand, CliCommand
 from backbacker.constants import Parameter
-from backbacker.errors import ParameterError
 
 
 __author__ = 'Christof Pieloth'
@@ -17,103 +16,104 @@ class MountSamba(SystemCommand):
 
     def __init__(self):
         super().__init__('mount')
-        self.__arg_cfg = ''
-        self.__arg_url = ''
-        self.__arg_dest = ''
+        self._cfg = None
+        self.url = None
+        self._dst = None
 
     @property
-    def arg_cfg(self):
-        return self.__arg_cfg
+    def cfg(self):
+        return self._cfg
 
-    @arg_cfg.setter
-    def arg_cfg(self, value):
-        self.__arg_cfg = os.path.expanduser(value)
-
-    @property
-    def arg_url(self):
-        return self.__arg_url
-
-    @arg_url.setter
-    def arg_url(self, value):
-        self.__arg_url = value
+    @cfg.setter
+    def cfg(self, value):
+        self._cfg = os.path.expanduser(value)
 
     @property
-    def arg_dest(self):
-        return self.__arg_dest
+    def dst(self):
+        return self._dst
 
-    @arg_dest.setter
-    def arg_dest(self, value):
-        self.__arg_dest = os.path.expanduser(value)
+    @dst.setter
+    def dst(self, value):
+        self._dst = os.path.expanduser(value)
 
     def _execute_command(self):
-        if not os.access(self.arg_cfg, os.R_OK):
-            log.error('No read access to: ' + self.arg_cfg)
-            return False
-        if not os.access(self.arg_dest, os.W_OK):
-            log.error('No write access to: ' + self.arg_dest)
-            return False
+        if not os.access(self.cfg, os.R_OK):
+            raise PermissionError('No read access to: {}'.format(self.cfg))
+        if not os.access(self.dst, os.W_OK):
+            raise PermissionError('No write access to: {}'.format(self.dst))
 
-        if call([self.cmd, '-t', 'cifs', '-o', 'credentials=' + self.arg_cfg, self.arg_url, self.arg_dest]) == 0:
-            return True
-        else:
-            return False
-
-    @classmethod
-    def instance(cls, params):
-        cmd = MountSamba()
-        if Parameter.CONFIG_FILE in params:
-            cmd.arg_cfg = params[Parameter.CONFIG_FILE]
-        else:
-            raise ParameterError(Parameter.CONFIG_FILE + ' parameter is missing!')
-        if Parameter.URL in params:
-            cmd.arg_url = params[Parameter.URL]
-        else:
-            raise ParameterError(Parameter.URL + ' parameter is missing!')
-        if Parameter.DEST_DIR in params:
-            cmd.arg_dest = params[Parameter.DEST_DIR]
-        else:
-            raise ParameterError(Parameter.DEST_DIR + ' parameter is missing!')
-        return cmd
-
-    @classmethod
-    def prototype(cls):
-        return MountSamba()
+        cmd = [self.cmd, '-t', 'cifs', '-o', 'credentials={}'.format(self.cfg), self.url, self.dst]
+        if call(cmd) != 0:
+            raise RuntimeError('Error calling: {}'.format(' '.join(cmd)))
 
 
 class UMount(SystemCommand):
     """Unmounts a mounting point."""
 
     def __init__(self):
-        SystemCommand.__init__(self, 'umount')
-        self.__arg_dir = ''
+        super().__init__('umount')
+        self._dir = None
 
     @property
-    def arg_dir(self):
-        return self.__arg_dir
+    def dir(self):
+        return self._dir
 
-    @arg_dir.setter
-    def arg_dir(self, value):
-        self.__arg_dir = value
+    @dir.setter
+    def dir(self, value):
+        self._dir = value
 
     def _execute_command(self):
-        if not os.access(self.arg_dir, os.W_OK):
-            log.error('No write access to: ' + self.arg_dir)
-            return False
+        if not os.access(self.dir, os.W_OK):
+            raise PermissionError('No write access to: {}'.format(self.dir))
 
-        if call([self.cmd, self.arg_dir]) == 0:
-            return True
-        else:
-            return False
+        cmd = [self.cmd, self.dir]
+        if call(cmd) != 0:
+            raise RuntimeError('Error calling: {}'.format(' '.join(cmd)))
 
-    @classmethod
-    def instance(cls, params):
-        cmd = UMount()
-        if Parameter.DIR in params:
-            cmd.arg_dir = params[Parameter.DIR]
-        else:
-            raise ParameterError(Parameter.DIR + ' parameter is missing!')
-        return cmd
+
+class MountSambaCliCommand(CliCommand):
 
     @classmethod
-    def prototype(cls):
-        return UMount()
+    def _add_arguments(cls, subparsers):
+        # TODO(cpieloth): improve help
+        subparsers.add_argument('--{}'.format(Parameter.CONFIG_FILE), help='config file', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.URL), help='url', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='destination dir', required=True)
+
+    @classmethod
+    def _name(cls):
+        return 'mount_smb'
+
+    @classmethod
+    def _help(cls):
+        return MountSamba.__doc__
+
+    @classmethod
+    def _instance(cls, args):
+        instance = MountSamba()
+        instance.cfg = args[Parameter.CONFIG_FILE]
+        instance.url = args[Parameter.URL]
+        instance.dst = args[Parameter.DEST_DIR]
+        return instance
+
+
+class UmountCliCommand(CliCommand):
+
+    @classmethod
+    def _add_arguments(cls, subparsers):
+        # TODO(cpieloth): improve help
+        subparsers.add_argument('--{}'.format(Parameter.DIR), help='dir', required=True)
+
+    @classmethod
+    def _name(cls):
+        return 'umount'
+
+    @classmethod
+    def _help(cls):
+        return UMount.__doc__
+
+    @classmethod
+    def _instance(cls, args):
+        instance = UMount()
+        instance.dir = args[Parameter.DIR]
+        return instance
