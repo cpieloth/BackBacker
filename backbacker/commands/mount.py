@@ -2,7 +2,7 @@ import logging
 import os
 from subprocess import call
 
-from backbacker.command import SystemCommand, CliCommand
+from backbacker.command import SystemCommand, CliCommand, Argument
 from backbacker.constants import Parameter
 
 
@@ -76,9 +76,9 @@ class MountSambaCliCommand(CliCommand):
     @classmethod
     def _add_arguments(cls, subparsers):
         # TODO(cpieloth): improve help
-        subparsers.add_argument('--{}'.format(Parameter.CONFIG_FILE), help='config file', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.URL), help='url', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='destination dir', required=True)
+        subparsers.add_argument(Argument.CONFIG_FILE.long_arg, help='config file', required=True)
+        subparsers.add_argument(Argument.URL.long_arg, help='url', required=True)
+        subparsers.add_argument(Argument.DST_DIR.long_arg, help='destination dir', required=True)
 
     @classmethod
     def _name(cls):
@@ -91,9 +91,9 @@ class MountSambaCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = MountSamba()
-        instance.cfg = args[Parameter.CONFIG_FILE]
-        instance.url = args[Parameter.URL]
-        instance.dst = args[Parameter.DEST_DIR]
+        instance.cfg = args[Argument.CONFIG_FILE.key]
+        instance.url = args[Argument.URL.key]
+        instance.dst = args[Argument.DST_DIR.key]
         return instance
 
 
@@ -102,7 +102,7 @@ class UmountCliCommand(CliCommand):
     @classmethod
     def _add_arguments(cls, subparsers):
         # TODO(cpieloth): improve help
-        subparsers.add_argument('--{}'.format(Parameter.DIR), help='dir', required=True)
+        subparsers.add_argument(Argument.DIR.long_arg, help='dir', required=True)
 
     @classmethod
     def _name(cls):
@@ -115,5 +115,5 @@ class UmountCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = UMount()
-        instance.dir = args[Parameter.DIR]
+        instance.dir = args[Argument.DIR.key]
         return instance
