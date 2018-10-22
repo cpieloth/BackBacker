@@ -1,12 +1,11 @@
 import logging
 import os
 
-from backbacker.command import CliCommand
+from backbacker.command import CliCommand, Argument
 from backbacker.commands.compress import GZip
 from backbacker.commands.mysql_dump_gzip import MySqlDumpGZip
 from backbacker.commands.service import ServiceStart
 from backbacker.commands.service import ServiceStop
-from backbacker.constants import Parameter
 
 from .task import Task
 
@@ -88,11 +87,11 @@ class RedmineAMCliCommand(CliCommand):
     @classmethod
     def _add_arguments(cls, subparsers):
         # TODO(cpieloth): improve help
-        subparsers.add_argument('--{}'.format(Parameter.SRC_DIR), help='source dir', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DST_DIR), help='destination dir', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DB_NAME), help='db name', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DB_USER), help='db user', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DB_PASSWD), help='db password', required=True)
+        subparsers.add_argument(Argument.SRC_DIR.long_arg, help='source dir', required=True)
+        subparsers.add_argument(Argument.DST_DIR.long_arg, help='destination dir', required=True)
+        subparsers.add_argument(Argument.DB_NAME.long_arg, help='db name', required=True)
+        subparsers.add_argument(Argument.DB_USER.long_arg, help='db user', required=True)
+        subparsers.add_argument(Argument.DB_PASSWD.long_arg, help='db password', required=True)
 
     @classmethod
     def _name(cls):
@@ -105,10 +104,10 @@ class RedmineAMCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = RedmineAM()
-        instance.src_dir = args[Parameter.SRC_DIR]
-        instance.dst_dir = args[Parameter.DST_DIR]
-        instance.db_name = args[Parameter.DB_NAME]
-        instance.db_user = args[Parameter.DB_USER]
-        instance.db_passwd = args[Parameter.DB_PASSWD]
+        instance.src_dir = args[Argument.SRC_DIR.key]
+        instance.dst_dir = args[Argument.DST_DIR.key]
+        instance.db_name = args[Argument.DB_NAME.key]
+        instance.db_user = args[Argument.DB_USER.key]
+        instance.db_passwd = args[Argument.DB_PASSWD.key]
         return instance
 
