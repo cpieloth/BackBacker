@@ -4,7 +4,7 @@ from glob import glob
 import os
 import sys
 
-from backbacker.command import Command, CliCommand
+from backbacker.command import Command, CliCommand, Argument
 from backbacker.constants import Parameter
 from backbacker.constants import Constants
 
@@ -76,10 +76,10 @@ class BackupRotationCliCommand(CliCommand):
     @classmethod
     def _add_arguments(cls, subparsers):
         # TODO(cpieloth): improve help
-        subparsers.add_argument('--{}'.format(Parameter.DIR), help='dir', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DATE_FORMAT), help='date format',
+        subparsers.add_argument(Argument.DIR.long_arg, help='dir', required=True)
+        subparsers.add_argument(Argument.DATE_FORMAT.long_arg, help='date format',
                                 default=Constants.FILE_DATE_FORMAT)
-        subparsers.add_argument('--{}'.format(Parameter.ROTATE), help='rotate', type=int,
+        subparsers.add_argument(Argument.ROTATE.long_arg, help='rotate', type=int,
                                 default=Constants.KEEP_BACKUPS)
 
     @classmethod
@@ -93,9 +93,9 @@ class BackupRotationCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = BackupRotation()
-        instance.dir = args[Parameter.DIR]
-        if Parameter.DATE_FORMAT in args:
-            instance.date_pattern = args[Parameter.DATE_FORMAT]
-        if Parameter.ROTATE in args:
-            instance.keep_backups = args[Parameter.ROTATE]
+        instance.dir = args[Argument.DIR.key]
+        if Argument.DATE_FORMAT.key in args:
+            instance.date_pattern = args[Argument.DATE_FORMAT.key]
+        if Argument.ROTATE.key in args:
+            instance.keep_backups = args[Argument.ROTATE.key]
         return instance
