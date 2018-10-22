@@ -80,7 +80,7 @@ class MoveTimestampCliCommand(CliCommand):
     def _add_arguments(cls, subparsers):
         # TODO(cpieloth): improve help
         subparsers.add_argument(Argument.SRC_DIR.long_arg, help='source dir', required=True)
-        subparsers.add_argument(Argument.DEST_DIR.long_arg, help='destination dir', required=True)
+        subparsers.add_argument(Argument.DST_DIR.long_arg, help='destination dir', required=True)
         subparsers.add_argument(Argument.DATE_FORMAT.long_arg, help='date format',
                                 default=Constants.FILE_DATE_FORMAT)
 
@@ -96,6 +96,6 @@ class MoveTimestampCliCommand(CliCommand):
     def _instance(cls, args):
         instance = MoveTimestamp()
         instance.src_dir = args[Argument.SRC_DIR.key]
-        instance.dst_dir = args[Argument.DEST_DIR.key]
+        instance.dst_dir = args[Argument.DST_DIR.key]
         instance.datefmt = args[Argument.DATE_FORMAT.key]
         return instance
