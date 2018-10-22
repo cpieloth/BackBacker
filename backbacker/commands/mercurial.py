@@ -2,8 +2,7 @@ import logging
 import os
 import subprocess
 
-from backbacker.command import SystemCommand, CliCommand
-from backbacker.constants import Parameter
+from backbacker.command import SystemCommand, CliCommand, Argument
 
 __author__ = 'Christof Pieloth'
 
@@ -65,8 +64,8 @@ class HgBundleCliCommand(CliCommand):
 
     @classmethod
     def _add_arguments(cls, subparsers):
-        subparsers.add_argument('--{}'.format(Parameter.SRC_DIR), help='Mercurial repository to bundle.', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='Destination directory to store the bundle.', required=True)
+        subparsers.add_argument(Argument.SRC_DIR.long_arg, help='Mercurial repository to bundle.', required=True)
+        subparsers.add_argument(Argument.DST_DIR.long_arg, help='Destination directory to store the bundle.', required=True)
 
     @classmethod
     def _name(cls):
@@ -78,4 +77,4 @@ class HgBundleCliCommand(CliCommand):
 
     @classmethod
     def _instance(cls, args):
-        return HgBundle(args[Parameter.SRC_DIR], args[Parameter.DEST_DIR])
+        return HgBundle(args[Argument.SRC_DIR.key], args[Argument.DST_DIR.key])
