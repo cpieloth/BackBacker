@@ -1,3 +1,3 @@
 # Example backup script, change folders for your system.
-git_bundle -r /tmp/git_repo -d /tmp
-hg_bundle -r /tmp/hg_repo -d /tmp
+git_bundle --src_dir /tmp/git_repo --dst_dir /tmp
+hg_bundle --src_dir /tmp/hg_repo --dst_dir /tmp
