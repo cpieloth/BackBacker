@@ -2,9 +2,7 @@ import logging
 import os
 import subprocess
 
-from backbacker.command import SystemCommand, CliCommand
-from backbacker.constants import Parameter
-
+from backbacker.command import SystemCommand, CliCommand, Argument
 
 __author__ = 'Christof Pieloth'
 
@@ -81,11 +79,11 @@ class RsyncCliCommand(CliCommand):
     @classmethod
     def _add_arguments(cls, subparsers):
         # TODO(cpieloth): improve help
-        subparsers.add_argument('--{}'.format(Parameter.SRC_DIR), help='source dir', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DST_DIR), help='destination dir', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.BACKUP_DIR), help='backup dir')
-        subparsers.add_argument('--{}'.format(Parameter.MIRROR), help='mirror', action='store_true')
-        subparsers.add_argument('--{}'.format(Parameter.SHELL), help='shell')
+        subparsers.add_argument(Argument.SRC_DIR.long_arg, help='source dir', required=True)
+        subparsers.add_argument(Argument.DST_DIR.long_arg, help='destination dir', required=True)
+        subparsers.add_argument(Argument.BACKUP_DIR.long_arg, help='backup dir')
+        subparsers.add_argument(Argument.MIRROR.long_arg, help='mirror', action='store_true')
+        subparsers.add_argument(Argument.SHELL.long_arg, help='shell')
 
     @classmethod
     def _name(cls):
@@ -98,14 +96,14 @@ class RsyncCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = Rsync()
-        instance.src_dir = args[Parameter.SRC_DIR]
-        instance.dst_dir = args[Parameter.DST_DIR]
-        instance.mirror = args[Parameter.MIRROR]
+        instance.src_dir = args[Argument.SRC_DIR.key]
+        instance.dst_dir = args[Argument.DST_DIR.key]
+        instance.mirror = args[Argument.MIRROR.key]
 
-        if Parameter.BACKUP_DIR in args:
-            instance.backup_dir = args[Parameter.BACKUP_DIR]
+        if Argument.BACKUP_DIR.key in args:
+            instance.backup_dir = args[Argument.BACKUP_DIR.key]
 
-        if Parameter.SHELL in args:
-            instance.rsh = args[Parameter.SHELL]
+        if Argument.SHELL.key in args:
+            instance.rsh = args[Argument.SHELL.key]
 
         return instance
