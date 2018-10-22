@@ -5,7 +5,6 @@ import os
 import sys
 
 from backbacker.command import Command, CliCommand, Argument
-from backbacker.constants import Parameter
 from backbacker.constants import Constants
 
 
