@@ -73,7 +73,7 @@ class SubCommand(abc.ABC):
         :type subparsers: argparse.ArgumentParser
         :return: void
         """
-        parser = subparsers.add_parser(cls._name(), help=cls._help())
+        parser = subparsers.add_parser(cls._name().strip(), help=cls._help().strip())
         cls._add_arguments(parser)
         parser.set_defaults(func=cls.exec)
 
