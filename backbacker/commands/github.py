@@ -6,6 +6,7 @@ import requests
 
 from backbacker.command import Command, CliCommand
 from backbacker.commands.git import GitClone, GitBundle
+from backbacker.constants import Parameter
 
 __author__ = 'christof'
 
@@ -75,8 +76,8 @@ class GithubCloneCliCommand(CliCommand):
 
     @classmethod
     def _add_arguments(cls, subparsers):
-        subparsers.add_argument('-u', '--username', help='Username of the Github account.', required=True)
-        subparsers.add_argument('-d', '--dst_dir', help='Destination directory.', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.USER), help='Username of the Github account.', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='Destination directory.', required=True)
 
     @classmethod
     def _name(cls):
@@ -84,5 +85,5 @@ class GithubCloneCliCommand(CliCommand):
 
     @classmethod
     def _instance(cls, args):
-        return GithubClone(args.repo, args.dst_dir)
+        return GithubClone(args[Parameter.USER], args[Parameter.DEST_DIR])
 
