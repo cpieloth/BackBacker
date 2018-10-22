@@ -76,7 +76,7 @@ class Rsync(SystemCommand):
         subprocess.check_call(cmd)
 
 
-class RsyncliCommand(CliCommand):
+class RsyncCliCommand(CliCommand):
 
     @classmethod
     def _add_arguments(cls, subparsers):

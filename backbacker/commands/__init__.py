@@ -32,7 +32,7 @@ def register_sub_commands(subparser):
     from backbacker.commands.mercurial import HgBundleCliCommand
     from backbacker.commands.mount import MountSambaCliCommand, UmountCliCommand
     from backbacker.commands.mv_timestamp import MoveTimestampCliCommand
-    from backbacker.commands.rsync import RsyncliCommand
+    from backbacker.commands.rsync import RsyncCliCommand
 
     BackupRotationCliCommand.init_subparser(subparser)
     ExampleCliCommand.init_subparser(subparser)
@@ -44,4 +44,4 @@ def register_sub_commands(subparser):
     MountSambaCliCommand.init_subparser(subparser)
     UmountCliCommand.init_subparser(subparser)
     MoveTimestampCliCommand.init_subparser(subparser)
-    RsyncliCommand.init_subparser(subparser)
+    RsyncCliCommand.init_subparser(subparser)
