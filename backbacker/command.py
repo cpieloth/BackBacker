@@ -5,6 +5,8 @@ A concrete command implements the back-up logic.
 
 import abc
 import logging
+from enum import Enum
+
 from backbacker.sub_commands import SubCommand
 
 __author__ = 'Christof Pieloth'
@@ -138,3 +140,42 @@ class CliCommand(SubCommand, metaclass=abc.ABCMeta):
         except Exception as ex:
             log.error(ex)
             return 1
+
+
+class Argument(Enum):
+    SRC_DIR = 'src_dir'
+    DST_DIR = 'dst_dir'
+    DIR = 'dir'
+    BACKUP_DIR = 'backup_dir'
+    CONFIG_FILE = 'cfg_file'
+
+    # Network
+    URL = 'url'
+
+    # Authentication
+    USER = 'user'
+    PASSWD = 'passwd'
+
+    # Database
+    DB_NAME = 'db_name'
+    DB_SCHEMA = 'db_schema'
+    DB_TABLE = 'db_table'
+    DB_USER = 'db_user'
+    DB_PASSWD = 'db_passwd'
+
+    # Misc
+    DATE_FORMAT = 'datefmt'
+    ROTATE = 'rotate'
+    MIRROR = 'mirror'
+    SHELL = 'shell'
+
+    def __init__(self, name):
+        self._name = name
+
+    @property
+    def key(self):
+        return self._name
+
+    @property
+    def long_arg(self):
+        return '--{}'.format(self.key)
