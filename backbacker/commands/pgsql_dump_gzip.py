@@ -1,10 +1,9 @@
 import logging
 import os
-from subprocess import call
+import subprocess
 
-from backbacker.command import SystemCommand
+from backbacker.command import SystemCommand, CliCommand
 from backbacker.constants import Parameter
-from backbacker.errors import ParameterError
 
 
 __author__ = 'Christof Pieloth'
@@ -17,115 +16,77 @@ class PgSqlDumpGZip(SystemCommand):
 
     def __init__(self):
         super().__init__('pg_dump')
-        self.__arg_dest = ''
-        self.__arg_dbname = ''
-        self.__arg_dbuser = ''
-        self.__arg_dbpasswd = ''
-        self.__arg_dbschema = ''
-        self.__arg_dbtable = ''
+        self._dst_dir = ''
+        self.db_name = ''
+        self.db_user = ''
+        self.db_passwd = ''
+        self.db_schema = ''
+        self.db_table = ''
 
     @property
-    def arg_dest(self):
-        return self.__arg_dest
+    def dst_dir(self):
+        return self._dst_dir
 
-    @arg_dest.setter
-    def arg_dest(self, value):
-        self.__arg_dest = os.path.expanduser(value)
-
-    @property
-    def arg_dbname(self):
-        return self.__arg_dbname
-
-    @arg_dbname.setter
-    def arg_dbname(self, value):
-        self.__arg_dbname = value
-
-    @property
-    def arg_dbuser(self):
-        return self.__arg_dbuser
-
-    @arg_dbuser.setter
-    def arg_dbuser(self, value):
-        self.__arg_dbuser = value
-
-    @property
-    def arg_dbpasswd(self):
-        return self.__arg_dbpasswd
-
-    @arg_dbpasswd.setter
-    def arg_dbpasswd(self, value):
-        self.__arg_dbpasswd = value
-
-    @property
-    def arg_dbschema(self):
-        return self.__arg_dbschema
-
-    @arg_dbschema.setter
-    def arg_dbschema(self, value):
-        self.__arg_dbschema = value
-
-    @property
-    def arg_dbtable(self):
-        return self.__arg_dbtable
-
-    @arg_dbtable.setter
-    def arg_dbtable(self, value):
-        self.__arg_dbtable = value
+    @dst_dir.setter
+    def dst_dir(self, value):
+        self._dst_dir = os.path.expanduser(value)
 
     def is_available(self):
         return SystemCommand.check_version(self.cmd)
 
     def _execute_command(self):
-        if not os.access(self.arg_dest, os.W_OK):
-            log.error('No write access to: ' + self.arg_dest)
-            return False
-        dest = os.path.join(self.arg_dest, self.arg_dbname + '.sql.gz')
+        if not os.access(self.dst_dir, os.W_OK):
+            raise PermissionError('No write access to: {}'.format(self.dst_dir))
+        dest = os.path.join(self.dst_dir, self.db_name + '.sql.gz')
 
         # auth
-        pg_dump = 'PGPASSWORD="' + self.arg_dbpasswd + '" pg_dump -U ' + self.arg_dbuser
+        pg_dump = 'PGPASSWORD="' + self.db_passwd + '" pg_dump -U ' + self.db_user
         # schema & table
-        if self.arg_dbschema != '':
-            pg_dump += ' -n ' + self.arg_dbschema
-        if self.arg_dbtable != '':
-            pg_dump += ' -t ' + self.arg_dbtable
+        if self.db_schema != '':
+            pg_dump += ' -n ' + self.db_schema
+        if self.db_table != '':
+            pg_dump += ' -t ' + self.db_table
         # compression
         pg_dump += ' -Z 9'
         # database and output
-        pg_dump += ' ' + self.arg_dbname
+        pg_dump += ' ' + self.db_name
         pg_dump += ' > ' + dest
         log.info(pg_dump)
 
-        if call([pg_dump], shell=True) == 0:
-            return True
-        else:
-            log.error('Error while dumping PostgreSQL DB.')
-            return False
+        subprocess.check_call([pg_dump], shell=True)
+
+
+class PgSqlDumpGzipCliCommand(CliCommand):
 
     @classmethod
-    def instance(cls, params):
-        cmd = PgSqlDumpGZip()
-        if Parameter.DEST_DIR in params:
-            cmd.arg_dest = params[Parameter.DEST_DIR]
-        else:
-            raise ParameterError(Parameter.DEST_DIR + ' parameter is missing!')
-        if Parameter.DB_NAME in params:
-            cmd.arg_dbname = params[Parameter.DB_NAME]
-        else:
-            raise ParameterError(Parameter.DB_NAME + ' parameter is missing!')
-        if Parameter.USER in params:
-            cmd.arg_dbuser = params[Parameter.USER]
-        else:
-            raise ParameterError(Parameter.USER + ' parameter is missing!')
-        if Parameter.PASSWD in params:
-            cmd.arg_dbpasswd = params[Parameter.PASSWD]
-        else:
-            raise ParameterError(Parameter.PASSWD + ' parameter is missing!')
-        if Parameter.DB_SCHEMA in params:
-            cmd.arg_dbschema = params[Parameter.DB_SCHEMA]
-        if Parameter.DB_TABLE in params:
-            cmd.arg_dbtable = params[Parameter.DB_TABLE]
-        return cmd
+    def _add_arguments(cls, subparsers):
+        # TODO(cpieloth): improve help
+        subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='dest dir', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.DB_NAME), help='db name', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.USER), help='user', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.PASSWD), help='password', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.DB_SCHEMA), help='db schema')
+        subparsers.add_argument('--{}'.format(Parameter.DB_TABLE), help='db table')
 
     @classmethod
-    def prototype(cls):
-        return PgSqlDumpGZip()
+    def _name(cls):
+        return 'pgsqldump'
+
+    @classmethod
+    def _help(cls):
+        return PgSqlDumpGZip.__doc__
+
+    @classmethod
+    def _instance(cls, args):
+        instance = PgSqlDumpGZip()
+        instance.dst_dir = args[Parameter.DEST_DIR]
+        instance.db_name = args[Parameter.DB_NAME]
+        instance.db_user = args[Parameter.USER]
+        instance.db_passwd = args[Parameter.PASSWD]
+
+        if Parameter.DB_SCHEMA in args:
+            instance.db_schema = args[Parameter.DB_SCHEMA]
+        if Parameter.DB_TABLE in args:
+            instance.db_table = args[Parameter.DB_TABLE]
+
+        return instance
