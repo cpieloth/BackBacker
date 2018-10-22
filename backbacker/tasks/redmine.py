@@ -3,7 +3,7 @@ import os
 
 from backbacker.command import CliCommand, Argument
 from backbacker.commands.compress import GZip
-from backbacker.commands.mysql_dump_gzip import MySqlDumpGZip
+from backbacker.commands.mysql import MySqlDumpGZip
 from backbacker.commands.service import ServiceStart
 from backbacker.commands.service import ServiceStop
 
