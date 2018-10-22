@@ -4,7 +4,6 @@ import subprocess
 
 from backbacker.command import SystemCommand, CliCommand
 from backbacker.constants import Parameter
-from backbacker.errors import ParameterError
 
 
 __author__ = 'Christof Pieloth'
@@ -46,27 +45,6 @@ class MySqlDumpGZip(SystemCommand):
         gzip = 'gzip > ' + dest
 
         subprocess.check_call([mysqldump + ' | ' + gzip], shell=True)
-
-    @classmethod
-    def instance(cls, params):
-        cmd = MySqlDumpGZip()
-        if Parameter.DEST_DIR in params:
-            cmd.dst_dir = params[Parameter.DEST_DIR]
-        else:
-            raise ParameterError(Parameter.DEST_DIR + ' parameter is missing!')
-        if Parameter.DB_NAME in params:
-            cmd.db_name = params[Parameter.DB_NAME]
-        else:
-            raise ParameterError(Parameter.DB_NAME + ' parameter is missing!')
-        if Parameter.USER in params:
-            cmd.db_user = params[Parameter.USER]
-        else:
-            raise ParameterError(Parameter.USER + ' parameter is missing!')
-        if Parameter.PASSWD in params:
-            cmd.db_passwd = params[Parameter.PASSWD]
-        else:
-            raise ParameterError(Parameter.PASSWD + ' parameter is missing!')
-        return cmd
 
 
 class MySqlDumpGzipCliCommand(CliCommand):
