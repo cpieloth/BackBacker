@@ -89,7 +89,7 @@ class RedmineAMCliCommand(CliCommand):
     def _add_arguments(cls, subparsers):
         # TODO(cpieloth): improve help
         subparsers.add_argument('--{}'.format(Parameter.SRC_DIR), help='source dir', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='destination dir', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.DST_DIR), help='destination dir', required=True)
         subparsers.add_argument('--{}'.format(Parameter.DB_NAME), help='db name', required=True)
         subparsers.add_argument('--{}'.format(Parameter.DB_USER), help='db user', required=True)
         subparsers.add_argument('--{}'.format(Parameter.DB_PASSWD), help='db password', required=True)
@@ -106,7 +106,7 @@ class RedmineAMCliCommand(CliCommand):
     def _instance(cls, args):
         instance = RedmineAM()
         instance.src_dir = args[Parameter.SRC_DIR]
-        instance.dst_dir = args[Parameter.DEST_DIR]
+        instance.dst_dir = args[Parameter.DST_DIR]
         instance.db_name = args[Parameter.DB_NAME]
         instance.db_user = args[Parameter.DB_USER]
         instance.db_passwd = args[Parameter.DB_PASSWD]

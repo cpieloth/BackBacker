@@ -82,7 +82,7 @@ class RsyncCliCommand(CliCommand):
     def _add_arguments(cls, subparsers):
         # TODO(cpieloth): improve help
         subparsers.add_argument('--{}'.format(Parameter.SRC_DIR), help='source dir', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='destination dir', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.DST_DIR), help='destination dir', required=True)
         subparsers.add_argument('--{}'.format(Parameter.BACKUP_DIR), help='backup dir')
         subparsers.add_argument('--{}'.format(Parameter.MIRROR), help='mirror', action='store_true')
         subparsers.add_argument('--{}'.format(Parameter.SHELL), help='shell')
@@ -99,7 +99,7 @@ class RsyncCliCommand(CliCommand):
     def _instance(cls, args):
         instance = Rsync()
         instance.src_dir = args[Parameter.SRC_DIR]
-        instance.dst_dir = args[Parameter.DEST_DIR]
+        instance.dst_dir = args[Parameter.DST_DIR]
         instance.mirror = args[Parameter.MIRROR]
 
         if Parameter.BACKUP_DIR in args:

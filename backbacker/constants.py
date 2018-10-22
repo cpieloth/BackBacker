@@ -5,7 +5,7 @@ class Parameter(object):
     """Parameter for a consistent use in commands, tasks and job file."""
     # Paths and files
     SRC_DIR = 'src_dir'
-    DEST_DIR = 'dest_dir'
+    DST_DIR = 'dest_dir'
     DIR = 'dir'
     BACKUP_DIR = 'backup_dir'
     CONFIG_FILE = 'cfg_file'
