@@ -56,7 +56,7 @@ class RedmineAM(Task):
             return False
 
         cmd = ServiceStop()
-        cmd.arg_service = 'apache2'
+        cmd.service = 'apache2'
         return cmd.execute()
 
     def _execute_task(self):
@@ -79,7 +79,7 @@ class RedmineAM(Task):
 
     def _post_execute(self):
         cmd = ServiceStart()
-        cmd.arg_service = 'apache2'
+        cmd.service = 'apache2'
         return cmd.execute()
 
 

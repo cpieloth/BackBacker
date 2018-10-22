@@ -1,7 +1,5 @@
 # from backbacker.commands.mysql_dump_gzip import MySqlDumpGZip
 # from backbacker.commands.pgsql_dump_gzip import PgSqlDumpGZip
-# from backbacker.commands.service import ServiceStart
-# from backbacker.commands.service import ServiceStop
 
 __author__ = 'Christof Pieloth'
 
@@ -11,9 +9,6 @@ def command_prototypes():
     prototypes = list()
     # prototypes.append(MySqlDumpGZip.prototype())
     # prototypes.append(PgSqlDumpGZip.prototype())
-    # prototypes.append(Rsync.prototype())
-    # prototypes.append(ServiceStart.prototype())
-    # prototypes.append(ServiceStop.prototype())
     return prototypes
 
 
@@ -33,6 +28,7 @@ def register_sub_commands(subparser):
     from backbacker.commands.mount import MountSambaCliCommand, UmountCliCommand
     from backbacker.commands.mv_timestamp import MoveTimestampCliCommand
     from backbacker.commands.rsync import RsyncCliCommand
+    from backbacker.commands.service import ServiceStartCliCommand, ServiceStopCliCommand
 
     BackupRotationCliCommand.init_subparser(subparser)
     ExampleCliCommand.init_subparser(subparser)
@@ -45,3 +41,5 @@ def register_sub_commands(subparser):
     UmountCliCommand.init_subparser(subparser)
     MoveTimestampCliCommand.init_subparser(subparser)
     RsyncCliCommand.init_subparser(subparser)
+    ServiceStartCliCommand.init_subparser(subparser)
+    ServiceStopCliCommand.init_subparser(subparser)
