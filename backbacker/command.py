@@ -173,9 +173,11 @@ class Argument(Enum):
         self._name = name
 
     @property
-    def key(self):
-        return self._name
-
-    @property
     def long_arg(self):
-        return '--{}'.format(self.key)
+        return '--{}'.format(self._name)
+
+    def get_value(self, args):
+        return vars(args)[self._name]
+
+    def has_value(self, args):
+        return self._name in vars(args)

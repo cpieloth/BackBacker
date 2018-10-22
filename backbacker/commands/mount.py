@@ -90,9 +90,9 @@ class MountSambaCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = MountSamba()
-        instance.cfg = args[Argument.CONFIG_FILE.key]
-        instance.url = args[Argument.URL.key]
-        instance.dst = args[Argument.DST_DIR.key]
+        instance.cfg = Argument.CONFIG_FILE.get_value(args)
+        instance.url = Argument.URL.get_value(args)
+        instance.dst = Argument.DST_DIR.get_value(args)
         return instance
 
 
@@ -114,5 +114,5 @@ class UmountCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = UMount()
-        instance.dir = args[Argument.DIR.key]
+        instance.dir = Argument.DIR.get_value(args)
         return instance

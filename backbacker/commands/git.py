@@ -75,7 +75,7 @@ class GitBundleCliCommand(CliCommand):
 
     @classmethod
     def _instance(cls, args):
-        return GitBundle(args[Argument.SRC_DIR.key], args[Argument.DST_DIR.key])
+        return GitBundle(Argument.SRC_DIR.get_value(args), Argument.DST_DIR.get_value(args))
 
 
 class GitClone(SystemCommand):
@@ -118,4 +118,4 @@ class GitCloneCliCommand(CliCommand):
 
     @classmethod
     def _instance(cls, args):
-        return GitClone(args[Argument.SRC_DIR.key], args[Argument.DST_DIR.key])
+        return GitClone(Argument.SRC_DIR.get_value(args), Argument.DST_DIR.get_value(args))

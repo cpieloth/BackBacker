@@ -92,9 +92,9 @@ class BackupRotationCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = BackupRotation()
-        instance.dir = args[Argument.DIR.key]
-        if Argument.DATE_FORMAT.key in args:
-            instance.date_pattern = args[Argument.DATE_FORMAT.key]
-        if Argument.ROTATE.key in args:
-            instance.keep_backups = args[Argument.ROTATE.key]
+        instance.dir = Argument.DIR.get_value(args)
+        if Argument.DATE_FORMAT.has_value(args):
+            instance.date_pattern = Argument.DATE_FORMAT.get_value(args)
+        if Argument.ROTATE.has_value(args):
+            instance.keep_backups = Argument.ROTATE.get_value(args)
         return instance

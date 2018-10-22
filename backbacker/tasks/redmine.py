@@ -104,10 +104,10 @@ class RedmineAMCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = RedmineAM()
-        instance.src_dir = args[Argument.SRC_DIR.key]
-        instance.dst_dir = args[Argument.DST_DIR.key]
-        instance.db_name = args[Argument.DB_NAME.key]
-        instance.db_user = args[Argument.DB_USER.key]
-        instance.db_passwd = args[Argument.DB_PASSWD.key]
+        instance.src_dir = Argument.SRC_DIR.get_value(args)
+        instance.dst_dir = Argument.DST_DIR.get_value(args)
+        instance.db_name = Argument.DB_NAME.get_value(args)
+        instance.db_user = Argument.DB_USER.get_value(args)
+        instance.db_passwd = Argument.DB_PASSWD.get_value(args)
         return instance
 

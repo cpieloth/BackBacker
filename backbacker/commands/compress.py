@@ -72,6 +72,6 @@ class GZipCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = GZip()
-        instance.src_dir = args[Argument.SRC_DIR.key]
-        instance.dst_dir = args[Argument.DST_DIR.key]
+        instance.src_dir = Argument.SRC_DIR.get_value(args)
+        instance.dst_dir = Argument.DST_DIR.get_value(args)
         return instance

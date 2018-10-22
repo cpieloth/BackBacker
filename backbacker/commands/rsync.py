@@ -96,14 +96,14 @@ class RsyncCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = Rsync()
-        instance.src_dir = args[Argument.SRC_DIR.key]
-        instance.dst_dir = args[Argument.DST_DIR.key]
-        instance.mirror = args[Argument.MIRROR.key]
+        instance.src_dir = Argument.SRC_DIR.get_value(args)
+        instance.dst_dir = Argument.DST_DIR.get_value(args)
+        instance.mirror = Argument.MIRROR.get_value(args)
 
-        if Argument.BACKUP_DIR.key in args:
-            instance.backup_dir = args[Argument.BACKUP_DIR.key]
+        if Argument.BACKUP_DIR.has_value(args):
+            instance.backup_dir = Argument.BACKUP_DIR.get_value(args)
 
-        if Argument.SHELL.key in args:
-            instance.rsh = args[Argument.SHELL.key]
+        if Argument.SHELL.has_value(args):
+            instance.rsh = Argument.SHELL.get_value(args)
 
         return instance

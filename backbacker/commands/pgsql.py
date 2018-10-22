@@ -78,14 +78,14 @@ class PgSqlDumpGzipCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = PgSqlDumpGZip()
-        instance.dst_dir = args[Argument.DST_DIR.key]
-        instance.db_name = args[Argument.DB_NAME.key]
-        instance.db_user = args[Argument.DB_USER.key]
-        instance.db_passwd = args[Argument.DB_PASSWD.key]
+        instance.dst_dir = Argument.DST_DIR.get_value(args)
+        instance.db_name = Argument.DB_NAME.get_value(args)
+        instance.db_user = Argument.DB_USER.get_value(args)
+        instance.db_passwd = Argument.DB_PASSWD.get_value(args)
 
-        if Argument.DB_SCHEMA.key in args:
-            instance.db_schema = args[Argument.DB_SCHEMA.key]
-        if Argument.DB_TABLE.key in args:
-            instance.db_table = args[Argument.DB_TABLE.key]
+        if Argument.DB_SCHEMA.has_value(args):
+            instance.db_schema = Argument.DB_SCHEMA.get_value(args)
+        if Argument.DB_TABLE.has_value(args):
+            instance.db_table = Argument.DB_TABLE.get_value(args)
 
         return instance

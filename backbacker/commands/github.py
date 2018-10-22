@@ -84,5 +84,5 @@ class GithubCloneCliCommand(CliCommand):
 
     @classmethod
     def _instance(cls, args):
-        return GithubClone(args[Argument.USER.key], args[Argument.DST_DIR.key])
+        return GithubClone(Argument.USER.get_value(args), Argument.DST_DIR.get_value(args))
 
