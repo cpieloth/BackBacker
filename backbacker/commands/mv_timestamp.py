@@ -3,9 +3,8 @@ import logging
 import os
 import shutil
 
-from backbacker.command import Command, CliCommand
+from backbacker.command import Command, CliCommand, Argument
 from backbacker.constants import Constants
-from backbacker.constants import Parameter
 
 
 __author__ = 'Christof Pieloth'
@@ -80,9 +79,9 @@ class MoveTimestampCliCommand(CliCommand):
     @classmethod
     def _add_arguments(cls, subparsers):
         # TODO(cpieloth): improve help
-        subparsers.add_argument('--{}'.format(Parameter.SRC_DIR), help='source dir', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='destination dir', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DATE_FORMAT), help='date format',
+        subparsers.add_argument(Argument.SRC_DIR.long_arg, help='source dir', required=True)
+        subparsers.add_argument(Argument.DEST_DIR.long_arg, help='destination dir', required=True)
+        subparsers.add_argument(Argument.DATE_FORMAT.long_arg, help='date format',
                                 default=Constants.FILE_DATE_FORMAT)
 
     @classmethod
@@ -96,7 +95,7 @@ class MoveTimestampCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = MoveTimestamp()
-        instance.src_dir = args[Parameter.SRC_DIR]
-        instance.dst_dir = args[Parameter.DEST_DIR]
-        instance.datefmt = args[Parameter.DATE_FORMAT]
+        instance.src_dir = args[Argument.SRC_DIR.key]
+        instance.dst_dir = args[Argument.DEST_DIR.key]
+        instance.datefmt = args[Argument.DATE_FORMAT.key]
         return instance
