@@ -3,7 +3,6 @@ import os
 from subprocess import call
 
 from backbacker.command import SystemCommand, CliCommand, Argument
-from backbacker.constants import Parameter
 
 
 __author__ = 'Christof Pieloth'
