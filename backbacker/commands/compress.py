@@ -2,8 +2,7 @@ import logging
 import os
 import tarfile
 
-from backbacker.command import Command, CliCommand
-from backbacker.constants import Parameter
+from backbacker.command import Command, CliCommand, Argument
 
 
 __author__ = 'Christof Pieloth'
@@ -59,8 +58,8 @@ class GZipCliCommand(CliCommand):
     @classmethod
     def _add_arguments(cls, subparsers):
         # TODO(cpieloth): improve help
-        subparsers.add_argument('--{}'.format(Parameter.SRC_DIR), help='source dir', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='destination dir', required=True)
+        subparsers.add_argument(Argument.SRC_DIR.long_arg, help='source dir', required=True)
+        subparsers.add_argument(Argument.DST_DIR.long_arg, help='destination dir', required=True)
 
     @classmethod
     def _name(cls):
@@ -73,6 +72,6 @@ class GZipCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = GZip()
-        instance.src_dir = args[Parameter.SRC_DIR]
-        instance.dst_dir = args[Parameter.DEST_DIR]
+        instance.src_dir = args[Argument.SRC_DIR.key]
+        instance.dst_dir = args[Argument.DST_DIR.key]
         return instance
