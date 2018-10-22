@@ -2,8 +2,7 @@ import logging
 import os
 import subprocess
 
-from backbacker.command import SystemCommand, CliCommand
-from backbacker.constants import Parameter
+from backbacker.command import SystemCommand, CliCommand, Argument
 
 
 __author__ = 'Christof Pieloth'
@@ -52,10 +51,10 @@ class MySqlDumpGzipCliCommand(CliCommand):
     @classmethod
     def _add_arguments(cls, subparsers):
         # TODO(cpieloth): improve help
-        subparsers.add_argument('--{}'.format(Parameter.DST_DIR), help='dest dir', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DB_NAME), help='db name', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DB_USER), help='user', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.DB_PASSWD), help='password', required=True)
+        subparsers.add_argument(Argument.DST_DIR.long_arg, help='dest dir', required=True)
+        subparsers.add_argument(Argument.DB_NAME.long_arg, help='db name', required=True)
+        subparsers.add_argument(Argument.DB_USER.long_arg, help='user', required=True)
+        subparsers.add_argument(Argument.DB_PASSWD.long_arg, help='password', required=True)
 
     @classmethod
     def _name(cls):
@@ -68,8 +67,8 @@ class MySqlDumpGzipCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = MySqlDumpGZip()
-        instance.dst_dir = args[Parameter.DST_DIR]
-        instance.db_name = args[Parameter.DB_NAME]
-        instance.db_user = args[Parameter.DB_USER]
-        instance.db_passwd = args[Parameter.DB_PASSWD]
+        instance.dst_dir = args[Argument.DST_DIR.key]
+        instance.db_name = args[Argument.DB_NAME.key]
+        instance.db_user = args[Argument.DB_USER.key]
+        instance.db_passwd = args[Argument.DB_PASSWD.key]
         return instance
