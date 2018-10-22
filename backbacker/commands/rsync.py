@@ -1,10 +1,9 @@
 import logging
 import os
-from subprocess import call
+import subprocess
 
-from backbacker.command import SystemCommand
+from backbacker.command import SystemCommand, CliCommand
 from backbacker.constants import Parameter
-from backbacker.errors import ParameterError
 
 
 __author__ = 'Christof Pieloth'
@@ -26,96 +25,87 @@ class Rsync(SystemCommand):
 
     def __init__(self):
         super().__init__('rsync')
-        self.__arg_src = ''
-        self.__arg_dest = ''
-        self.__arg_backup_dir = ''
-        self.__arg_mirror = False
-        self.__arg_rsh = ''
+        self._src_dir = ''
+        self._dst_dir = ''
+        self._backup_dir = ''
+        self.mirror = False
+        self.rsh = ''
 
     @property
-    def arg_src(self):
-        return self.__arg_src
+    def src_dir(self):
+        return self._src_dir
 
-    @arg_src.setter
-    def arg_src(self, value):
-        self.__arg_src = os.path.expanduser(value)
-
-    @property
-    def arg_dest(self):
-        return self.__arg_dest
-
-    @arg_dest.setter
-    def arg_dest(self, value):
-        self.__arg_dest = os.path.expanduser(value)
+    @src_dir.setter
+    def src_dir(self, value):
+        self._src_dir = os.path.expanduser(value)
 
     @property
-    def arg_mirror(self):
-        return self.__arg_mirror
+    def dst_dir(self):
+        return self._dst_dir
 
-    @arg_mirror.setter
-    def arg_mirror(self, value):
-        self.__arg_mirror = value
-
-    @property
-    def arg_backup_dir(self):
-        return self.__arg_backup_dir
-
-    @arg_backup_dir.setter
-    def arg_backup_dir(self, value):
-        self.__arg_backup_dir = os.path.expanduser(value)
+    @dst_dir.setter
+    def dst_dir(self, value):
+        self._dst_dir = os.path.expanduser(value)
 
     @property
-    def arg_rsh(self):
-        return self.__arg_rsh
+    def backup_dir(self):
+        return self._backup_dir
 
-    @arg_rsh.setter
-    def arg_rsh(self, value):
-        self.__arg_rsh = value
+    @backup_dir.setter
+    def backup_dir(self, value):
+        self._backup_dir = os.path.expanduser(value)
 
-    def execute(self):
-        if self.arg_rsh == '':
-            if not os.access(self.arg_src, os.R_OK):
-                log.error('No read access to: ' + self.arg_src)
-                return False
-            if not os.access(self.arg_dest, os.W_OK):
-                log.error('No write access to: ' + self.arg_dest)
-                return False
+    def _execute_command(self):
+        if self.rsh == '':
+            if not os.access(self.src_dir, os.R_OK):
+                raise PermissionError('No read access to: {}'.format(self.src_dir))
+            if not os.access(self.dst_dir, os.W_OK):
+                raise PermissionError('No write access to: {}'.format(self.dst_dir))
 
         cmd = [self.cmd, Rsync.ALL]
-        if self.arg_mirror:
+        if self.mirror:
             cmd.append(Rsync.DELETE_DEST)
-            if self.arg_backup_dir != '':
+            if self.backup_dir != '':
                 cmd.append(Rsync.BACKUP_DELETE)
-                cmd.append(Rsync.BACKUP_DELETE_DIR + self.arg_backup_dir)
-        if self.arg_rsh != '':
-            cmd.append(Rsync.REMOTE_SHELL + ' ' + self.arg_rsh)
-        cmd.append(self.arg_src)
-        cmd.append(self.arg_dest)
+                cmd.append(Rsync.BACKUP_DELETE_DIR + self.backup_dir)
+        if self.rsh != '':
+            cmd.append(Rsync.REMOTE_SHELL + ' ' + self.rsh)
+        cmd.append(self.src_dir)
+        cmd.append(self.dst_dir)
 
-        if call(cmd) == 0:
-            return True
-        else:
-            return False
+        subprocess.check_call(cmd)
 
-    @classmethod
-    def instance(cls, params):
-        cmd = Rsync()
-        if Parameter.SRC_DIR in params:
-            cmd.arg_src = params[Parameter.SRC_DIR]
-        else:
-            raise ParameterError(Parameter.SRC_DIR + ' parameter is missing!')
-        if Parameter.DEST_DIR in params:
-            cmd.arg_dest = params[Parameter.DEST_DIR]
-        else:
-            raise ParameterError(Parameter.DEST_DIR + ' parameter is missing!')
-        if Parameter.MIRROR in params:
-            cmd.arg_mirror = True
-        if Parameter.BACKUP_DIR in params:
-            cmd.arg_backup_dir = params[Parameter.BACKUP_DIR]
-        if Parameter.SHELL in params:
-            cmd.arg_rsh = params[Parameter.SHELL]
-        return cmd
+
+class RsyncliCommand(CliCommand):
 
     @classmethod
-    def prototype(cls):
-        return Rsync()
+    def _add_arguments(cls, subparsers):
+        # TODO(cpieloth): improve help
+        subparsers.add_argument('--{}'.format(Parameter.SRC_DIR), help='source dir', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='destination dir', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.BACKUP_DIR), help='backup dir')
+        subparsers.add_argument('--{}'.format(Parameter.MIRROR), help='mirror', action='store_true')
+        subparsers.add_argument('--{}'.format(Parameter.SHELL), help='shell')
+
+    @classmethod
+    def _name(cls):
+        return 'rsync'
+
+    @classmethod
+    def _help(cls):
+        return Rsync.__doc__
+
+    @classmethod
+    def _instance(cls, args):
+        instance = Rsync()
+        instance.src_dir = args[Parameter.SRC_DIR]
+        instance.dst_dir = args[Parameter.DEST_DIR]
+        instance.mirror = args[Parameter.MIRROR]
+
+        if Parameter.BACKUP_DIR in args:
+            instance.backup_dir = args[Parameter.BACKUP_DIR]
+
+        if Parameter.SHELL in args:
+            instance.rsh = args[Parameter.SHELL]
+
+        return instance

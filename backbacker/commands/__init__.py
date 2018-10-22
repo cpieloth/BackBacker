@@ -1,6 +1,5 @@
 # from backbacker.commands.mysql_dump_gzip import MySqlDumpGZip
 # from backbacker.commands.pgsql_dump_gzip import PgSqlDumpGZip
-# from backbacker.commands.rsync import Rsync
 # from backbacker.commands.service import ServiceStart
 # from backbacker.commands.service import ServiceStop
 
@@ -33,6 +32,7 @@ def register_sub_commands(subparser):
     from backbacker.commands.mercurial import HgBundleCliCommand
     from backbacker.commands.mount import MountSambaCliCommand, UmountCliCommand
     from backbacker.commands.mv_timestamp import MoveTimestampCliCommand
+    from backbacker.commands.rsync import RsyncliCommand
 
     BackupRotationCliCommand.init_subparser(subparser)
     ExampleCliCommand.init_subparser(subparser)
@@ -44,3 +44,4 @@ def register_sub_commands(subparser):
     MountSambaCliCommand.init_subparser(subparser)
     UmountCliCommand.init_subparser(subparser)
     MoveTimestampCliCommand.init_subparser(subparser)
+    RsyncliCommand.init_subparser(subparser)
