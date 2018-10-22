@@ -21,6 +21,8 @@ class Parameter(object):
     DB_NAME = 'db_name'
     DB_SCHEMA = 'db_schema'
     DB_TABLE = 'db_table'
+    DB_USER = 'db_user'
+    DB_PASSWD = 'db_passwd'
 
     # Misc
     DATE_FORMAT = 'datefmt'

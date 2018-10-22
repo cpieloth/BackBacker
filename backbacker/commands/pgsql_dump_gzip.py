@@ -63,8 +63,8 @@ class PgSqlDumpGzipCliCommand(CliCommand):
         # TODO(cpieloth): improve help
         subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='dest dir', required=True)
         subparsers.add_argument('--{}'.format(Parameter.DB_NAME), help='db name', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.USER), help='user', required=True)
-        subparsers.add_argument('--{}'.format(Parameter.PASSWD), help='password', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.DB_USER), help='user', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.DB_PASSWD), help='password', required=True)
         subparsers.add_argument('--{}'.format(Parameter.DB_SCHEMA), help='db schema')
         subparsers.add_argument('--{}'.format(Parameter.DB_TABLE), help='db table')
 
@@ -81,8 +81,8 @@ class PgSqlDumpGzipCliCommand(CliCommand):
         instance = PgSqlDumpGZip()
         instance.dst_dir = args[Parameter.DEST_DIR]
         instance.db_name = args[Parameter.DB_NAME]
-        instance.db_user = args[Parameter.USER]
-        instance.db_passwd = args[Parameter.PASSWD]
+        instance.db_user = args[Parameter.DB_USER]
+        instance.db_passwd = args[Parameter.DB_PASSWD]
 
         if Parameter.DB_SCHEMA in args:
             instance.db_schema = args[Parameter.DB_SCHEMA]
