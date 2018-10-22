@@ -66,7 +66,7 @@ class GitBundleCliCommand(CliCommand):
     @classmethod
     def _add_arguments(cls, subparsers):
         subparsers.add_argument(Argument.SRC_DIR.long_arg, help='git repository to bundle.', required=True)
-        subparsers.add_argument(Argument.DEST_DIR.long_arg, help='Destination directory to store the bundle.',
+        subparsers.add_argument(Argument.DST_DIR.long_arg, help='Destination directory to store the bundle.',
                                 required=True)
 
     @classmethod
@@ -75,7 +75,7 @@ class GitBundleCliCommand(CliCommand):
 
     @classmethod
     def _instance(cls, args):
-        return GitBundle(args[Argument.SRC_DIR.key], args[Argument.DEST_DIR.key])
+        return GitBundle(args[Argument.SRC_DIR.key], args[Argument.DST_DIR.key])
 
 
 class GitClone(SystemCommand):
@@ -110,7 +110,7 @@ class GitCloneCliCommand(CliCommand):
     @classmethod
     def _add_arguments(cls, subparsers):
         subparsers.add_argument(Argument.SRC_DIR.long_arg, help='git repository to clone.', required=True)
-        subparsers.add_argument(Argument.DEST_DIR.long_arg, help='Destination directory.', required=True)
+        subparsers.add_argument(Argument.DST_DIR.long_arg, help='Destination directory.', required=True)
 
     @classmethod
     def _name(cls):
@@ -118,4 +118,4 @@ class GitCloneCliCommand(CliCommand):
 
     @classmethod
     def _instance(cls, args):
-        return GitClone(args[Argument.SRC_DIR.key], args[Argument.DEST_DIR.key])
+        return GitClone(args[Argument.SRC_DIR.key], args[Argument.DST_DIR.key])
