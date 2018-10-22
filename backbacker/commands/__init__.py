@@ -1,4 +1,3 @@
-# from backbacker.commands.mysql_dump_gzip import MySqlDumpGZip
 # from backbacker.commands.pgsql_dump_gzip import PgSqlDumpGZip
 
 __author__ = 'Christof Pieloth'
@@ -7,7 +6,6 @@ __author__ = 'Christof Pieloth'
 def command_prototypes():
     """Returns prototypes of all known commands."""
     prototypes = list()
-    # prototypes.append(MySqlDumpGZip.prototype())
     # prototypes.append(PgSqlDumpGZip.prototype())
     return prototypes
 
@@ -27,6 +25,7 @@ def register_sub_commands(subparser):
     from backbacker.commands.mercurial import HgBundleCliCommand
     from backbacker.commands.mount import MountSambaCliCommand, UmountCliCommand
     from backbacker.commands.mv_timestamp import MoveTimestampCliCommand
+    from backbacker.commands.mysql_dump_gzip import MySqlDumpGzipCliCommand
     from backbacker.commands.rsync import RsyncCliCommand
     from backbacker.commands.service import ServiceStartCliCommand, ServiceStopCliCommand
 
@@ -40,6 +39,7 @@ def register_sub_commands(subparser):
     MountSambaCliCommand.init_subparser(subparser)
     UmountCliCommand.init_subparser(subparser)
     MoveTimestampCliCommand.init_subparser(subparser)
+    MySqlDumpGzipCliCommand.init_subparser(subparser)
     RsyncCliCommand.init_subparser(subparser)
     ServiceStartCliCommand.init_subparser(subparser)
     ServiceStopCliCommand.init_subparser(subparser)

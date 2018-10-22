@@ -69,10 +69,10 @@ class RedmineAM(Task):
         success = success and self._cmd_targz.execute()
 
         # Dump database
-        self._cmd_sqldump.arg_dest = self.dst_dir
-        self._cmd_sqldump.arg_dbname = self.db_name
-        self._cmd_sqldump.arg_dbuser = self.db_user
-        self._cmd_sqldump.arg_dbpasswd = self.db_passwd
+        self._cmd_sqldump.dst_dir = self.dst_dir
+        self._cmd_sqldump.db_name = self.db_name
+        self._cmd_sqldump.db_user = self.db_user
+        self._cmd_sqldump.db_passwd = self.db_passwd
         success = success and self._cmd_sqldump.execute()
 
         return success

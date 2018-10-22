@@ -1,8 +1,8 @@
 import logging
 import os
-from subprocess import call
+import subprocess
 
-from backbacker.command import SystemCommand
+from backbacker.command import SystemCommand, CliCommand
 from backbacker.constants import Parameter
 from backbacker.errors import ParameterError
 
@@ -19,42 +19,18 @@ class MySqlDumpGZip(SystemCommand):
 
     def __init__(self):
         super().__init__('mysqldump')
-        self.__arg_dest = ''
-        self.__arg_dbname = ''
-        self.__arg_dbuser = ''
-        self.__arg_dbpasswd = ''
+        self._dst_dir = ''
+        self.db_name = ''
+        self.db_user = ''
+        self.db_passwd = ''
 
     @property
-    def arg_dest(self):
-        return self.__arg_dest
+    def dst_dir(self):
+        return self._dst_dir
 
-    @arg_dest.setter
-    def arg_dest(self, value):
-        self.__arg_dest = os.path.expanduser(value)
-
-    @property
-    def arg_dbname(self):
-        return self.__arg_dbname
-
-    @arg_dbname.setter
-    def arg_dbname(self, value):
-        self.__arg_dbname = value
-
-    @property
-    def arg_dbuser(self):
-        return self.__arg_dbuser
-
-    @arg_dbuser.setter
-    def arg_dbuser(self, value):
-        self.__arg_dbuser = value
-
-    @property
-    def arg_dbpasswd(self):
-        return self.__arg_dbpasswd
-
-    @arg_dbpasswd.setter
-    def arg_dbpasswd(self, value):
-        self.__arg_dbpasswd = value
+    @dst_dir.setter
+    def dst_dir(self, value):
+        self._dst_dir = os.path.expanduser(value)
 
     def is_available(self):
         success = SystemCommand.check_version(self.cmd)
@@ -62,41 +38,60 @@ class MySqlDumpGZip(SystemCommand):
         return success
 
     def _execute_command(self):
-        if not os.access(self.arg_dest, os.W_OK):
-            log.error('No write access to: ' + self.arg_dest)
-            return False
-        dest = os.path.join(self.arg_dest, self.arg_dbname + '.sql.gz')
+        if not os.access(self.dst_dir, os.W_OK):
+            raise PermissionError('No write access to: {}'.format(self.dst_dir))
+        dest = os.path.join(self.dst_dir, self.db_name + '.sql.gz')
 
-        mysqldump = 'mysqldump -u ' + self.arg_dbuser + ' --password=' + self.arg_dbpasswd + ' ' + self.arg_dbname
+        mysqldump = 'mysqldump -u ' + self.db_user + ' --password=' + self.db_passwd + ' ' + self.db_name
         gzip = 'gzip > ' + dest
 
-        if call([mysqldump + ' | ' + gzip], shell=True) == 0:
-            return True
-        else:
-            log.error('Error while dumping MySQL DB.')
-            return False
+        subprocess.check_call([mysqldump + ' | ' + gzip], shell=True)
 
     @classmethod
     def instance(cls, params):
         cmd = MySqlDumpGZip()
         if Parameter.DEST_DIR in params:
-            cmd.arg_dest = params[Parameter.DEST_DIR]
+            cmd.dst_dir = params[Parameter.DEST_DIR]
         else:
             raise ParameterError(Parameter.DEST_DIR + ' parameter is missing!')
         if Parameter.DB_NAME in params:
-            cmd.arg_dbname = params[Parameter.DB_NAME]
+            cmd.db_name = params[Parameter.DB_NAME]
         else:
             raise ParameterError(Parameter.DB_NAME + ' parameter is missing!')
         if Parameter.USER in params:
-            cmd.arg_dbuser = params[Parameter.USER]
+            cmd.db_user = params[Parameter.USER]
         else:
             raise ParameterError(Parameter.USER + ' parameter is missing!')
         if Parameter.PASSWD in params:
-            cmd.arg_dbpasswd = params[Parameter.PASSWD]
+            cmd.db_passwd = params[Parameter.PASSWD]
         else:
             raise ParameterError(Parameter.PASSWD + ' parameter is missing!')
         return cmd
 
+
+class MySqlDumpGzipCliCommand(CliCommand):
+
     @classmethod
-    def prototype(cls):
-        return MySqlDumpGZip()
+    def _add_arguments(cls, subparsers):
+        # TODO(cpieloth): improve help
+        subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='dest dir', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.DB_NAME), help='db name', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.USER), help='user', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.PASSWD), help='password', required=True)
+
+    @classmethod
+    def _name(cls):
+        return 'mysqldump'
+
+    @classmethod
+    def _help(cls):
+        return MySqlDumpGZip.__doc__
+
+    @classmethod
+    def _instance(cls, args):
+        instance = MySqlDumpGZip()
+        instance.dst_dir = args[Parameter.DEST_DIR]
+        instance.db_name = args[Parameter.DB_NAME]
+        instance.db_user = args[Parameter.USER]
+        instance.db_passwd = args[Parameter.PASSWD]
+        return instance
