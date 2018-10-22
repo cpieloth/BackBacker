@@ -3,7 +3,7 @@ import os
 import subprocess
 
 from backbacker.command import SystemCommand, CliCommand
-
+from backbacker.constants import Parameter
 
 __author__ = 'Christof Pieloth'
 
@@ -66,8 +66,9 @@ class GitBundleCliCommand(CliCommand):
 
     @classmethod
     def _add_arguments(cls, subparsers):
-        subparsers.add_argument('-r', '--repo', help='git repository to bundle.', required=True)
-        subparsers.add_argument('-d', '--dst_dir', help='Destination directory to store the bundle.', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.SRC_DIR), help='git repository to bundle.', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='Destination directory to store the bundle.',
+                                required=True)
 
     @classmethod
     def _name(cls):
@@ -75,7 +76,7 @@ class GitBundleCliCommand(CliCommand):
 
     @classmethod
     def _instance(cls, args):
-        return GitBundle(args.repo, args.dst_dir)
+        return GitBundle(args[Parameter.SRC_DIR], args[Parameter.DEST_DIR])
 
 
 class GitClone(SystemCommand):
@@ -109,8 +110,8 @@ class GitCloneCliCommand(CliCommand):
 
     @classmethod
     def _add_arguments(cls, subparsers):
-        subparsers.add_argument('-r', '--repo', help='git repository to clone.', required=True)
-        subparsers.add_argument('-d', '--dst_dir', help='Destination directory.', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.SRC_DIR), help='git repository to clone.', required=True)
+        subparsers.add_argument('--{}'.format(Parameter.DEST_DIR), help='Destination directory.', required=True)
 
     @classmethod
     def _name(cls):
@@ -118,4 +119,4 @@ class GitCloneCliCommand(CliCommand):
 
     @classmethod
     def _instance(cls, args):
-        return GitClone(args.repo, args.dst_dir)
+        return GitClone(args[Parameter.SRC_DIR], args[Parameter.DEST_DIR])
