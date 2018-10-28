@@ -22,7 +22,7 @@ class BackupRotation(Command):
         super().__init__()
         self._dir = None
         self.date_pattern = Constants.FILE_DATE_FORMAT
-        self._keep_backups = Constants.KEEP_BACKUPS
+        self._keep_backups = sys.maxsize
 
     @property
     def dir(self):
@@ -41,11 +41,10 @@ class BackupRotation(Command):
         try:
             self._keep_backups = int(value)
         except ValueError:
-            log.error('Could not cast to int: %s', value)
-            self._keep_backups = sys.maxsize
-        if self._keep_backups == 0:
-            log.warning('rotation == 0 are ignored!')
-            self._keep_backups = sys.maxsize
+            raise ValueError('Could not cast "keep_backups" to int: {}'.format(value))
+
+        if self._keep_backups <= 0:
+            raise ValueError('Invalid value of "keep_backups". Must be greater than 0, but it is: {}'.format(value))
 
     def execute(self):
         if not os.access(self.dir, os.R_OK):
@@ -73,13 +72,13 @@ class BackupRotation(Command):
 class BackupRotationCliCommand(CliCommand):
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        # TODO(cpieloth): improve help
-        subparsers.add_argument(Argument.DIR.long_arg, help='dir', required=True)
-        subparsers.add_argument(Argument.DATE_FORMAT.long_arg, help='date format',
-                                default=Constants.FILE_DATE_FORMAT)
-        subparsers.add_argument(Argument.ROTATE.long_arg, help='rotate', type=int,
-                                default=Constants.KEEP_BACKUPS)
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.DIR.long_arg, required=True,
+                            help='Directory which contains the backups with a date prefix.')
+        parser.add_argument(Argument.DATE_FORMAT.long_arg, default=Constants.FILE_DATE_FORMAT,
+                            help='Date format of the date prefix.')
+        parser.add_argument(Argument.ROTATE.long_arg, type=int, default=5,
+                            help='Number of backups to keep.')
 
     @classmethod
     def _name(cls):
