@@ -73,11 +73,10 @@ class UMount(SystemCommand):
 class MountSambaCliCommand(CliCommand):
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        # TODO(cpieloth): improve help
-        subparsers.add_argument(Argument.CONFIG_FILE.long_arg, help='config file', required=True)
-        subparsers.add_argument(Argument.URL.long_arg, help='url', required=True)
-        subparsers.add_argument(Argument.DST_DIR.long_arg, help='destination dir', required=True)
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.CONFIG_FILE.long_arg, help='Config file for .credentials.', required=True)
+        parser.add_argument(Argument.URL.long_arg, help='URL of the samba share.', required=True)
+        parser.add_argument(Argument.DST_DIR.long_arg, help='Mount directory.', required=True)
 
     @classmethod
     def _name(cls):
@@ -99,9 +98,8 @@ class MountSambaCliCommand(CliCommand):
 class UmountCliCommand(CliCommand):
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        # TODO(cpieloth): improve help
-        subparsers.add_argument(Argument.DIR.long_arg, help='dir', required=True)
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.DIR.long_arg, help='Director to unmount.', required=True)
 
     @classmethod
     def _name(cls):
