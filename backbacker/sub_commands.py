@@ -101,6 +101,7 @@ class BatchCmd(SubCommand):
     @classmethod
     def _add_arguments(cls, parser):
         parser.add_argument('-c', '--config', help='Config file.')
+        parser.add_argument('-i', '--ignore_errors', help='Continue on error.', action='store_true')
         parser.add_argument('batch_file', help='Batch file.')
         return parser
 
@@ -112,15 +113,21 @@ class BatchCmd(SubCommand):
         init_logging(args.config)
 
         commands = cls.read_batch_file(args.batch_file)
+        error_count = 0
         for command in commands:
             argv = ['nop']
             argv.extend(command.split(' '))
             rc = main(argv)
-            if rc != 0:
-                log.error('Error executing command: %s', command)
-                return rc
 
-        return 0
+            if rc > 0:
+                error_count += 1
+                log.error('Error executing command: %s. Returned with: %d', command, rc)
+                if args.ignore_errors:
+                    continue
+                else:
+                    return rc
+
+        return error_count
 
     @staticmethod
     def read_batch_file(fname):
