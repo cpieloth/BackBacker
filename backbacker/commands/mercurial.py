@@ -63,9 +63,9 @@ class HgBundle(SystemCommand):
 class HgBundleCliCommand(CliCommand):
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        subparsers.add_argument(Argument.SRC_DIR.long_arg, help='Mercurial repository to bundle.', required=True)
-        subparsers.add_argument(Argument.DST_DIR.long_arg, help='Destination directory to store the bundle.', required=True)
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.SRC_DIR.long_arg, help='Mercurial repository to bundle.', required=True)
+        parser.add_argument(Argument.DST_DIR.long_arg, help='Destination directory to store the bundle.', required=True)
 
     @classmethod
     def _name(cls):
