@@ -61,13 +61,16 @@ class GitBundle(SystemCommand):
 
 
 class GitBundleCliCommand(CliCommand):
-    """Bundle a git repository."""
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        subparsers.add_argument(Argument.SRC_DIR.long_arg, help='git repository to bundle.', required=True)
-        subparsers.add_argument(Argument.DST_DIR.long_arg, help='Destination directory to store the bundle.',
-                                required=True)
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.SRC_DIR.long_arg, help='git repository to bundle.', required=True)
+        parser.add_argument(Argument.DST_DIR.long_arg, help='Destination directory to store the bundle.',
+                            required=True)
+
+    @classmethod
+    def _help(cls):
+        return GitBundle.__doc__
 
     @classmethod
     def _name(cls):
@@ -108,9 +111,13 @@ class GitCloneCliCommand(CliCommand):
     """Clone a git repository."""
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        subparsers.add_argument(Argument.SRC_DIR.long_arg, help='git repository to clone.', required=True)
-        subparsers.add_argument(Argument.DST_DIR.long_arg, help='Destination directory.', required=True)
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.SRC_DIR.long_arg, help='git repository to clone.', required=True)
+        parser.add_argument(Argument.DST_DIR.long_arg, help='Destination directory.', required=True)
+
+    @classmethod
+    def _help(cls):
+        return GitClone.__doc__
 
     @classmethod
     def _name(cls):
