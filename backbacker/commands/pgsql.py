@@ -30,9 +30,6 @@ class PgSqlDumpGZip(SystemCommand):
     def dst_dir(self, value):
         self._dst_dir = os.path.expanduser(value)
 
-    def is_available(self):
-        return SystemCommand.check_version(self.cmd)
-
     def _execute_command(self):
         if not os.access(self.dst_dir, os.W_OK):
             raise PermissionError('No write access to: {}'.format(self.dst_dir))
@@ -58,14 +55,13 @@ class PgSqlDumpGZip(SystemCommand):
 class PgSqlDumpGzipCliCommand(CliCommand):
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        # TODO(cpieloth): improve help
-        subparsers.add_argument(Argument.DST_DIR.long_arg, help='dest dir', required=True)
-        subparsers.add_argument(Argument.DB_NAME.long_arg, help='db name', required=True)
-        subparsers.add_argument(Argument.DB_USER.long_arg, help='user', required=True)
-        subparsers.add_argument(Argument.DB_PASSWD.long_arg, help='password', required=True)
-        subparsers.add_argument(Argument.DB_SCHEMA.long_arg, help='db schema')
-        subparsers.add_argument(Argument.DB_TABLE.long_arg, help='db table')
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.DST_DIR.long_arg, help='Destination directory for dump for dump.', required=True)
+        parser.add_argument(Argument.DB_NAME.long_arg, help='Database name.', required=True)
+        parser.add_argument(Argument.DB_USER.long_arg, help='Database user.', required=True)
+        parser.add_argument(Argument.DB_PASSWD.long_arg, help='Password for database user.', required=True)
+        parser.add_argument(Argument.DB_SCHEMA.long_arg, help='Database schema.')
+        parser.add_argument(Argument.DB_TABLE.long_arg, help='Database table.')
 
     @classmethod
     def _name(cls):
