@@ -45,41 +45,34 @@ class RedmineAM(Task):
 
     def _pre_execute(self):
         if not os.access(self.src_dir, os.R_OK):
-            log.error('No read access to: ' + self.src_dir)
-            return False
+            raise PermissionError('No read access to: {}'.format(self.src_dir))
         if not os.access(self.dst_dir, os.W_OK):
-            log.error('No write access to: ' + self.dst_dir)
-            return False
+            raise PermissionError('No write access to: {}'.format(self.dst_dir))
 
         if not self._cmd_sqldump.is_available():
-            return False
+            raise OSError('Command not available: {}'.format(self._cmd_sqldump.cmd))
 
         cmd = ServiceStop()
         cmd.service = 'apache2'
-        return cmd.execute()
+        cmd.execute()
 
     def _execute_task(self):
-        # FIXME(cpieloth): Check pre_execute, execute_task, post_execute for return code vs exception!
-
-        success = True
         # Compress redmine folder
         self._cmd_targz.src_dir = self.src_dir
         self._cmd_targz.dst_dir = self.dst_dir
-        success = success and self._cmd_targz.execute()
+        self._cmd_targz.execute()
 
         # Dump database
         self._cmd_sqldump.dst_dir = self.dst_dir
         self._cmd_sqldump.db_name = self.db_name
         self._cmd_sqldump.db_user = self.db_user
         self._cmd_sqldump.db_passwd = self.db_passwd
-        success = success and self._cmd_sqldump.execute()
-
-        return success
+        self._cmd_sqldump.execute()
 
     def _post_execute(self):
         cmd = ServiceStart()
         cmd.service = 'apache2'
-        return cmd.execute()
+        cmd.execute()
 
 
 class RedmineAMCliCommand(CliCommand):

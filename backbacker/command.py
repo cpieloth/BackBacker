@@ -49,7 +49,6 @@ class SystemCommand(Command, metaclass=abc.ABCMeta):
 
     def execute(self):
         if not self.is_available():
-            log.error('Not available!')
             raise OSError('Command not available: {}'.format(self.cmd))
 
         self._execute_command()
