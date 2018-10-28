@@ -85,13 +85,12 @@ class RedmineAM(Task):
 class RedmineAMCliCommand(CliCommand):
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        # TODO(cpieloth): improve help
-        subparsers.add_argument(Argument.SRC_DIR.long_arg, help='source dir', required=True)
-        subparsers.add_argument(Argument.DST_DIR.long_arg, help='destination dir', required=True)
-        subparsers.add_argument(Argument.DB_NAME.long_arg, help='db name', required=True)
-        subparsers.add_argument(Argument.DB_USER.long_arg, help='db user', required=True)
-        subparsers.add_argument(Argument.DB_PASSWD.long_arg, help='db password', required=True)
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.SRC_DIR.long_arg, help='Redmine folder.', required=True)
+        parser.add_argument(Argument.DST_DIR.long_arg, help='Destination director for backup.', required=True)
+        parser.add_argument(Argument.DB_NAME.long_arg, help='Database name for Redmine.', required=True)
+        parser.add_argument(Argument.DB_USER.long_arg, help='Database user.', required=True)
+        parser.add_argument(Argument.DB_PASSWD.long_arg, help='Password for database user.', required=True)
 
     @classmethod
     def _name(cls):
@@ -110,4 +109,3 @@ class RedmineAMCliCommand(CliCommand):
         instance.db_user = Argument.DB_USER.get_value(args)
         instance.db_passwd = Argument.DB_PASSWD.get_value(args)
         return instance
-
