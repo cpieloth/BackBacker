@@ -18,8 +18,8 @@ class ExampleCliCommand(CliCommand):
     """An example how to implement a CLI command for a command."""
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        subparsers.add_argument('--name', help='Name to greet.', required=True)
+    def _add_arguments(cls, parser):
+        parser.add_argument('--name', help='Name to greet.', required=True)
 
     @classmethod
     def _name(cls):
