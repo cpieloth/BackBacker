@@ -52,14 +52,14 @@ class SubCommand(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def _add_arguments(cls, subparsers):
+    def _add_arguments(cls, parser):
         """
         Initialize the argument parser and help for the specific sub-command.
 
         Must be implemented by a sub-command.
 
-        :param subparsers: A subparser.
-        :type subparsers: argparse.ArgumentParser
+        :param parser: A subparser.
+        :type parser: argparse.ArgumentParser
         :return: void
         """
         raise NotImplementedError()
@@ -91,17 +91,17 @@ class SubCommand(abc.ABC):
         raise NotImplementedError()
 
 
-class JobCmd(SubCommand):
-    """A job is a collection of commands and tasks which are executed sequentially."""
+class BatchCmd(SubCommand):
+    """A batch is a collection of commands and tasks which are executed sequentially."""
 
     @classmethod
     def _name(cls):
-        return 'job'
+        return 'batch'
 
     @classmethod
     def _add_arguments(cls, parser):
         parser.add_argument('-c', '--config', help='Config file.')
-        parser.add_argument('job_file', help='Job file.')
+        parser.add_argument('batch_file', help='Batch file.')
         return parser
 
     @classmethod
@@ -111,7 +111,7 @@ class JobCmd(SubCommand):
 
         init_logging(args.config)
 
-        commands = cls.read_job_file(args.job_file)
+        commands = cls.read_batch_file(args.batch_file)
         for command in commands:
             argv = ['nop']
             argv.extend(command.split(' '))
@@ -123,7 +123,7 @@ class JobCmd(SubCommand):
         return 0
 
     @staticmethod
-    def read_job_file(fname):
+    def read_batch_file(fname):
         commands = list()
         with open(fname, 'r') as file:
             for line in file:
@@ -136,4 +136,4 @@ class JobCmd(SubCommand):
 
 
 def register_sub_commands(subparser):
-    JobCmd.init_subparser(subparser)
+    BatchCmd.init_subparser(subparser)

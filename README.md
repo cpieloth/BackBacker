@@ -1,7 +1,7 @@
 BackBacker - A light backup tool.
 =================================
 
-BackBacker is a light backup tool with a job file based on simple commands with arguments.
+BackBacker is a light backup tool with a batch file based on simple commands with arguments.
 
 
 Concept
@@ -16,7 +16,7 @@ hg_bundle -r /tmp/hg_repo -d /tmp
 
 Run backup job:
 ```
-$ backbacker.py job examples/job.bb
+$ backbacker.py batch examples/batch.bb
 ```
 
 Additional you can run or use each command in your own script by using it as a sub-command:
@@ -43,14 +43,14 @@ $ python3 setup.py install
 $ cp examples/config.ini examples/myconfig.ini
 $ editor examples/myconfig.ini
 ```
-* Create a backup job:
+* Create a backup batch:
 ```
-$ cp examples/jobs.bb examples/myjob.bb
-$ editor examples/myjob.bb
+$ cp examples/batch.bb examples/batch.bb
+$ editor examples/batch.bb
 ```
 * Run your backup job
 ```
-$ backbacker job -c examples/config.ini examples/job.bb
+$ backbacker batch -c examples/config.ini examples/batch.bb
 ```
 * Create a cron job (optional):
 ```
