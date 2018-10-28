@@ -1,7 +1,8 @@
 import logging
 import os
-from string import Template
 import tempfile
+import urllib.parse
+
 import requests
 
 from backbacker.command import Command, CliCommand, Argument
@@ -41,8 +42,7 @@ class GithubClone(Command):
     @classmethod
     def collect_repository_urls(cls, username):
         # https://developer.github.com/v3/repos/#list-user-repositories
-        request_url_template = Template('https://api.github.com/users/${username}/repos')
-        request_url = request_url_template.substitute(username=username)
+        request_url = 'https://api.github.com/users/{}/repos'.format(urllib.parse.quote(username))
 
         while request_url:
             response = requests.get(request_url)
@@ -71,12 +71,15 @@ class GithubClone(Command):
 
 
 class GithubCloneCliCommand(CliCommand):
-    """Clone all git repositories from a Github account."""
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        subparsers.add_argument(Argument.USER.long_arg, help='Username of the Github account.', required=True)
-        subparsers.add_argument(Argument.DST_DIR.long_arg, help='Destination directory.', required=True)
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.USER.long_arg, help='Username of the Github account.', required=True)
+        parser.add_argument(Argument.DST_DIR.long_arg, help='Destination directory.', required=True)
+
+    @classmethod
+    def _help(cls):
+        return GithubClone.__doc__
 
     @classmethod
     def _name(cls):
@@ -85,4 +88,3 @@ class GithubCloneCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         return GithubClone(Argument.USER.get_value(args), Argument.DST_DIR.get_value(args))
-
