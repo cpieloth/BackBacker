@@ -56,10 +56,10 @@ class GZip(Command):
 class GZipCliCommand(CliCommand):
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        # TODO(cpieloth): improve help
-        subparsers.add_argument(Argument.SRC_DIR.long_arg, help='source dir', required=True)
-        subparsers.add_argument(Argument.DST_DIR.long_arg, help='destination dir', required=True)
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.SRC_DIR.long_arg, help='Folder to compress.', required=True)
+        parser.add_argument(Argument.DST_DIR.long_arg, required=True,
+                            help='Destination directory to store tar.gz.')
 
     @classmethod
     def _name(cls):
