@@ -46,9 +46,8 @@ class ServiceStop(Service):
 class ServiceStartCliCommand(CliCommand):
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        # TODO(cpieloth): improve help
-        subparsers.add_argument('--service', help='service', required=True)
+    def _add_arguments(cls, parser):
+        parser.add_argument('--service', help='Service to start.', required=True)
 
     @classmethod
     def _name(cls):
@@ -68,9 +67,8 @@ class ServiceStartCliCommand(CliCommand):
 class ServiceStopCliCommand(CliCommand):
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        # TODO(cpieloth): improve help
-        subparsers.add_argument('--service', help='service', required=True)
+    def _add_arguments(cls, parser):
+        parser.add_argument('--service', help='Service to stop.', required=True)
 
     @classmethod
     def _name(cls):
