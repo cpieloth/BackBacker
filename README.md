@@ -1,8 +1,7 @@
 BackBacker - A light backup tool.
 =================================
 
-BackBacker is a light backup tool with a "declarative" job file based on simple commands with arguments.
-BackBacker requires Python 3, but a backport to Python 2 can be done easily.
+BackBacker is a light backup tool with a batch file based on simple commands with arguments.
 
 
 Concept
@@ -11,13 +10,19 @@ Concept
 Job script with one instruction per line:
 ```
 $ cat examples/job.bb
-git_bundle: src_dir=~/BackBacker; dest_dir=/tmp;
-gzip: src_dir=~/BackBacker; dest_dir=/tmp;
+git_bundle -r /tmp/git_repo -d /tmp
+hg_bundle -r /tmp/hg_repo -d /tmp
 ```
 
 Run backup job:
 ```
-$ backbacker examples/job.bb
+$ backbacker.py batch examples/batch.bb
+```
+
+Additional you can run or use each command in your own script by using it as a sub-command:
+```
+$ backbacker.py git_bundle -r /tmp/git_repo -d /tmp
+$ backbacker.py hg_bundle -r /tmp/hg_repo -d /tmp
 ```
 
 
@@ -36,34 +41,18 @@ $ python3 setup.py install
 * Create a config (optional):
 ```
 $ cp examples/config.ini examples/myconfig.ini
-$ vi examples/myconfig.ini
+$ editor examples/myconfig.ini
 ```
-* Create a backup job:
+* Create a backup batch:
 ```
-$ cp examples/jobs.bb examples/myjob.bb
-$ vi examples/myjob.bb
+$ cp examples/batch.bb examples/batch.bb
+$ editor examples/batch.bb
 ```
 * Run your backup job
 ```
-$ backbacker -c examples/myconfig.ini examples/myjob.bb
+$ backbacker batch -c examples/config.ini examples/batch.bb
 ```
 * Create a cron job (optional):
 ```
 $ crontab -e
 ```
-
-
-Coding Style
-------------
-
-* https://www.python.org/dev/peps/pep-0008
-* https://www.python.org/dev/peps/pep-0257
-* http://editorconfig.org
-* See .editorconfig in project root
-
-
-TODO
-----
-
-* scp
-* variables in job script, e.g. ${BACKUP_DIR} is replaced by pre-processing config file.

@@ -1,9 +1,12 @@
 __author__ = 'Christof Pieloth'
 
-from backbacker.tasks.redmine import RedmineAM
 
+def register_sub_commands(subparser):
+    """
+    Register backup commands to a subparser.
 
-def task_prototypes():
-    """Returns prototypes of all known tasks."""
-    prototypes = [RedmineAM.prototype()]
-    return prototypes
+    :param subparser: A argparse subparser.
+    """
+    from backbacker.tasks.redmine import RedmineAMCliCommand
+
+    RedmineAMCliCommand.init_subparser(subparser)

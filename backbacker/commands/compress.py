@@ -1,75 +1,77 @@
-__author__ = 'Christof Pieloth'
-
+import logging
 import os
 import tarfile
 
-from backbacker.errors import ParameterError
-from backbacker.constants import Parameter
+from backbacker.command import Command, CliCommand, Argument
 
-from .command import Command
+
+__author__ = 'Christof Pieloth'
+
+log = logging.getLogger(__name__)
 
 
 class GZip(Command):
     """Compresses a folder to a tar.gz archive."""
 
     def __init__(self):
-        super().__init__('gzip')
-        self.__arg_src = ''
-        self.__arg_dest = ''
+        super().__init__()
+        self._src_dir = None
+        self._dst_dir = None
 
     @property
-    def arg_src(self):
-        return self.__arg_src
+    def src_dir(self):
+        return self._src_dir
 
-    @arg_src.setter
-    def arg_src(self, value):
-        self.__arg_src = os.path.expanduser(value)
+    @src_dir.setter
+    def src_dir(self, value):
+        self._src_dir = os.path.expanduser(value)
 
     @property
-    def arg_dest(self):
-        return self.__arg_dest
+    def dst_dir(self):
+        return self._dst_dir
 
-    @arg_dest.setter
-    def arg_dest(self, value):
-        self.__arg_dest = os.path.expanduser(value)
+    @dst_dir.setter
+    def dst_dir(self, value):
+        self._dst_dir = os.path.expanduser(value)
 
     def execute(self):
-        if not os.access(self.arg_src, os.R_OK):
-            self.log.error('No read access to: ' + self.arg_src)
-            return False
-        if not os.access(self.arg_dest, os.W_OK):
-            self.log.error('No write access to: ' + self.arg_dest)
-            return False
+        if not os.access(self.src_dir, os.R_OK):
+            raise PermissionError('No read access to: {}'.format(self.src_dir))
+        if not os.access(self.dst_dir, os.W_OK):
+            raise PermissionError('No write access to: {}'.format(self.dst_dir))
 
-        dest_file = os.path.basename(self.arg_src) + '.tar.gz'
-        dest = os.path.join(self.arg_dest, dest_file)
+        dest_file = '{}.tar.gz'.format(os.path.basename(self.src_dir))
+        dest = os.path.join(self.dst_dir, dest_file)
         tar = None
-        success = True
         try:
             tar = tarfile.open(dest, 'w|gz')
-            tar.add(self.arg_src)
+            tar.add(self.src_dir)
         except Exception as ex:
-            self.log.error('Could not compress: ' + self.arg_src + '\n' + str(ex))
-            success = False
+            raise RuntimeError('Could not compress: {}'.format(self.src_dir)) from ex
         finally:
             if tar:
                 tar.close()
 
-        return success
+
+class GZipCliCommand(CliCommand):
 
     @classmethod
-    def instance(cls, params):
-        cmd = GZip()
-        if Parameter.SRC_DIR in params:
-            cmd.arg_src = params[Parameter.SRC_DIR]
-        else:
-            raise ParameterError(Parameter.SRC_DIR + ' parameter is missing!')
-        if Parameter.DEST_DIR in params:
-            cmd.arg_dest = params[Parameter.DEST_DIR]
-        else:
-            raise ParameterError(Parameter.DEST_DIR + ' parameter is missing!')
-        return cmd
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.SRC_DIR.long_arg, help='Folder to compress.', required=True)
+        parser.add_argument(Argument.DST_DIR.long_arg, required=True,
+                            help='Destination directory to store tar.gz.')
 
     @classmethod
-    def prototype(cls):
-        return GZip()
+    def _name(cls):
+        return 'gzip'
+
+    @classmethod
+    def _help(cls):
+        return GZip.__doc__
+
+    @classmethod
+    def _instance(cls, args):
+        instance = GZip()
+        instance.src_dir = Argument.SRC_DIR.get_value(args)
+        instance.dst_dir = Argument.DST_DIR.get_value(args)
+        return instance

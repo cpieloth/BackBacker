@@ -1,79 +1,71 @@
-__author__ = 'Christof Pieloth'
-
 from datetime import datetime
+import logging
 import os
 import shutil
 
+from backbacker.command import Command, CliCommand, Argument
 from backbacker.constants import Constants
-from backbacker.constants import Parameter
-from backbacker.errors import ParameterError
 
-from .command import Command
+
+__author__ = 'Christof Pieloth'
+
+log = logging.getLogger(__name__)
 
 
 class MoveTimestamp(Command):
     """Moves/renames all files in a folder to a destination by adding a timestamp prefix."""
 
     def __init__(self):
-        super().__init__('mv_timestamp')
-        self.__arg_src = ''
-        self.__arg_dest = ''
-        self.__arg_datefmt = Constants.FILE_DATE_FORMAT
+        super().__init__()
+        self._src_dir = None
+        self._dst_dir = None
+        self.datefmt = Constants.FILE_DATE_FORMAT
 
     @property
-    def arg_src(self):
-        return self.__arg_src
+    def src_dir(self):
+        return self._src_dir
 
-    @arg_src.setter
-    def arg_src(self, value):
-        self.__arg_src = os.path.expanduser(value)
-
-    @property
-    def arg_dest(self):
-        return self.__arg_dest
-
-    @arg_dest.setter
-    def arg_dest(self, value):
-        self.__arg_dest = os.path.expanduser(value)
+    @src_dir.setter
+    def src_dir(self, value):
+        self._src_dir = os.path.expanduser(value)
 
     @property
-    def arg_datefmt(self):
-        return self.__arg_datefmt
+    def dst_dir(self):
+        return self._dst_dir
 
-    @arg_datefmt.setter
-    def arg_datefmt(self, value):
-        self.__arg_datefmt = value
+    @dst_dir.setter
+    def dst_dir(self, value):
+        self._dst_dir = os.path.expanduser(value)
 
     def execute(self):
-        if not os.access(self.arg_src, os.R_OK):
-            self.log.error('No read access to: ' + self.arg_src)
-            return False
-        if not os.access(self.arg_dest, os.W_OK):
-            self.log.error('No write access to: ' + self.arg_dest)
-            return False
+        if not os.access(self.src_dir, os.R_OK):
+            raise PermissionError('No read access to: {}'.format(self.src_dir))
+        if not os.access(self.dst_dir, os.W_OK):
+            raise PermissionError('No write access to: {}'.format(self.dst_dir))
 
         try:
-            date_str = datetime.now().strftime(self.arg_datefmt)
-        except Exception as ex:
-            self.log.error('Could not create date string! Using default format:\n' + str(ex))
+            date_str = datetime.now().strftime(self.datefmt)
+        except Exception:
+            log.exception('Could not create date string for %s! Using default format %s',
+                          self.datefmt, Constants.FILE_DATE_FORMAT)
             date_str = datetime.now().strftime(Constants.FILE_DATE_FORMAT)
 
         # Collecting file to avoid conflict if src_dir eq. dest_dir.
         files = []
-        for entry in os.listdir(self.arg_src):
-            file = os.path.join(self.arg_src, entry)
+        for entry in os.listdir(self.src_dir):
+            file = os.path.join(self.src_dir, entry)
             if os.path.isfile(file):
                 files.append(file)
 
         errors = 0
         for file_in in files:
             fname = os.path.basename(file_in)
-            file_out = os.path.join(self.arg_dest, date_str + Constants.DATE_PREFIX_SEPARATOR + fname)
+            file_out = os.path.join(self.dst_dir, date_str + Constants.DATE_PREFIX_SEPARATOR + fname)
             try:
                 # Using shutil.move() instead of os.rename() to enable operation over different filesystems.
                 shutil.move(file_in, file_out)
-            except Exception as ex:
-                self.log.error('Could not move file: ' + file_in + '\n' + str(ex))
+            except Exception:
+                log.exception('Could not move file: %s', file_in)
                 errors += 1
 
         if errors == 0:
@@ -81,21 +73,28 @@ class MoveTimestamp(Command):
         else:
             return False
 
-    @classmethod
-    def instance(cls, params):
-        cmd = MoveTimestamp()
-        if Parameter.SRC_DIR in params:
-            cmd.arg_src = params[Parameter.SRC_DIR]
-        else:
-            raise ParameterError(Parameter.SRC_DIR + ' parameter is missing!')
-        if Parameter.DEST_DIR in params:
-            cmd.arg_dest = params[Parameter.DEST_DIR]
-        else:
-            raise ParameterError(Parameter.DEST_DIR + ' parameter is missing!')
-        if Parameter.DATE_FORMAT in params:
-            cmd.arg_datefmt = params[Parameter.DATE_FORMAT]
-        return cmd
+
+class MoveTimestampCliCommand(CliCommand):
 
     @classmethod
-    def prototype(cls):
-        return MoveTimestamp()
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.SRC_DIR.long_arg, help='Source directory which should be moved.', required=True)
+        parser.add_argument(Argument.DST_DIR.long_arg, help='Destination directory.', required=True)
+        parser.add_argument(Argument.DATE_FORMAT.long_arg, help='Date format for the timestamp prefix.',
+                            default=Constants.FILE_DATE_FORMAT)
+
+    @classmethod
+    def _name(cls):
+        return 'mv_timestamp'
+
+    @classmethod
+    def _help(cls):
+        return MoveTimestamp.__doc__
+
+    @classmethod
+    def _instance(cls, args):
+        instance = MoveTimestamp()
+        instance.src_dir = Argument.SRC_DIR.get_value(args)
+        instance.dst_dir = Argument.DST_DIR.get_value(args)
+        instance.datefmt = Argument.DATE_FORMAT.get_value(args)
+        return instance

@@ -1,32 +1,38 @@
 __author__ = 'Christof Pieloth'
 
-from .compress import GZip
-from .git_bundle import GitBundle
-from .hg_bundle import HgBundle
-from .mount import MountSamba
-from .mount import UMount
-from .mv_timestamp import MoveTimestamp
-from .mysql_dump_gzip import MySqlDumpGZip
-from .pgsql_dump_gzip import PgSqlDumpGZip
-from .rsync import Rsync
-from .service import ServiceStart
-from .service import ServiceStop
-from .backup_rotation import BackupRotation
 
+def register_sub_commands(subparser):
+    """
+    Register backup commands to a subparser.
 
-def command_prototypes():
-    """Returns prototypes of all known commands."""
-    prototypes = []
-    prototypes.append(GZip.prototype())
-    prototypes.append(GitBundle.prototype())
-    prototypes.append(HgBundle.prototype())
-    prototypes.append(MountSamba.prototype())
-    prototypes.append(MoveTimestamp.prototype())
-    prototypes.append(MySqlDumpGZip.prototype())
-    prototypes.append(PgSqlDumpGZip.prototype())
-    prototypes.append(Rsync.prototype())
-    prototypes.append(ServiceStart.prototype())
-    prototypes.append(ServiceStop.prototype())
-    prototypes.append(UMount.prototype())
-    prototypes.append(BackupRotation.prototype())
-    return prototypes
+    :param subparser: A argparse subparser.
+    """
+    from backbacker.commands.backup_rotation import BackupRotationCliCommand
+    from backbacker.commands.compress import GZipCliCommand
+    from backbacker.commands.example import ExampleCliCommand
+    from backbacker.commands.git import GitBundleCliCommand
+    from backbacker.commands.git import GitCloneCliCommand
+    from backbacker.commands.github import GithubCloneCliCommand
+    from backbacker.commands.mercurial import HgBundleCliCommand
+    from backbacker.commands.mount import MountSambaCliCommand, UmountCliCommand
+    from backbacker.commands.mv_timestamp import MoveTimestampCliCommand
+    from backbacker.commands.mysql import MySqlDumpGzipCliCommand
+    from backbacker.commands.pgsql import PgSqlDumpGzipCliCommand
+    from backbacker.commands.rsync import RsyncCliCommand
+    from backbacker.commands.service import ServiceStartCliCommand, ServiceStopCliCommand
+
+    BackupRotationCliCommand.init_subparser(subparser)
+    ExampleCliCommand.init_subparser(subparser)
+    GitBundleCliCommand.init_subparser(subparser)
+    GitCloneCliCommand.init_subparser(subparser)
+    GithubCloneCliCommand.init_subparser(subparser)
+    GZipCliCommand.init_subparser(subparser)
+    HgBundleCliCommand.init_subparser(subparser)
+    MountSambaCliCommand.init_subparser(subparser)
+    UmountCliCommand.init_subparser(subparser)
+    MoveTimestampCliCommand.init_subparser(subparser)
+    MySqlDumpGzipCliCommand.init_subparser(subparser)
+    PgSqlDumpGzipCliCommand.init_subparser(subparser)
+    RsyncCliCommand.init_subparser(subparser)
+    ServiceStartCliCommand.init_subparser(subparser)
+    ServiceStopCliCommand.init_subparser(subparser)

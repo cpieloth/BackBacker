@@ -3,8 +3,6 @@
 import argparse
 import sys
 
-import backbacker.sub_commands
-
 
 def main(argv=sys.argv):
     """
@@ -12,6 +10,11 @@ def main(argv=sys.argv):
 
     :return: 0 on success.
     """
+    from backbacker import __version__
+    from backbacker.sub_commands import register_sub_commands as register_base_commands
+    from backbacker.commands import register_sub_commands as register_backup_command
+    from backbacker.tasks import register_sub_commands as register_backup_tasks
+
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.prog = argv[0]
     parser.name = 'BackBacker'
@@ -21,10 +24,12 @@ def main(argv=sys.argv):
                     'This program comes with ABSOLUTELY NO WARRANTY; see LICENSE file.\n' \
                     'This is free software, and you are welcome to redistribute it\n' \
                     'under certain conditions; see LICENSE file.'
-    parser.add_argument('--version', action='version', version='BackBacker ' + backbacker.__version__)
+    parser.add_argument('--version', action='version', version='BackBacker ' + __version__)
 
     subparser = parser.add_subparsers(title='BackBacker Commands', description='Valid example commands.')
-    backbacker.sub_commands.JobCmd.init_subparser(subparser)
+    register_base_commands(subparser)
+    register_backup_command(subparser)
+    register_backup_tasks(subparser)
 
     args = parser.parse_args(argv[1:])
     try:

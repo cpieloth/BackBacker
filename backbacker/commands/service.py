@@ -1,76 +1,85 @@
-__author__ = 'Christof Pieloth'
-
+import logging
 import subprocess
 
-from .command import SystemCommand
+from backbacker.command import SystemCommand, CliCommand
+
+
+__author__ = 'Christof Pieloth'
+
+log = logging.getLogger(__name__)
 
 
 class Service(SystemCommand):
-    def __init__(self, name, command):
-        super().__init__(name, 'service')
-        self._arg_service = ''
-        self._arg_command = command
+    def __init__(self, command):
+        super().__init__('service')
+        self.service = ''
+        self._command = command
 
     @property
-    def arg_service(self):
-        return self._arg_service
-
-    @arg_service.setter
-    def arg_service(self, service):
-        self._arg_service = service
-
-    @property
-    def arg_command(self):
-        return self._arg_command
+    def command(self):
+        return self._command
 
     def _execute_command(self):
-        if not self.arg_service:
-            self.log.error('Bad service name: ' + str(self.arg_service))
-            return False
+        if not self.service:
+            raise ValueError('Empty service name.')
 
-        if not self.arg_command == 'start' and not self.arg_command == 'stop':
-            self.log.error('Bad command: ' + str(self.arg_command))
-            return False
+        if not self.command == 'start' and not self.command == 'stop':
+            raise ValueError('Bad command: {}'.format(self.command))
 
-        try:
-            return subprocess.call([self.cmd, self.arg_service, self.arg_command], stdout=subprocess.PIPE) == 0
-        except OSError as err:
-            self.log.error(
-                'Error on calling \'service ' + self.arg_service + ' ' + self.arg_command + '\': ' + str(err))
-            return False
+        subprocess.check_call([self.cmd, self.service, self.command], stdout=subprocess.PIPE)
 
 
 class ServiceStart(Service):
     """Starts a service using 'service' command."""
 
     def __init__(self):
-        Service.__init__(self, 'service_start', 'start')
-
-    @classmethod
-    def instance(cls, params):
-        cmd = ServiceStart()
-        if 'service' in params:
-            cmd.arg_service = params['service']
-        return cmd
-
-    @classmethod
-    def prototype(cls):
-        return ServiceStart()
+        Service.__init__(self, 'start')
 
 
 class ServiceStop(Service):
     """Stops a service using 'service' command."""
 
     def __init__(self):
-        Service.__init__(self, 'service_stop', 'stop')
+        Service.__init__(self, 'stop')
+
+
+class ServiceStartCliCommand(CliCommand):
 
     @classmethod
-    def instance(cls, params):
-        cmd = ServiceStop()
-        if 'service' in params:
-            cmd.arg_service = params['service']
-        return cmd
+    def _add_arguments(cls, parser):
+        parser.add_argument('--service', help='Service to start.', required=True)
 
     @classmethod
-    def prototype(cls):
-        return ServiceStop()
+    def _name(cls):
+        return 'service_start'
+
+    @classmethod
+    def _help(cls):
+        return ServiceStart.__doc__
+
+    @classmethod
+    def _instance(cls, args):
+        instance = ServiceStart()
+        instance.service = args.service
+        return instance
+
+
+class ServiceStopCliCommand(CliCommand):
+
+    @classmethod
+    def _add_arguments(cls, parser):
+        parser.add_argument('--service', help='Service to stop.', required=True)
+
+    @classmethod
+    def _name(cls):
+        return 'service_stop'
+
+    @classmethod
+    def _help(cls):
+        return ServiceStop.__doc__
+
+    @classmethod
+    def _instance(cls, args):
+        instance = ServiceStop()
+        instance.service = args.service
+        return instance

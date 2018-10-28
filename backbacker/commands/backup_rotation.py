@@ -1,15 +1,16 @@
-__author__ = 'Gunnar Nitsche'
-
 from datetime import datetime
+import logging
 from glob import glob
 import os
 import sys
 
-from backbacker.constants import Parameter
+from backbacker.command import Command, CliCommand, Argument
 from backbacker.constants import Constants
-from backbacker.errors import ParameterError
 
-from .command import Command
+
+__author__ = 'Gunnar Nitsche'
+
+log = logging.getLogger(__name__)
 
 
 class BackupRotation(Command):
@@ -18,88 +19,81 @@ class BackupRotation(Command):
     DATE_PREFIX_SEP = Constants.DATE_PREFIX_SEPARATOR
 
     def __init__(self):
-        super().__init__('backup_rotation')
-        self.__arg_src = ''
-        self.__arg_date_pattern = Constants.FILE_DATE_FORMAT
-        self.__arg_keep_backups = Constants.KEEP_BACKUPS
+        super().__init__()
+        self._dir = None
+        self.date_pattern = Constants.FILE_DATE_FORMAT
+        self._keep_backups = sys.maxsize
 
     @property
-    def arg_src(self):
-        return self.__arg_src
+    def dir(self):
+        return self._dir
 
-    @arg_src.setter
-    def arg_src(self, value):
-        self.__arg_src = os.path.expanduser(value)
-
-    @property
-    def arg_date_pattern(self):
-        return self.__arg_date_pattern
-
-    @arg_date_pattern.setter
-    def arg_date_pattern(self, pattern):
-        self.__arg_date_pattern = pattern
+    @dir.setter
+    def dir(self, value):
+        self._dir = os.path.expanduser(value)
 
     @property
-    def arg_keep_backups(self):
-        return self.__arg_keep_backups
+    def keep_backups(self):
+        return self._keep_backups
 
-    @arg_keep_backups.setter
-    def arg_keep_backups(self, value):
+    @keep_backups.setter
+    def keep_backups(self, value):
         try:
-            self.__arg_keep_backups = int(value)
+            self._keep_backups = int(value)
         except ValueError:
-            self.log.error('Could not cast to int: ' + str(value))
-            self.__arg_keep_backups = sys.maxsize
-        if self.__arg_keep_backups == 0:
-            self.log.warn('rotation == 0 are ignored!')
-            self.__arg_keep_backups = sys.maxsize
+            raise ValueError('Could not cast "keep_backups" to int: {}'.format(value))
+
+        if self._keep_backups <= 0:
+            raise ValueError('Invalid value of "keep_backups". Must be greater than 0, but it is: {}'.format(value))
 
     def execute(self):
-        if not os.access(self.arg_src, os.R_OK):
-            self.log.error('No read access for: ' + self.arg_src)
-            return False
-        if not os.access(self.arg_src, os.W_OK):
-            self.log.error('No write access for: ' + self.arg_src)
-            return False
+        if not os.access(self.dir, os.R_OK):
+            raise PermissionError('No read access to: {}'.format(self.dir))
+        if not os.access(self.dir, os.W_OK):
+            raise PermissionError('No write access to: {}'.format(self.dir))
 
-        dates = [x.split(BackupRotation.DATE_PREFIX_SEP)[0] for x in os.listdir(self.arg_src)
-                 if os.path.isfile(os.path.join(self.arg_src, x))]
+        dates = [x.split(BackupRotation.DATE_PREFIX_SEP)[0] for x in os.listdir(self.dir)
+                 if os.path.isfile(os.path.join(self.dir, x))]
         dates = set(dates)
-        dates = [datetime.strptime(x, self.arg_date_pattern) for x in dates]
+        dates = [datetime.strptime(x, self.date_pattern) for x in dates]
 
-        if len(dates) > self.arg_keep_backups:
+        if len(dates) > self.keep_backups:
             dates.sort()
             files = []
 
-            for dpfx in dates[:-self.arg_keep_backups]:
-                spfx = dpfx.strftime(self.arg_date_pattern) + BackupRotation.DATE_PREFIX_SEP + '*'
-                files.extend(glob(os.path.join(self.arg_src, spfx)))
+            for dpfx in dates[:-self.keep_backups]:
+                spfx = dpfx.strftime(self.date_pattern) + BackupRotation.DATE_PREFIX_SEP + '*'
+                files.extend(glob(os.path.join(self.dir, spfx)))
 
             for dfile in files:
                 os.remove(dfile)
 
-        return True
+
+class BackupRotationCliCommand(CliCommand):
 
     @classmethod
-    def instance(cls, params):
-        cmd = BackupRotation()
-        if Parameter.DIR in params:
-            cmd.arg_src = params[Parameter.DIR]
-        else:
-            raise ParameterError(Parameter.DIR + ' parameter is missing!')
-
-        if Parameter.ROTATE in params:
-            cmd.arg_keep_backups = params[Parameter.ROTATE]
-        else:
-            cls.cls_log.warn('Rotate not specified! Using default: ' + Constants.KEEP_BACKUPS)
-
-        if Parameter.DATE_FORMAT in params:
-            cmd.arg_date_pattern = params[Parameter.DATE_FORMAT]
-        else:
-            cls.cls_log.warn('No date format defined! Using default: ' + cmd.arg_date_pattern)
-
-        return cmd
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.DIR.long_arg, required=True,
+                            help='Directory which contains the backups with a date prefix.')
+        parser.add_argument(Argument.DATE_FORMAT.long_arg, default=Constants.FILE_DATE_FORMAT,
+                            help='Date format of the date prefix.')
+        parser.add_argument(Argument.ROTATE.long_arg, type=int, default=5,
+                            help='Number of backups to keep.')
 
     @classmethod
-    def prototype(cls):
-        return BackupRotation()
+    def _name(cls):
+        return 'backup_rotation'
+
+    @classmethod
+    def _help(cls):
+        return BackupRotation.__doc__
+
+    @classmethod
+    def _instance(cls, args):
+        instance = BackupRotation()
+        instance.dir = Argument.DIR.get_value(args)
+        if Argument.DATE_FORMAT.has_value(args):
+            instance.date_pattern = Argument.DATE_FORMAT.get_value(args)
+        if Argument.ROTATE.has_value(args):
+            instance.keep_backups = Argument.ROTATE.get_value(args)
+        return instance

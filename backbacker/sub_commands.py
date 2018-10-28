@@ -4,24 +4,22 @@ import abc
 import logging
 import sys
 
-from backbacker.config import Config
-from backbacker.job import Job
-
 __author__ = 'christof.pieloth'
 
 log = logging.getLogger(__name__)
 
 
 def init_logging(cfg):
-        """Initializes the logging."""
-        if not cfg:
-            logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
-        elif cfg.log_type == Config.ARG_LOG_TYPE_CONSOLE:
-            logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=cfg.log_format,
-                                datefmt=cfg.log_datefmt)
-        elif cfg.log_type == Config.ARG_LOG_TYPE_FILE:
-            logging.basicConfig(level=logging.DEBUG, filename=cfg.log_file, format=cfg.log_format,
-                                datefmt=cfg.log_datefmt)
+    """Initializes the logging."""
+    from backbacker.config import Config
+    if not cfg:
+        logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+    elif cfg.log_type == Config.ARG_LOG_TYPE_CONSOLE:
+        logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=cfg.log_format,
+                            datefmt=cfg.log_datefmt)
+    elif cfg.log_type == Config.ARG_LOG_TYPE_FILE:
+        logging.basicConfig(level=logging.DEBUG, filename=cfg.log_file, format=cfg.log_format,
+                            datefmt=cfg.log_datefmt)
 
 
 class SubCommand(abc.ABC):
@@ -54,14 +52,14 @@ class SubCommand(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def _add_arguments(cls, subparsers):
+    def _add_arguments(cls, parser):
         """
         Initialize the argument parser and help for the specific sub-command.
 
         Must be implemented by a sub-command.
 
-        :param subparsers: A subparser.
-        :type subparsers: argparse.ArgumentParser
+        :param parser: A subparser.
+        :type parser: argparse.ArgumentParser
         :return: void
         """
         raise NotImplementedError()
@@ -75,7 +73,7 @@ class SubCommand(abc.ABC):
         :type subparsers: argparse.ArgumentParser
         :return: void
         """
-        parser = subparsers.add_parser(cls._name(), help=cls._help())
+        parser = subparsers.add_parser(cls._name().strip(), help=cls._help().strip())
         cls._add_arguments(parser)
         parser.set_defaults(func=cls.exec)
 
@@ -93,36 +91,56 @@ class SubCommand(abc.ABC):
         raise NotImplementedError()
 
 
-class JobCmd(SubCommand):
-    """Run all commands of a job file."""
+class BatchCmd(SubCommand):
+    """A batch is a collection of commands and tasks which are executed sequentially."""
 
     @classmethod
     def _name(cls):
-        return 'job'
+        return 'batch'
 
     @classmethod
     def _add_arguments(cls, parser):
-        parser.add_argument("-c", "--config", help="Config file.")
-        parser.add_argument("job_file", help="Job file.")
+        parser.add_argument('-c', '--config', help='Config file.')
+        parser.add_argument('-i', '--ignore_errors', help='Continue on error.', action='store_true')
+        parser.add_argument('batch_file', help='Batch file.')
         return parser
 
     @classmethod
     def exec(cls, args):
         """Execute the command."""
+        from backbacker.backbacker import main
+
         init_logging(args.config)
 
-        # Read job
-        job = Job.read_job(args.job_file)
-        if not job:
-            log.critical('Could not create job. Backup cancelled!')
-            return 1
+        commands = cls.read_batch_file(args.batch_file)
+        error_count = 0
+        for command in commands:
+            argv = ['nop']
+            argv.extend(command.split(' '))
+            rc = main(argv)
 
-        # Execute job
-        log.info('Start backup ...')
-        errors = job.execute()
-        if errors == 0:
-            log.info('Backup successfully finished.')
-        else:
-            log.error('Backup finished with %i errors!' % errors)
+            if rc > 0:
+                error_count += 1
+                log.error('Error executing command: %s. Returned with: %d', command, rc)
+                if args.ignore_errors:
+                    continue
+                else:
+                    return rc
 
-        return errors
+        return error_count
+
+    @staticmethod
+    def read_batch_file(fname):
+        commands = list()
+        with open(fname, 'r') as file:
+            for line in file:
+                if line[0] == '#':
+                    continue
+
+                commands.append(line.strip())
+
+        return commands
+
+
+def register_sub_commands(subparser):
+    BatchCmd.init_subparser(subparser)
