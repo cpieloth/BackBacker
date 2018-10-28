@@ -77,13 +77,12 @@ class Rsync(SystemCommand):
 class RsyncCliCommand(CliCommand):
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        # TODO(cpieloth): improve help
-        subparsers.add_argument(Argument.SRC_DIR.long_arg, help='source dir', required=True)
-        subparsers.add_argument(Argument.DST_DIR.long_arg, help='destination dir', required=True)
-        subparsers.add_argument(Argument.BACKUP_DIR.long_arg, help='backup dir')
-        subparsers.add_argument(Argument.MIRROR.long_arg, help='mirror', action='store_true')
-        subparsers.add_argument(Argument.SHELL.long_arg, help='shell')
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.SRC_DIR.long_arg, help='Source directory for sync.', required=True)
+        parser.add_argument(Argument.DST_DIR.long_arg, help='Destination directory for sync.', required=True)
+        parser.add_argument(Argument.BACKUP_DIR.long_arg, help='Backup directory for rsync.')
+        parser.add_argument(Argument.MIRROR.long_arg, help='Enable mirror mode.', action='store_true')
+        parser.add_argument(Argument.SHELL.long_arg, help='Remote shell to use.')
 
     @classmethod
     def _name(cls):
