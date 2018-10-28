@@ -31,7 +31,8 @@ class MySqlDumpGZip(SystemCommand):
         self._dst_dir = os.path.expanduser(value)
 
     def is_available(self):
-        success = SystemCommand.check_version(self.cmd)
+        success = super().is_available()
+        # TODO(cpieloth): Use command of compress module.
         success = success and SystemCommand.check_version(MySqlDumpGZip.CMD_GZIP)
         return success
 
@@ -49,12 +50,11 @@ class MySqlDumpGZip(SystemCommand):
 class MySqlDumpGzipCliCommand(CliCommand):
 
     @classmethod
-    def _add_arguments(cls, subparsers):
-        # TODO(cpieloth): improve help
-        subparsers.add_argument(Argument.DST_DIR.long_arg, help='dest dir', required=True)
-        subparsers.add_argument(Argument.DB_NAME.long_arg, help='db name', required=True)
-        subparsers.add_argument(Argument.DB_USER.long_arg, help='user', required=True)
-        subparsers.add_argument(Argument.DB_PASSWD.long_arg, help='password', required=True)
+    def _add_arguments(cls, parser):
+        parser.add_argument(Argument.DST_DIR.long_arg, required=True, help='Destination directory for dump.')
+        parser.add_argument(Argument.DB_NAME.long_arg, required=True, help='Database name to dump.')
+        parser.add_argument(Argument.DB_USER.long_arg, required=True, help='Database user.')
+        parser.add_argument(Argument.DB_PASSWD.long_arg, required=True, help='Password for database user.')
 
     @classmethod
     def _name(cls):
