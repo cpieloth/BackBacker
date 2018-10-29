@@ -84,14 +84,14 @@ class PackageCustomCmd(CustomCommand):
         sandbox.run_setup('setup.py', ['bdist_wheel', '--python-tag', 'py3'])
 
 
-class DocApiCustomCmd(CustomCommand):
-    """Create API documentation with Sphinx."""
+class DocumentationCustomCmd(CustomCommand):
+    """Generate HTML documentation with Sphinx."""
 
     description = CustomCommand.description(__doc__)
     user_options = []
 
     sphinx_build_dir = os.path.join(build_dir, 'sphinx')
-    doc_build_dir = os.path.join(build_dir, 'doc', 'api')
+    doc_build_dir = os.path.join(build_dir, 'docs')
 
     @classmethod
     def clean_folders(cls):
@@ -99,7 +99,7 @@ class DocApiCustomCmd(CustomCommand):
 
     @classmethod
     def name(cls):
-        return 'doc_api'
+        return 'documentation'
 
     def initialize_options(self):
         pass
@@ -108,109 +108,19 @@ class DocApiCustomCmd(CustomCommand):
         pass
 
     def run(self):
-        import sphinx.apidoc
+        import sphinx.ext.apidoc
         import sphinx.cmdline
 
         # generate source files for Sphinx from python code
-        argv = ['sphinx-apidoc', '-f', '-o', self.sphinx_build_dir, os.path.join(working_dir, api_name)]
-        sphinx.apidoc.main(argv)
+        argv = ['-f', '-o', self.sphinx_build_dir, os.path.join(working_dir, api_name)]
+        sphinx.ext.apidoc.main(argv)
 
         # copy configuration and source files to build folder, to keep doc/sphinx clean
-        self.copy_tree(os.path.join(working_dir, 'doc', 'sphinx'), self.sphinx_build_dir)
+        self.copy_tree(os.path.join(working_dir, 'docs'), self.sphinx_build_dir)
 
         # generate HTML
-        argv = ['sphinx-build', '-b', 'html', '-a', self.sphinx_build_dir, self.doc_build_dir]
+        argv = ['-b', 'html', '-a', self.sphinx_build_dir, self.doc_build_dir]
         return sphinx.cmdline.main(argv)
-
-
-class DocManualCustomCmd(CustomCommand):
-    """Create HTML manual/user documentation from Markdown."""
-
-    description = CustomCommand.description(__doc__)
-    user_options = []
-
-    dst_dir = os.path.join(build_dir, 'doc', 'manual')
-    resource_dst_dir = os.path.join(dst_dir, 'resources')
-
-    @classmethod
-    def name(cls):
-        return 'doc_manual'
-
-    @classmethod
-    def clean_folders(cls):
-        return [cls.dst_dir, cls.resource_dst_dir]
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        import markdown
-        import string
-
-        template_fname = os.path.join(working_dir, 'doc', 'html', 'template_manual.html')
-        src_dir = os.path.join(working_dir, 'doc', 'manual')
-        src_parts = src_dir.split(os.path.sep)
-        resource_src_dir = os.path.join(src_dir, 'resources')
-
-        # copy resource folder to destination
-        if os.path.exists(resource_src_dir):
-            self.copytree(resource_src_dir, self.resource_dst_dir)
-
-        # load HTML template
-        with open(template_fname, 'r') as fd:
-            template = string.Template(fd.read())
-
-        # generate HTML for *.md and write it to dst_dir
-        md = markdown.Markdown(output_format='html')
-        for root, _, files in os.walk(src_dir):
-            # get sub folder to create
-            root_parts = root.split(os.path.sep)
-            sub_folders = []
-            if len(root_parts) > len(src_parts):
-                sub_folders.extend(root_parts[len(src_parts):])
-
-            for fname in files:
-                if not fname.endswith('.md'):
-                    continue
-
-                with open(os.path.join(root, fname)) as fd:
-                    html = md.convert(fd.read())
-
-                # create destination path/sub folder
-                html_path = os.path.join(self.dst_dir, *sub_folders)
-                os.makedirs(html_path, exist_ok=True)
-
-                html_fname = fname.replace(' ', '')[:-3]  # remove .md
-                with open('{}.html'.format(os.path.join(html_path, html_fname)), 'w') as fd:
-                    fd.write(template.substitute(content=html))
-
-
-class DocumentationCustomCmd(CustomCommand):
-    """Create API and manual documentation."""
-
-    description = CustomCommand.description(__doc__)
-    user_options = []
-
-    @classmethod
-    def name(cls):
-        return 'documentation'
-
-    @classmethod
-    def clean_folders(cls):
-        return [os.path.join(build_dir, 'doc')]
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        self.run_command('doc_api')
-        self.run_command('doc_manual')
 
 
 class CheckCodeCustomCmd(CustomCommand):
@@ -260,12 +170,11 @@ class CheckStyleCodeCustomCmd(CustomCommand):
         pass
 
     def run(self):
-        import pep8
+        import pycodestyle
 
         ignores = list()
-        ignores.append('E501')  # E501: line too long
 
-        style_guide = pep8.StyleGuide(ignore=ignores)
+        style_guide = pycodestyle.StyleGuide(ignore=ignores, max_line_length=120)
         report = style_guide.check_files([os.path.join(working_dir, api_name), os.path.join(working_dir, 'tests')])
         return report.total_errors
 
@@ -327,32 +236,6 @@ class CheckStyleCustomCmd(CustomCommand):
         self.run_command('check_style_doc')
 
 
-class TestCustomCmd(CustomCommand):
-    """Run unit tests."""
-
-    description = CustomCommand.description(__doc__)
-    user_options = []
-
-    @classmethod
-    def name(cls):
-        return 'test'
-
-    @classmethod
-    def clean_folders(cls):
-        return []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        import unittest
-        argv = ['unittest', 'discover', os.path.join(working_dir, 'tests', api_name)]
-        return unittest.main(argv=argv, module=None, exit=False).result
-
-
 class CoverageCustomCmd(CustomCommand):
     """Generate unit test coverage report."""
 
@@ -379,7 +262,7 @@ class CoverageCustomCmd(CustomCommand):
         from coverage.cmdline import main
 
         tests_dir = os.path.join(working_dir, 'tests', api_name)
-        argv = ['run', '--source', 'example/', '-m', 'unittest', 'discover', tests_dir]
+        argv = ['run', '--source', api_name, '-m', 'unittest', 'discover', tests_dir]
         rc = main(argv)
         if rc != 0:
             return rc
@@ -431,14 +314,11 @@ class CleanCustomCmd(CustomCommand):
 
 custom_commands = {
     PackageCustomCmd.name(): PackageCustomCmd,
-    DocApiCustomCmd.name(): DocApiCustomCmd,
-    DocManualCustomCmd.name(): DocManualCustomCmd,
     DocumentationCustomCmd.name(): DocumentationCustomCmd,
     CheckCodeCustomCmd.name(): CheckCodeCustomCmd,
     CheckStyleCodeCustomCmd.name(): CheckStyleCodeCustomCmd,
     CheckStyleDocCustomCmd.name(): CheckStyleDocCustomCmd,
     CheckStyleCustomCmd.name(): CheckStyleCustomCmd,
-    TestCustomCmd.name(): TestCustomCmd,
     CoverageCustomCmd.name(): CoverageCustomCmd,
     CleanCustomCmd.name(): CleanCustomCmd,
 }

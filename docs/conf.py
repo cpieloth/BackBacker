@@ -20,6 +20,7 @@
 import os
 import sys
 
+# NOTE: __file__ is located in build dir!
 PROJECT_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 sys.path.insert(1, PROJECT_ROOT)
 
@@ -37,6 +38,7 @@ import setup_commands
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
 ]
 
@@ -47,7 +49,12 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
+
+# http://www.sphinx-doc.org/en/stable/markdown.html
+source_parsers = {
+   '.md': 'recommonmark.parser.CommonMarkParser',
+}
 
 # The master toctree document.
 master_doc = 'index'
@@ -71,7 +78,7 @@ release = setup_commands.version
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -90,7 +97,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'classic'
+html_theme = 'bizstyle'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -159,6 +166,3 @@ texinfo_documents = [
      author, 'example', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-

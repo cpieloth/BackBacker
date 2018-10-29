@@ -18,9 +18,10 @@ __author__ = 'Christof Pieloth'
 # development environment dependencies
 dev_requires = [
     'coverage',
-    'pep8',
     'pep257',
+    'pycodestyle',
     'pylint',
+    'recommonmark',
     'Sphinx'
 ]
 
@@ -63,9 +64,9 @@ setup(
         'Programming Language :: Python :: 3',
     ],
 
-    packages=find_packages(exclude=['build*', 'doc', 'tests*', 'tools*', 'venv*']),
+    packages=find_packages(exclude=['build*', 'docs', 'tests*', 'tools*', 'venv*']),
 
-    install_requires={},
+    install_requires=[],
 
     tests_require=dev_requires,
 
@@ -78,6 +79,8 @@ setup(
     include_package_data=True,
 
     entry_points={
-        'console_scripts': ['backbacker = backbacker.backbacker:main']
+        'console_scripts': [
+            '{} = {}.{}:main'.format(setup_commands.api_name, setup_commands.api_name, setup_commands.api_name)
+        ],
     },
 )
