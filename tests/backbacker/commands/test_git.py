@@ -32,3 +32,22 @@ class GitCloneTestCase(unittest.TestCase):
         git_clone.execute()
 
         self.assertTrue(os.path.isfile(os.path.join(self._dst_dir, 'setup.py')))
+
+
+class GitBundleTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self._dst_dir_tmp = tempfile.TemporaryDirectory(prefix='gitBundleTest')
+        self._dst_dir = os.path.join(self._dst_dir_tmp.name)
+
+    def tearDown(self):
+        self._dst_dir = None
+        self._dst_dir_tmp.cleanup()
+
+    def test_execute_folder(self):
+        repo = os.path.abspath(os.path.join(__file__, '..', '..', '..', '..'))
+
+        git_bundle = git.GitBundle(repo=repo, dst_dir=self._dst_dir)
+        git_bundle.execute()
+
+        self.assertTrue(os.path.isfile(os.path.join(self._dst_dir, git_bundle.dst_file)))
