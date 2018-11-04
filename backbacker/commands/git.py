@@ -56,8 +56,7 @@ class GitBundle(SystemCommand):
         if not os.access(self.dst_dir, os.W_OK):
             raise PermissionError('No write access to: {}'.format(self.dst_dir))
 
-        os.chdir(self.repo)
-        subprocess.check_call([self.cmd, 'bundle', 'create', self.dst_file, '--all'])
+        subprocess.check_call([self.cmd, 'bundle', 'create', self.dst_file, '--all'], cwd=self.repo)
 
 
 class GitBundleCliCommand(CliCommand):
@@ -103,8 +102,7 @@ class GitClone(SystemCommand):
 
     def _execute_command(self):
         os.mkdir(self.dst_dir)
-        os.chdir(self.dst_dir)
-        subprocess.check_call([self.cmd, 'clone', self.repo, self.dst_dir])
+        subprocess.check_call([self.cmd, 'clone', self.repo, self.dst_dir], cwd=self.dst_dir)
 
 
 class GitCloneCliCommand(CliCommand):
