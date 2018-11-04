@@ -13,8 +13,8 @@ __author__ = 'christof'
 log = logging.getLogger(__name__)
 
 
-class GithubClone(Command):
-    """Clone all git repositories from a Github account."""
+class GithubBundle(Command):
+    """Bundle all git repositories from a Github account."""
 
     def __init__(self, username=None, dst_dir=None):
         self.username = username
@@ -70,7 +70,7 @@ class GithubClone(Command):
             git_bundle.execute()
 
 
-class GithubCloneCliCommand(CliCommand):
+class GithubBundleCliCommand(CliCommand):
 
     @classmethod
     def _add_arguments(cls, parser):
@@ -79,7 +79,7 @@ class GithubCloneCliCommand(CliCommand):
 
     @classmethod
     def _help(cls):
-        return GithubClone.__doc__
+        return GithubBundle.__doc__
 
     @classmethod
     def _name(cls):
@@ -87,4 +87,4 @@ class GithubCloneCliCommand(CliCommand):
 
     @classmethod
     def _instance(cls, args):
-        return GithubClone(Argument.USER.get_value(args), Argument.DST_DIR.get_value(args))
+        return GithubBundle(Argument.USER.get_value(args), Argument.DST_DIR.get_value(args))
