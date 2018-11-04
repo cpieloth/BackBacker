@@ -3,8 +3,6 @@ import os
 import tempfile
 import urllib.parse
 
-import requests
-
 from backbacker.command import Command, CliCommand, Argument
 from backbacker.commands.git import GitClone, GitBundle
 
@@ -41,6 +39,8 @@ class GithubBundle(Command):
 
     @classmethod
     def collect_repository_urls(cls, username):
+        import requests
+
         # https://developer.github.com/v3/repos/#list-user-repositories
         request_url = 'https://api.github.com/users/{}/repos'.format(urllib.parse.quote(username))
 

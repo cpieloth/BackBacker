@@ -1,4 +1,3 @@
 # Runtime requirements
-# <package 1>
-# <package 2>
-# ...
+# requests required by backbacker.commands.github
+requests==2.20.*
