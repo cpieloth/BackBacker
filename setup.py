@@ -15,15 +15,21 @@ import setup_commands
 
 __author__ = 'Christof Pieloth'
 
+install_requires = [
+    'requests==2.20.*'
+]
+
+
 # development environment dependencies
 dev_requires = [
     'coverage',
     'pep257',
     'pycodestyle',
-    'pylint',
+    'pylint==1.9.*',
     'recommonmark',
-    'Sphinx'
+    'Sphinx==1.7.*'
 ]
+
 
 setup(
     cmdclass=dict(setup_commands.custom_commands),
@@ -66,7 +72,7 @@ setup(
 
     packages=find_packages(exclude=['build*', 'docs', 'tests*', 'tools*', 'venv*']),
 
-    install_requires=[],
+    install_requires=install_requires,
 
     tests_require=dev_requires,
 

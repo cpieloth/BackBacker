@@ -1,4 +1,6 @@
-import os.path
+import os
+import shutil
+import stat
 import tempfile
 import unittest
 
@@ -11,10 +13,10 @@ class GitCloneTestCase(unittest.TestCase):
 
     def setUp(self):
         self._dst_dir_tmp = tempfile.TemporaryDirectory(prefix='gitCloneTest')
-        self._dst_dir = os.path.join(self._dst_dir_tmp.name, 'cloned')
+        self._dst_dir = self._dst_dir_tmp.name
 
     def tearDown(self):
-        self._dst_dir = None
+        shutil.rmtree(os.path.join(self._dst_dir, '.git'), onerror=_on_rm_error)
         self._dst_dir_tmp.cleanup()
 
     def test_execute_folder(self):
@@ -38,7 +40,7 @@ class GitBundleTestCase(unittest.TestCase):
 
     def setUp(self):
         self._dst_dir_tmp = tempfile.TemporaryDirectory(prefix='gitBundleTest')
-        self._dst_dir = os.path.join(self._dst_dir_tmp.name)
+        self._dst_dir = self._dst_dir_tmp.name
 
     def tearDown(self):
         self._dst_dir = None
@@ -51,3 +53,12 @@ class GitBundleTestCase(unittest.TestCase):
         git_bundle.execute()
 
         self.assertTrue(os.path.isfile(os.path.join(self._dst_dir, git_bundle.dst_file)))
+
+
+def _on_rm_error(func, path, exc_info):
+    # workaround for 'PermissionError: [WinError 5]' on windows
+    if isinstance(exc_info[1], PermissionError):
+        os.chmod(path, stat.S_IWRITE)
+        os.unlink(path)
+    else:
+        raise exc_info[1]

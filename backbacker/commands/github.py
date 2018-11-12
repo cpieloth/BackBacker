@@ -1,9 +1,9 @@
 import logging
 import os
+import shutil
+import stat
 import tempfile
 import urllib.parse
-
-import requests
 
 from backbacker.command import Command, CliCommand, Argument
 from backbacker.commands.git import GitClone, GitBundle
@@ -13,8 +13,8 @@ __author__ = 'christof'
 log = logging.getLogger(__name__)
 
 
-class GithubClone(Command):
-    """Clone all git repositories from a Github account."""
+class GithubBundle(Command):
+    """Bundle all git repositories from a Github account."""
 
     def __init__(self, username=None, dst_dir=None):
         self.username = username
@@ -41,6 +41,8 @@ class GithubClone(Command):
 
     @classmethod
     def collect_repository_urls(cls, username):
+        import requests
+
         # https://developer.github.com/v3/repos/#list-user-repositories
         request_url = 'https://api.github.com/users/{}/repos'.format(urllib.parse.quote(username))
 
@@ -61,16 +63,19 @@ class GithubClone(Command):
             log.error('Link header contains empty next URL.')
 
     def clone_and_bundle(self, name, url):
-        with tempfile.TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory(prefix='githubBundle') as tmp_dir:
             dst_dir = os.path.join(tmp_dir, name)
-            git_clone = GitClone(url, dst_dir)
-            git_clone.execute()
+            try:
+                git_clone = GitClone(url, dst_dir)
+                git_clone.execute()
 
-            git_bundle = GitBundle(dst_dir, self.dst_dir)
-            git_bundle.execute()
+                git_bundle = GitBundle(dst_dir, self.dst_dir)
+                git_bundle.execute()
+            finally:
+                shutil.rmtree(dst_dir, onerror=_on_rm_error)
 
 
-class GithubCloneCliCommand(CliCommand):
+class GithubBundleCliCommand(CliCommand):
 
     @classmethod
     def _add_arguments(cls, parser):
@@ -79,7 +84,7 @@ class GithubCloneCliCommand(CliCommand):
 
     @classmethod
     def _help(cls):
-        return GithubClone.__doc__
+        return GithubBundle.__doc__
 
     @classmethod
     def _name(cls):
@@ -87,4 +92,13 @@ class GithubCloneCliCommand(CliCommand):
 
     @classmethod
     def _instance(cls, args):
-        return GithubClone(Argument.USER.get_value(args), Argument.DST_DIR.get_value(args))
+        return GithubBundle(Argument.USER.get_value(args), Argument.DST_DIR.get_value(args))
+
+
+def _on_rm_error(func, path, exc_info):
+    # workaround for 'PermissionError: [WinError 5]' on windows
+    if isinstance(exc_info[1], PermissionError):
+        os.chmod(path, stat.S_IWRITE)
+        os.unlink(path)
+    else:
+        raise exc_info[1]
