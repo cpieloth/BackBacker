@@ -55,7 +55,7 @@ class GitBundleTestCase(unittest.TestCase):
         self.assertTrue(os.path.isfile(os.path.join(self._dst_dir, git_bundle.dst_file)))
 
 
-def _on_rm_error( func, path, exc_info):
+def _on_rm_error(func, path, exc_info):
     # workaround for 'PermissionError: [WinError 5]' on windows
     if isinstance(exc_info[1], PermissionError):
         os.chmod(path, stat.S_IWRITE)

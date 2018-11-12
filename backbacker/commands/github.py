@@ -1,5 +1,7 @@
 import logging
 import os
+import shutil
+import stat
 import tempfile
 import urllib.parse
 
@@ -61,13 +63,16 @@ class GithubBundle(Command):
             log.error('Link header contains empty next URL.')
 
     def clone_and_bundle(self, name, url):
-        with tempfile.TemporaryDirectory() as tmp_dir:
+        with tempfile.TemporaryDirectory(prefix='githubBundle') as tmp_dir:
             dst_dir = os.path.join(tmp_dir, name)
-            git_clone = GitClone(url, dst_dir)
-            git_clone.execute()
+            try:
+                git_clone = GitClone(url, dst_dir)
+                git_clone.execute()
 
-            git_bundle = GitBundle(dst_dir, self.dst_dir)
-            git_bundle.execute()
+                git_bundle = GitBundle(dst_dir, self.dst_dir)
+                git_bundle.execute()
+            finally:
+                shutil.rmtree(dst_dir, onerror=_on_rm_error)
 
 
 class GithubBundleCliCommand(CliCommand):
@@ -88,3 +93,12 @@ class GithubBundleCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         return GithubBundle(Argument.USER.get_value(args), Argument.DST_DIR.get_value(args))
+
+
+def _on_rm_error(func, path, exc_info):
+    # workaround for 'PermissionError: [WinError 5]' on windows
+    if isinstance(exc_info[1], PermissionError):
+        os.chmod(path, stat.S_IWRITE)
+        os.unlink(path)
+    else:
+        raise exc_info[1]

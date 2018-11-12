@@ -10,7 +10,7 @@ __author__ = 'christof.pieloth'
 class GithubBundleTestCase(unittest.TestCase):
 
     def setUp(self):
-        self._dst_dir_tmp = tempfile.TemporaryDirectory(prefix='githubCloneTest')
+        self._dst_dir_tmp = tempfile.TemporaryDirectory(prefix='githubBundleTest')
         self._dst_dir = self._dst_dir_tmp.name
 
     def tearDown(self):
