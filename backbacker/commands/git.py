@@ -101,8 +101,7 @@ class GitClone(SystemCommand):
         self._dst_dir = os.path.abspath(os.path.expanduser(value))
 
     def _execute_command(self):
-        os.mkdir(self.dst_dir)
-        subprocess.check_call([self.cmd, 'clone', self.repo, self.dst_dir], cwd=self.dst_dir)
+        subprocess.check_call([self.cmd, 'clone', self.repo, self.dst_dir])
 
 
 class GitCloneCliCommand(CliCommand):
