@@ -68,10 +68,8 @@ class MoveTimestamp(Command):
                 logger.exception('Could not move file: %s', file_in)
                 errors += 1
 
-        if errors == 0:
-            return True
-        else:
-            return False
+        if errors > 0:
+            raise RuntimeError('Could not move {} files.'.format(errors))
 
 
 class MoveTimestampCliCommand(CliCommand):
