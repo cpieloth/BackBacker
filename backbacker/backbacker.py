@@ -1,10 +1,9 @@
 """Entry point for CLI usage."""
 
 import argparse
-import sys
 
 
-def main(argv=sys.argv):
+def main(argv):
     """
     Start the Example tool.
 
