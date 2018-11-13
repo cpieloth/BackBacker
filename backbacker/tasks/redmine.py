@@ -1,13 +1,12 @@
 import logging
 import os
 
-from backbacker.command import CliCommand, Argument
+from backbacker.command import CliCommand, Argument, Task
 from backbacker.commands.compress import GZip
 from backbacker.commands.mysql import MySqlDumpGZip
 from backbacker.commands.service import ServiceStart
 from backbacker.commands.service import ServiceStop
 
-from .task import Task
 
 __author__ = 'Christof Pieloth'
 
