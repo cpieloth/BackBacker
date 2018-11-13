@@ -10,7 +10,7 @@ from backbacker.commands.git import GitClone, GitBundle
 
 __author__ = 'christof'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class GithubBundle(Command):
@@ -60,7 +60,7 @@ class GithubBundle(Command):
                 break
         else:  # no-break
             # https://developer.github.com/v3/#pagination
-            log.error('Link header contains empty next URL.')
+            logger.error('Link header contains empty next URL.')
 
     def clone_and_bundle(self, name, url):
         with tempfile.TemporaryDirectory(prefix='githubBundle') as tmp_dir:

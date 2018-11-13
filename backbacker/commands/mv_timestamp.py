@@ -9,7 +9,7 @@ from backbacker.constants import Constants
 
 __author__ = 'Christof Pieloth'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class MoveTimestamp(Command):
@@ -46,8 +46,8 @@ class MoveTimestamp(Command):
         try:
             date_str = datetime.now().strftime(self.datefmt)
         except Exception:
-            log.exception('Could not create date string for %s! Using default format %s',
-                          self.datefmt, Constants.FILE_DATE_FORMAT)
+            logger.exception('Could not create date string for %s! Using default format %s',
+                             self.datefmt, Constants.FILE_DATE_FORMAT)
             date_str = datetime.now().strftime(Constants.FILE_DATE_FORMAT)
 
         # Collecting file to avoid conflict if src_dir eq. dest_dir.
@@ -65,7 +65,7 @@ class MoveTimestamp(Command):
                 # Using shutil.move() instead of os.rename() to enable operation over different filesystems.
                 shutil.move(file_in, file_out)
             except Exception:
-                log.exception('Could not move file: %s', file_in)
+                logger.exception('Could not move file: %s', file_in)
                 errors += 1
 
         if errors == 0:

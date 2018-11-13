@@ -11,7 +11,7 @@ from backbacker.sub_commands import SubCommand
 
 __author__ = 'Christof Pieloth'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Command(abc.ABC):
@@ -137,7 +137,7 @@ class CliCommand(SubCommand, metaclass=abc.ABCMeta):
             instance.execute()
             return 0
         except Exception as ex:
-            log.error(ex)
+            logger.error(ex)
             return 1
 
 

@@ -6,7 +6,7 @@ from backbacker.command import SystemCommand, CliCommand
 
 __author__ = 'Christof Pieloth'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Service(SystemCommand):

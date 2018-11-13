@@ -7,7 +7,7 @@ from backbacker.command import SystemCommand, CliCommand, Argument
 
 __author__ = 'Christof Pieloth'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class PgSqlDumpGZip(SystemCommand):
@@ -47,7 +47,7 @@ class PgSqlDumpGZip(SystemCommand):
         # database and output
         pg_dump += ' ' + self.db_name
         pg_dump += ' > ' + dest
-        log.info(pg_dump)
+        logger.info(pg_dump)
 
         subprocess.check_call([pg_dump], shell=True)
 

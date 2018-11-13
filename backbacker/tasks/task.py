@@ -5,7 +5,7 @@ from backbacker.command import Command
 
 __author__ = 'Christof Pieloth'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class Task(Command, metaclass=abc.ABCMeta):
