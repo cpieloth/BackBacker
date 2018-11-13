@@ -49,7 +49,7 @@ class GithubBundle(Command):
         while request_url:
             response = requests.get(request_url)
             if not response.ok:
-                raise IOError('Unsuccessful request: '.format(request_url))
+                raise IOError('Unsuccessful request: {}'.format(request_url))
 
             for repo_dict in response.json():
                 yield (repo_dict['name'], repo_dict['git_url'])
@@ -95,7 +95,7 @@ class GithubBundleCliCommand(CliCommand):
         return GithubBundle(Argument.USER.get_value(args), Argument.DST_DIR.get_value(args))
 
 
-def _on_rm_error(func, path, exc_info):
+def _on_rm_error(_, path, exc_info):
     # workaround for 'PermissionError: [WinError 5]' on windows
     if isinstance(exc_info[1], PermissionError):
         os.chmod(path, stat.S_IWRITE)
