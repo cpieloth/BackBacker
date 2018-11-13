@@ -73,7 +73,8 @@ class Config(object):
             print('Error on reading config file!', file=sys.stderr)
             return cfg
 
-        cfg.log_type = cfg_parser.get(Config.SECTION_LOGGING, Config.PARAM_LOG_TYPE, fallback=Config.ARG_LOG_TYPE_CONSOLE)
+        cfg.log_type = cfg_parser.get(Config.SECTION_LOGGING, Config.PARAM_LOG_TYPE,
+                                      fallback=Config.ARG_LOG_TYPE_CONSOLE)
         cfg.log_file = cfg_parser.get(Config.SECTION_LOGGING, Config.PARAM_LOG_FILE, fallback=Config.DEFAULT_LOG_FILE)
 
         return cfg
