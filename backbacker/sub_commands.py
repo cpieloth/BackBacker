@@ -11,13 +11,13 @@ logger = logging.getLogger(__name__)
 
 def init_logging(cfg):
     """Initializes the logging."""
-    from backbacker.config import Config
+    from backbacker import config
     if not cfg:
         logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
-    elif cfg.log_type == Config.ARG_LOG_TYPE_CONSOLE:
+    elif cfg.log_type == config.Config.ARG_LOG_TYPE_CONSOLE:
         logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=cfg.log_format,
                             datefmt=cfg.log_datefmt)
-    elif cfg.log_type == Config.ARG_LOG_TYPE_FILE:
+    elif cfg.log_type == config.Config.ARG_LOG_TYPE_FILE:
         logging.basicConfig(level=logging.DEBUG, filename=cfg.log_file, format=cfg.log_format,
                             datefmt=cfg.log_datefmt)
 
@@ -108,7 +108,7 @@ class BatchCmd(SubCommand):
     @classmethod
     def exec(cls, args):
         """Execute the command."""
-        from backbacker.backbacker import main
+        from backbacker import backbacker
 
         init_logging(args.config)
 
@@ -117,7 +117,7 @@ class BatchCmd(SubCommand):
         for command in commands:
             argv = ['nop']
             argv.extend(command.split(' '))
-            rc = main(argv)
+            rc = backbacker.main(argv)
 
             if rc > 0:
                 error_count += 1

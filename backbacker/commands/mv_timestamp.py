@@ -3,8 +3,8 @@ import logging
 import os
 import shutil
 
-from backbacker.command import Command, CliCommand, Argument
-from backbacker.constants import Constants
+from backbacker import command
+from backbacker import constants
 
 
 __author__ = 'Christof Pieloth'
@@ -12,14 +12,14 @@ __author__ = 'Christof Pieloth'
 logger = logging.getLogger(__name__)
 
 
-class MoveTimestamp(Command):
+class MoveTimestamp(command.Command):
     """Moves/renames all files in a folder to a destination by adding a timestamp prefix."""
 
     def __init__(self):
         super().__init__()
         self._src_dir = None
         self._dst_dir = None
-        self.datefmt = Constants.FILE_DATE_FORMAT
+        self.datefmt = constants.Constants.FILE_DATE_FORMAT
 
     @property
     def src_dir(self):
@@ -47,8 +47,8 @@ class MoveTimestamp(Command):
             date_str = datetime.now().strftime(self.datefmt)
         except Exception:
             logger.exception('Could not create date string for %s! Using default format %s',
-                             self.datefmt, Constants.FILE_DATE_FORMAT)
-            date_str = datetime.now().strftime(Constants.FILE_DATE_FORMAT)
+                             self.datefmt, constants.Constants.FILE_DATE_FORMAT)
+            date_str = datetime.now().strftime(constants.Constants.FILE_DATE_FORMAT)
 
         # Collecting file to avoid conflict if src_dir eq. dest_dir.
         files = []
@@ -60,7 +60,7 @@ class MoveTimestamp(Command):
         errors = 0
         for file_in in files:
             fname = os.path.basename(file_in)
-            file_out = os.path.join(self.dst_dir, date_str + Constants.DATE_PREFIX_SEPARATOR + fname)
+            file_out = os.path.join(self.dst_dir, date_str + constants.Constants.DATE_PREFIX_SEPARATOR + fname)
             try:
                 # Using shutil.move() instead of os.rename() to enable operation over different filesystems.
                 shutil.move(file_in, file_out)
@@ -72,14 +72,15 @@ class MoveTimestamp(Command):
             raise RuntimeError('Could not move {} files.'.format(errors))
 
 
-class MoveTimestampCliCommand(CliCommand):
+class MoveTimestampCliCommand(command.CliCommand):
 
     @classmethod
     def _add_arguments(cls, parser):
-        parser.add_argument(Argument.SRC_DIR.long_arg, help='Source directory which should be moved.', required=True)
-        parser.add_argument(Argument.DST_DIR.long_arg, help='Destination directory.', required=True)
-        parser.add_argument(Argument.DATE_FORMAT.long_arg, help='Date format for the timestamp prefix.',
-                            default=Constants.FILE_DATE_FORMAT)
+        parser.add_argument(command.Argument.SRC_DIR.long_arg, required=True,
+                            help='Source directory which should be moved.')
+        parser.add_argument(command.Argument.DST_DIR.long_arg, help='Destination directory.', required=True)
+        parser.add_argument(command.Argument.DATE_FORMAT.long_arg, help='Date format for the timestamp prefix.',
+                            default=constants.Constants.FILE_DATE_FORMAT)
 
     @classmethod
     def _name(cls):
@@ -92,7 +93,7 @@ class MoveTimestampCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = MoveTimestamp()
-        instance.src_dir = Argument.SRC_DIR.get_value(args)
-        instance.dst_dir = Argument.DST_DIR.get_value(args)
-        instance.datefmt = Argument.DATE_FORMAT.get_value(args)
+        instance.src_dir = command.Argument.SRC_DIR.get_value(args)
+        instance.dst_dir = command.Argument.DST_DIR.get_value(args)
+        instance.datefmt = command.Argument.DATE_FORMAT.get_value(args)
         return instance

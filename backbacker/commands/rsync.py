@@ -2,14 +2,14 @@ import logging
 import os
 import subprocess
 
-from backbacker.command import SystemCommand, CliCommand, Argument
+from backbacker import command
 
 __author__ = 'Christof Pieloth'
 
 logger = logging.getLogger(__name__)
 
 
-class Rsync(SystemCommand):
+class Rsync(command.SystemCommand):
     """
     Wrapper for rsync.
     rsync is a file transfer program capable of efficient remote update via a fast differencing algorithm.
@@ -74,15 +74,15 @@ class Rsync(SystemCommand):
         subprocess.check_call(cmd)
 
 
-class RsyncCliCommand(CliCommand):
+class RsyncCliCommand(command.CliCommand):
 
     @classmethod
     def _add_arguments(cls, parser):
-        parser.add_argument(Argument.SRC_DIR.long_arg, help='Source directory for sync.', required=True)
-        parser.add_argument(Argument.DST_DIR.long_arg, help='Destination directory for sync.', required=True)
-        parser.add_argument(Argument.BACKUP_DIR.long_arg, help='Backup directory for rsync.')
-        parser.add_argument(Argument.MIRROR.long_arg, help='Enable mirror mode.', action='store_true')
-        parser.add_argument(Argument.SHELL.long_arg, help='Remote shell to use.')
+        parser.add_argument(command.Argument.SRC_DIR.long_arg, help='Source directory for sync.', required=True)
+        parser.add_argument(command.Argument.DST_DIR.long_arg, help='Destination directory for sync.', required=True)
+        parser.add_argument(command.Argument.BACKUP_DIR.long_arg, help='Backup directory for rsync.')
+        parser.add_argument(command.Argument.MIRROR.long_arg, help='Enable mirror mode.', action='store_true')
+        parser.add_argument(command.Argument.SHELL.long_arg, help='Remote shell to use.')
 
     @classmethod
     def _name(cls):
@@ -95,14 +95,14 @@ class RsyncCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = Rsync()
-        instance.src_dir = Argument.SRC_DIR.get_value(args)
-        instance.dst_dir = Argument.DST_DIR.get_value(args)
-        instance.mirror = Argument.MIRROR.get_value(args)
+        instance.src_dir = command.Argument.SRC_DIR.get_value(args)
+        instance.dst_dir = command.Argument.DST_DIR.get_value(args)
+        instance.mirror = command.Argument.MIRROR.get_value(args)
 
-        if Argument.BACKUP_DIR.has_value(args):
-            instance.backup_dir = Argument.BACKUP_DIR.get_value(args)
+        if command.Argument.BACKUP_DIR.has_value(args):
+            instance.backup_dir = command.Argument.BACKUP_DIR.get_value(args)
 
-        if Argument.SHELL.has_value(args):
-            instance.rsh = Argument.SHELL.get_value(args)
+        if command.Argument.SHELL.has_value(args):
+            instance.rsh = command.Argument.SHELL.get_value(args)
 
         return instance

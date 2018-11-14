@@ -7,6 +7,6 @@ def register_sub_commands(subparser):
 
     :param subparser: A argparse subparser.
     """
-    from backbacker.tasks.redmine import RedmineAMCliCommand
+    from backbacker.tasks import redmine
 
-    RedmineAMCliCommand.init_subparser(subparser)
+    redmine.RedmineAMCliCommand.init_subparser(subparser)

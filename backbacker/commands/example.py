@@ -1,9 +1,9 @@
-from backbacker.command import Command, CliCommand
+from backbacker import command
 
 __author__ = 'Christof Pieloth'
 
 
-class ExampleCommand(Command):
+class ExampleCommand(command.Command):
     """An example how to implement a command."""
 
     def __init__(self, name):
@@ -14,7 +14,7 @@ class ExampleCommand(Command):
         print('Hello {}!'.format(self._name))
 
 
-class ExampleCliCommand(CliCommand):
+class ExampleCliCommand(command.CliCommand):
     """An example how to implement a CLI command for a command."""
 
     @classmethod

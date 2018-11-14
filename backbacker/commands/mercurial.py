@@ -2,14 +2,14 @@ import logging
 import os
 import subprocess
 
-from backbacker.command import SystemCommand, CliCommand, Argument
+from backbacker import command
 
 __author__ = 'Christof Pieloth'
 
 logger = logging.getLogger(__name__)
 
 
-class HgBundle(SystemCommand):
+class HgBundle(command.SystemCommand):
     """Bundles a hg repository."""
 
     def __init__(self, repo=None, file=None):
@@ -60,12 +60,13 @@ class HgBundle(SystemCommand):
         subprocess.check_call([self.cmd, 'bundle', '--base', 'null', self.dst_file])
 
 
-class HgBundleCliCommand(CliCommand):
+class HgBundleCliCommand(command.CliCommand):
 
     @classmethod
     def _add_arguments(cls, parser):
-        parser.add_argument(Argument.SRC_DIR.long_arg, help='Mercurial repository to bundle.', required=True)
-        parser.add_argument(Argument.DST_DIR.long_arg, help='Destination directory to store the bundle.', required=True)
+        parser.add_argument(command.Argument.SRC_DIR.long_arg, help='Mercurial repository to bundle.', required=True)
+        parser.add_argument(command.Argument.DST_DIR.long_arg, required=True,
+                            help='Destination directory to store the bundle.')
 
     @classmethod
     def _name(cls):
@@ -77,4 +78,4 @@ class HgBundleCliCommand(CliCommand):
 
     @classmethod
     def _instance(cls, args):
-        return HgBundle(Argument.SRC_DIR.get_value(args), Argument.DST_DIR.get_value(args))
+        return HgBundle(command.Argument.SRC_DIR.get_value(args), command.Argument.DST_DIR.get_value(args))

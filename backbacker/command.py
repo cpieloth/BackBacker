@@ -4,10 +4,10 @@ A concrete command implements the back-up logic.
 """
 
 import abc
+import enum
 import logging
-from enum import Enum
 
-from backbacker.sub_commands import SubCommand
+import backbacker.sub_commands
 
 __author__ = 'Christof Pieloth'
 
@@ -112,7 +112,7 @@ class Task(Command, metaclass=abc.ABCMeta):  # pylint: disable=too-few-public-me
         pass
 
 
-class CliCommand(SubCommand, metaclass=abc.ABCMeta):
+class CliCommand(backbacker.sub_commands.SubCommand, metaclass=abc.ABCMeta):
     """Wraps a Command to a CLI sub-command."""
 
     @classmethod
@@ -138,7 +138,7 @@ class CliCommand(SubCommand, metaclass=abc.ABCMeta):
             return 1
 
 
-class Argument(Enum):
+class Argument(enum.Enum):
     SRC_DIR = 'src_dir'
     DST_DIR = 'dst_dir'
     DIR = 'dir'

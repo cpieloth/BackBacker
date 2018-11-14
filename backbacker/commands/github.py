@@ -5,15 +5,15 @@ import stat
 import tempfile
 import urllib.parse
 
-from backbacker.command import Command, CliCommand, Argument
-from backbacker.commands.git import GitClone, GitBundle
+from backbacker import command
+from backbacker.commands import git
 
 __author__ = 'christof'
 
 logger = logging.getLogger(__name__)
 
 
-class GithubBundle(Command):
+class GithubBundle(command.Command):
     """Bundle all git repositories from a Github account."""
 
     def __init__(self, username=None, dst_dir=None):
@@ -66,21 +66,21 @@ class GithubBundle(Command):
         with tempfile.TemporaryDirectory(prefix='githubBundle') as tmp_dir:
             dst_dir = os.path.join(tmp_dir, name)
             try:
-                git_clone = GitClone(url, dst_dir)
+                git_clone = git.GitClone(url, dst_dir)
                 git_clone.execute()
 
-                git_bundle = GitBundle(dst_dir, self.dst_dir)
+                git_bundle = git.GitBundle(dst_dir, self.dst_dir)
                 git_bundle.execute()
             finally:
                 shutil.rmtree(dst_dir, onerror=_on_rm_error)
 
 
-class GithubBundleCliCommand(CliCommand):
+class GithubBundleCliCommand(command.CliCommand):
 
     @classmethod
     def _add_arguments(cls, parser):
-        parser.add_argument(Argument.USER.long_arg, help='Username of the Github account.', required=True)
-        parser.add_argument(Argument.DST_DIR.long_arg, help='Destination directory.', required=True)
+        parser.add_argument(command.Argument.USER.long_arg, help='Username of the Github account.', required=True)
+        parser.add_argument(command.Argument.DST_DIR.long_arg, help='Destination directory.', required=True)
 
     @classmethod
     def _help(cls):
@@ -92,7 +92,7 @@ class GithubBundleCliCommand(CliCommand):
 
     @classmethod
     def _instance(cls, args):
-        return GithubBundle(Argument.USER.get_value(args), Argument.DST_DIR.get_value(args))
+        return GithubBundle(command.Argument.USER.get_value(args), command.Argument.DST_DIR.get_value(args))
 
 
 def _on_rm_error(_, path, exc_info):

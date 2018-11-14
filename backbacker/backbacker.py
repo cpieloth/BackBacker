@@ -10,10 +10,9 @@ def main(argv=None):
 
     :return: 0 on success.
     """
-    from backbacker import __version__
-    from backbacker.sub_commands import register_sub_commands as register_base_commands
-    from backbacker.commands import register_sub_commands as register_backup_command
-    from backbacker.tasks import register_sub_commands as register_backup_tasks
+    import backbacker.sub_commands
+    import backbacker.commands
+    import backbacker.tasks
 
     if not argv:
         argv = sys.argv
@@ -27,12 +26,12 @@ def main(argv=None):
                     'This program comes with ABSOLUTELY NO WARRANTY; see LICENSE file.\n' \
                     'This is free software, and you are welcome to redistribute it\n' \
                     'under certain conditions; see LICENSE file.'
-    parser.add_argument('--version', action='version', version='BackBacker ' + __version__)
+    parser.add_argument('--version', action='version', version='BackBacker ' + backbacker.__version__)
 
     subparser = parser.add_subparsers(title='BackBacker Commands', description='Valid example commands.')
-    register_base_commands(subparser)
-    register_backup_command(subparser)
-    register_backup_tasks(subparser)
+    backbacker.sub_commands.register_sub_commands(subparser)
+    backbacker.commands.register_sub_commands(subparser)
+    backbacker.tasks.register_sub_commands(subparser)
 
     args = parser.parse_args(argv[1:])
     try:
