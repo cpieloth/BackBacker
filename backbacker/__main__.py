@@ -1,7 +1,5 @@
-import sys
-
-from backbacker.backbacker import main
+from backbacker import backbacker
 
 __author__ = 'christof'
 
-main(sys.argv)
+backbacker.main()

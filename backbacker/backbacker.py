@@ -1,9 +1,10 @@
 """Entry point for CLI usage."""
 
 import argparse
+import sys
 
 
-def main(argv):
+def main(argv=None):
     """
     Start the Example tool.
 
@@ -13,6 +14,9 @@ def main(argv):
     from backbacker.sub_commands import register_sub_commands as register_base_commands
     from backbacker.commands import register_sub_commands as register_backup_command
     from backbacker.tasks import register_sub_commands as register_backup_tasks
+
+    if not argv:
+        argv = sys.argv
 
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.prog = argv[0]
@@ -39,3 +43,7 @@ def main(argv):
         return 2
 
     return args.func(args)
+
+
+if __name__ == '__main__':
+    sys.exit(main())

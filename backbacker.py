@@ -2,7 +2,7 @@
 
 import sys
 
-from backbacker.backbacker import main
+from backbacker import backbacker
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    sys.exit(backbacker.main())
