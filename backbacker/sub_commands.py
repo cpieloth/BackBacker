@@ -9,14 +9,13 @@ __author__ = 'christof.pieloth'
 log = logging.getLogger(__name__)
 
 
-def init_logging(cfg):
+def init_logging():
     """Initializes the logging."""
-    from backbacker.config import CfgLogging
-    if not cfg:
-        logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
-    elif cfg.log.type == CfgLogging.TYPE_CONSOLE:
+    import backbacker.config
+    cfg = backbacker.config.Config()
+    if cfg.log.type == cfg.log.TYPE_CONSOLE:
         logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=cfg.log.format, datefmt=cfg.log.datefmt)
-    elif cfg.log.type == CfgLogging.TYPE_FILE:
+    elif cfg.log.type == cfg.log.TYPE_FILE:
         logging.basicConfig(level=logging.DEBUG, filename=cfg.log.file, format=cfg.log.format, datefmt=cfg.log.datefmt)
 
 
@@ -109,8 +108,8 @@ class BatchCmd(SubCommand):
         from backbacker.backbacker import main
         from backbacker.config import Config
 
-        cfg = Config.read_config(args.config)
-        init_logging(cfg)
+        Config.read_config(args.config)
+        init_logging()
 
         commands = cls.read_batch_file(args.batch_file)
         error_count = 0

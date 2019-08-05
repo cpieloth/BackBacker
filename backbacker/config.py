@@ -5,9 +5,18 @@ __author__ = 'Christof Pieloth'
 
 
 class Config(object):
+    __instance = None
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = object.__new__(cls)
+            cls.__instance.__initialized = False
+        return cls.__instance
 
     def __init__(self):
-        self._log = CfgLogging()
+        if not self.__initialized:
+            self._log = _CfgLogging()
+            self.__initialized = True
 
     def parse_cfg(self, parser):
         self.log.parse_cfg(parser)
@@ -25,14 +34,13 @@ class Config(object):
             cfg_parser = configparser.ConfigParser()
             files = cfg_parser.read(fname)
             if not files or len(files) == 0:
-                IOError('Error on reading config file: %s'.format(fname))
-                return cfg
+                raise IOError('Error on reading config file: {}'.format(fname))
             cfg.parse_cfg(cfg_parser)
 
         return cfg
 
 
-class CfgLogging(object):
+class _CfgLogging(object):
 
     CFG_SECTION = 'logging'
 
@@ -67,7 +75,7 @@ class CfgLogging(object):
         elif value == self.TYPE_FILE:
             self.format = self.FORMAT_FILE
         else:
-            raise ValueError('Unknown log type: %s'.format(value))
+            raise ValueError('Unknown log type: {}'.format(value))
 
         self._type = value
 
