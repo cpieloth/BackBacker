@@ -1,79 +1,81 @@
 import configparser
 import os
-import sys
 
 __author__ = 'Christof Pieloth'
 
 
 class Config(object):
-    """Stores global settings."""
-    SECTION_LOGGING = 'logging'
-
-    PARAM_LOG_TYPE = 'log_type'
-    ARG_LOG_TYPE_CONSOLE = 'console'
-    ARG_LOG_TYPE_FILE = 'file'
-
-    PARAM_LOG_FILE = 'log_file'
-    DEFAULT_LOG_FILE = '/tmp/backbacker.log'
-
-    LOG_FORMAT_CONSOLE = '[%(levelname)s] %(name)s: %(message)s'
-    LOG_FORMAT_FILE = '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
-    LOG_FORMAT_DATE = "%Y-%m-%dT%H:%M:%S"
 
     def __init__(self):
-        self.__log_type = Config.ARG_LOG_TYPE_CONSOLE
-        self.__log_file = ''
-        self.__log_format = Config.LOG_FORMAT_CONSOLE
-        self.__log_datefmt = Config.LOG_FORMAT_DATE
+        self._log = CfgLogging()
+
+    def parse_cfg(self, parser):
+        self.log.parse_cfg(parser)
 
     @property
-    def log_datefmt(self):
-        return self.__log_datefmt
+    def log(self):
+        return self._log
 
-    @property
-    def log_format(self):
-        return self.__log_format
-
-    @log_format.setter
-    def log_format(self, value):
-        self.__log_format = value
-
-    @property
-    def log_type(self):
-        return self.__log_type
-
-    @log_type.setter
-    def log_type(self, value):
-        value = value.lower().strip()
-        self.__log_type = value
-        if self.log_type == Config.ARG_LOG_TYPE_CONSOLE:
-            self.log_format = Config.LOG_FORMAT_CONSOLE
-        elif self.log_type == Config.ARG_LOG_TYPE_FILE:
-            self.log_format = Config.LOG_FORMAT_FILE
-        else:
-            self.log_type = Config.ARG_LOG_TYPE_CONSOLE
-            print('Unknown log type! Logging to console instead.', file=sys.stderr)
-
-    @property
-    def log_file(self):
-        return self.__log_file
-
-    @log_file.setter
-    def log_file(self, value):
-        self.__log_file = os.path.expanduser(value)
-
-    @staticmethod
-    def read_config(fname):
+    @classmethod
+    def read_config(cls, fname):
         """Reads and creates a config from a file."""
-        cfg = Config()
+        cfg = cls()
 
-        cfg_parser = configparser.ConfigParser()
-        files = cfg_parser.read(fname)
-        if not files or len(files) == 0:
-            print('Error on reading config file!', file=sys.stderr)
-            return cfg
-
-        cfg.log_type = cfg_parser.get(Config.SECTION_LOGGING, Config.PARAM_LOG_TYPE, fallback=Config.ARG_LOG_TYPE_CONSOLE)
-        cfg.log_file = cfg_parser.get(Config.SECTION_LOGGING, Config.PARAM_LOG_FILE, fallback=Config.DEFAULT_LOG_FILE)
+        if fname:
+            cfg_parser = configparser.ConfigParser()
+            files = cfg_parser.read(fname)
+            if not files or len(files) == 0:
+                IOError('Error on reading config file: %s'.format(fname))
+                return cfg
+            cfg.parse_cfg(cfg_parser)
 
         return cfg
+
+
+class CfgLogging(object):
+
+    CFG_SECTION = 'logging'
+
+    TYPE_CONSOLE = 'console'
+    TYPE_FILE = 'file'
+
+    FORMAT_CONSOLE = '[%(levelname)s] %(name)s: %(message)s'
+    FORMAT_FILE = '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+    FORMAT_DATE = '%Y-%m-%dT%H:%M:%S'
+
+    def __init__(self):
+        self.format = self.FORMAT_CONSOLE
+        self.datefmt = self.FORMAT_DATE
+        self._type = self.TYPE_CONSOLE
+        self._file = None
+
+    def parse_cfg(self, parser, section=CFG_SECTION):
+        self.type = parser.get(section, 'log_type', fallback=self.type)
+        self.format = parser.get(section, 'log_format', fallback=self.format)
+        self.datefmt = parser.get(section, 'log_datefmt', fallback=self.datefmt)
+        self.file = parser.get(section, 'log_file', fallback=self.file)
+
+    @property
+    def type(self):
+        return self._type
+
+    @type.setter
+    def type(self, value):
+        value = value.lower().strip()
+        if value == self.TYPE_CONSOLE:
+            self.format = self.FORMAT_CONSOLE
+        elif value == self.TYPE_FILE:
+            self.format = self.FORMAT_FILE
+        else:
+            raise ValueError('Unknown log type: %s'.format(value))
+
+        self._type = value
+
+    @property
+    def file(self):
+        return self._file
+
+    @file.setter
+    def file(self, value):
+        if value:
+            self._file = os.path.expanduser(value)

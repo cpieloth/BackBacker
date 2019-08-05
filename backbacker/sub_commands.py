@@ -11,15 +11,13 @@ log = logging.getLogger(__name__)
 
 def init_logging(cfg):
     """Initializes the logging."""
-    from backbacker.config import Config
+    from backbacker.config import CfgLogging
     if not cfg:
         logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
-    elif cfg.log_type == Config.ARG_LOG_TYPE_CONSOLE:
-        logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=cfg.log_format,
-                            datefmt=cfg.log_datefmt)
-    elif cfg.log_type == Config.ARG_LOG_TYPE_FILE:
-        logging.basicConfig(level=logging.DEBUG, filename=cfg.log_file, format=cfg.log_format,
-                            datefmt=cfg.log_datefmt)
+    elif cfg.log.type == CfgLogging.TYPE_CONSOLE:
+        logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=cfg.log.format, datefmt=cfg.log.datefmt)
+    elif cfg.log.type == CfgLogging.TYPE_FILE:
+        logging.basicConfig(level=logging.DEBUG, filename=cfg.log.file, format=cfg.log.format, datefmt=cfg.log.datefmt)
 
 
 class SubCommand(abc.ABC):
@@ -109,8 +107,10 @@ class BatchCmd(SubCommand):
     def exec(cls, args):
         """Execute the command."""
         from backbacker.backbacker import main
+        from backbacker.config import Config
 
-        init_logging(args.config)
+        cfg = Config.read_config(args.config)
+        init_logging(cfg)
 
         commands = cls.read_batch_file(args.batch_file)
         error_count = 0
