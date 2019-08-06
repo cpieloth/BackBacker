@@ -45,7 +45,7 @@ class SystemCommand(Command, metaclass=abc.ABCMeta):
 
     def is_available(self):
         """Checks if this command is available on the system, uses argument --version."""
-        return SystemCommand.check_version(self.cmd)
+        return self.check_version(self.cmd)
 
     def execute(self):
         if not self.is_available():
@@ -62,8 +62,8 @@ class SystemCommand(Command, metaclass=abc.ABCMeta):
         """
         raise NotImplementedError('This method must be implemented by each SystemCommand.')
 
-    @staticmethod
-    def check_version(cmd):
+    @classmethod
+    def check_version(cls, cmd):
         """
         Checks if  'cmd --version' is callable.
 

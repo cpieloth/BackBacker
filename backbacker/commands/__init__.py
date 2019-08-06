@@ -10,7 +10,7 @@ def register_sub_commands(subparser):
     from backbacker.commands.backup_rotation import BackupRotationCliCommand
     from backbacker.commands.compress import GZipCliCommand
     from backbacker.commands.example import ExampleCliCommand
-    from backbacker.commands.file_sync import RsyncCliCommand
+    from backbacker.commands.file_sync import RobocopyCliCommand, RsyncCliCommand
     from backbacker.commands.git import GitBundleCliCommand
     from backbacker.commands.git import GitCloneCliCommand
     from backbacker.commands.github import GithubBundleCliCommand
@@ -33,6 +33,7 @@ def register_sub_commands(subparser):
     MoveTimestampCliCommand.init_subparser(subparser)
     MySqlDumpGzipCliCommand.init_subparser(subparser)
     PgSqlDumpGzipCliCommand.init_subparser(subparser)
+    RobocopyCliCommand.init_subparser(subparser)
     RsyncCliCommand.init_subparser(subparser)
     ServiceStartCliCommand.init_subparser(subparser)
     ServiceStopCliCommand.init_subparser(subparser)
