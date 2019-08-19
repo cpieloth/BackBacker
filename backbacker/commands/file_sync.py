@@ -69,6 +69,7 @@ class Robocopy(FileSync):
         if self.mirror:
             cmd.append(self.MIRROR)
 
+        log.info('execute: %s', cmd)
         rc = subprocess.call(cmd)
         # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy
         # https://ss64.com/nt/robocopy-exit.html
@@ -155,6 +156,7 @@ class Rsync(FileSync):
         cmd.append(self.src_dir)
         cmd.append(self.dst_dir)
 
+        log.info('execute: %s', cmd)
         subprocess.check_call(cmd)
 
 
