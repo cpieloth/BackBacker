@@ -133,11 +133,12 @@ class BatchCmd(SubCommand):
         commands = list()
         with open(fname, 'r') as file:
             for line in file:
-                if line[0] == '#':
+                stripped = line.strip()
+                if not stripped:  # skip empty lines
                     continue
-
-                commands.append(line.strip())
-
+                if stripped.startswith('#'):  # skip comments
+                    continue
+                commands.append(stripped)
         return commands
 
 
