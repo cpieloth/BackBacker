@@ -20,6 +20,7 @@ class FileSync(SystemCommand, metaclass=abc.ABCMeta):
         self._src_dir = ''
         self._dst_dir = ''
         self.mirror = False
+        self._exclude_files = list()
 
     @property
     def src_dir(self):
@@ -37,6 +38,17 @@ class FileSync(SystemCommand, metaclass=abc.ABCMeta):
     def dst_dir(self, value):
         self._dst_dir = os.path.expanduser(value)
 
+    @property
+    def exclude_files(self):
+        return self._exclude_files
+
+    @exclude_files.setter
+    def exclude_files(self, value):
+        if isinstance(value, list):
+            self._exclude_files = value
+        else:
+            raise TypeError('exclude_files must be a list!')
+
 
 class FileSyncCliCommand(CliCommand, metaclass=abc.ABCMeta):
     """Abstract base class for file sync commands, which provides an interface on CLI level."""
@@ -46,6 +58,7 @@ class FileSyncCliCommand(CliCommand, metaclass=abc.ABCMeta):
         parser.add_argument(Argument.SRC_DIR.long_arg, help='Source directory for sync.', required=True)
         parser.add_argument(Argument.DST_DIR.long_arg, help='Destination directory for sync.', required=True)
         parser.add_argument(Argument.MIRROR.long_arg, help='Enable mirror mode.', action='store_true')
+        parser.add_argument(Argument.EXCLUDE_FILES.long_arg, nargs='*', help='Exclude files.')
 
 
 class Robocopy(FileSync):
@@ -55,6 +68,7 @@ class Robocopy(FileSync):
     """
 
     MIRROR = '/MIR'
+    EXCLUDE_FILE = '/XF'
 
     def __init__(self):
         super().__init__('robocopy')
@@ -68,6 +82,12 @@ class Robocopy(FileSync):
         cmd = [self.cmd, self.src_dir, self.dst_dir]
         if self.mirror:
             cmd.append(self.MIRROR)
+
+        for exclude in self.exclude_files:
+            cmd.append(self.EXCLUDE_FILE)
+            cmd.append(exclude)
+
+        # TODO: exclude dirs
 
         log.info('execute: %s', cmd)
         rc = subprocess.call(cmd)
@@ -110,6 +130,11 @@ class RobocopyCliCommand(FileSyncCliCommand):
         instance.dst_dir = Argument.DST_DIR.get_value(args)
         instance.mirror = Argument.MIRROR.get_value(args)
 
+        if Argument.EXCLUDE_FILES.has_value(args):
+            instance.exclude_files = Argument.EXCLUDE_FILES.get_value(args)
+
+        # TODO: exclude dirs
+
         return instance
 
 
@@ -124,6 +149,7 @@ class Rsync(FileSync):
     BACKUP_DELETE = '-b'
     BACKUP_DELETE_DIR = '--backup-dir='
     REMOTE_SHELL = '-e'
+    EXCLUDE = '--exclude'
 
     def __init__(self):
         super().__init__('rsync')
@@ -151,8 +177,14 @@ class Rsync(FileSync):
             if self.backup_dir != '':
                 cmd.append(self.BACKUP_DELETE)
                 cmd.append(self.BACKUP_DELETE_DIR + self.backup_dir)
+
         if self.rsh != '':
             cmd.append(self.REMOTE_SHELL + ' ' + self.rsh)
+
+        for exclude in self.exclude_files:
+            cmd.append(self.EXCLUDE)
+            cmd.append(exclude)
+
         cmd.append(self.src_dir)
         cmd.append(self.dst_dir)
 
@@ -182,6 +214,9 @@ class RsyncCliCommand(FileSyncCliCommand):
         instance.src_dir = Argument.SRC_DIR.get_value(args)
         instance.dst_dir = Argument.DST_DIR.get_value(args)
         instance.mirror = Argument.MIRROR.get_value(args)
+
+        if Argument.EXCLUDE_FILES.has_value(args):
+            instance.exclude_files = Argument.EXCLUDE_FILES.get_value(args)
 
         if Argument.BACKUP_DIR.has_value(args):
             instance.backup_dir = Argument.BACKUP_DIR.get_value(args)

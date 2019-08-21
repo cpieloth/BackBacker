@@ -41,6 +41,21 @@ class FileSyncTests(unittest.TestCase, metaclass=abc.ABCMeta):
         self.assertTrue(os.path.isfile(os.path.join(self._dst_dir, 'foo', 'foo.txt')))
         self.assertTrue(os.path.isfile(os.path.join(self._dst_dir, 'bar.txt')))
 
+    def test_mirror_initial_exclude_file(self):
+        """
+        Sync src dir into an empty dst dir excluding a file.
+        All files from src dir must be part of dst dir, except the excluded file.
+        """
+        fs = self.instance()
+        fs.src_dir = os.path.join(self._src_dir, '')
+        fs.dst_dir = self._dst_dir
+        fs.mirror = True
+        fs.exclude_files = ['bar.txt']
+        fs.execute()
+
+        self.assertTrue(os.path.isfile(os.path.join(self._dst_dir, 'foo', 'foo.txt')))
+        self.assertFalse(os.path.isfile(os.path.join(self._dst_dir, 'bar.txt')))
+
     def test_mirror_identical(self):
         """
         Sync src dir into identical dst dir.

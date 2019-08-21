@@ -167,6 +167,7 @@ class Argument(Enum):
     ROTATE = 'rotate'
     MIRROR = 'mirror'
     SHELL = 'shell'
+    EXCLUDE_FILES = 'exclude-files'
 
     def __init__(self, name):
         self._name = name
