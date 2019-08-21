@@ -168,6 +168,7 @@ class Argument(Enum):
     MIRROR = 'mirror'
     SHELL = 'shell'
     EXCLUDE_FILES = 'exclude-files'
+    EXCLUDE_DIRS = 'exclude-directories'
 
     def __init__(self, name):
         self._name = name

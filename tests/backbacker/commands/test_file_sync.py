@@ -41,7 +41,7 @@ class FileSyncTests(unittest.TestCase, metaclass=abc.ABCMeta):
         self.assertTrue(os.path.isfile(os.path.join(self._dst_dir, 'foo', 'foo.txt')))
         self.assertTrue(os.path.isfile(os.path.join(self._dst_dir, 'bar.txt')))
 
-    def test_mirror_initial_exclude_file(self):
+    def test_mirror_initial_exclude_files(self):
         """
         Sync src dir into an empty dst dir excluding a file.
         All files from src dir must be part of dst dir, except the excluded file.
@@ -99,6 +99,22 @@ class RobocopyTestCase(FileSyncTests):
     @classmethod
     def instance(cls):
         return file_sync.Robocopy()
+
+    def test_mirror_initial_exclude_dirs(self):
+        """
+        Sync src dir into an empty dst dir excluding a directory.
+        All files from src dir must be part of dst dir, except the excluded directory.
+        """
+        fs = self.instance()
+        fs.src_dir = os.path.join(self._src_dir, '')
+        fs.dst_dir = self._dst_dir
+        fs.mirror = True
+        fs.exclude_dirs = ['foo']
+        fs.execute()
+
+        self.assertFalse(os.path.isfile(os.path.join(self._dst_dir, 'foo', 'foo.txt')))
+        self.assertFalse(os.path.isdir(os.path.join(self._dst_dir, 'foo')))
+        self.assertTrue(os.path.isfile(os.path.join(self._dst_dir, 'bar.txt')))
 
 
 @unittest.skipUnless(sys.platform.startswith('linux'), 'requires Linux')

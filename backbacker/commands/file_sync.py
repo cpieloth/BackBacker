@@ -69,9 +69,22 @@ class Robocopy(FileSync):
 
     MIRROR = '/MIR'
     EXCLUDE_FILE = '/XF'
+    EXCLUDE_DIR = '/XD'
 
     def __init__(self):
         super().__init__('robocopy')
+        self._exclude_dirs = list()
+
+    @property
+    def exclude_dirs(self):
+        return self._exclude_dirs
+
+    @exclude_dirs.setter
+    def exclude_dirs(self, value):
+        if isinstance(value, list):
+            self._exclude_dirs = value
+        else:
+            raise TypeError('exclude_dirs must be a list!')
 
     def _execute_command(self):
         if not os.access(self.src_dir, os.R_OK):
@@ -87,7 +100,9 @@ class Robocopy(FileSync):
             cmd.append(self.EXCLUDE_FILE)
             cmd.append(exclude)
 
-        # TODO: exclude dirs
+        for exclude in self.exclude_dirs:
+            cmd.append(self.EXCLUDE_DIR)
+            cmd.append(exclude)
 
         log.info('execute: %s', cmd)
         rc = subprocess.call(cmd)
@@ -124,6 +139,11 @@ class RobocopyCliCommand(FileSyncCliCommand):
         return Robocopy.__doc__
 
     @classmethod
+    def _add_arguments(cls, parser):
+        FileSyncCliCommand._add_arguments(parser)
+        parser.add_argument(Argument.EXCLUDE_DIRS.long_arg, nargs='*', help='Exclude directories.')
+
+    @classmethod
     def _instance(cls, args):
         instance = Robocopy()
         instance.src_dir = Argument.SRC_DIR.get_value(args)
@@ -133,7 +153,8 @@ class RobocopyCliCommand(FileSyncCliCommand):
         if Argument.EXCLUDE_FILES.has_value(args):
             instance.exclude_files = Argument.EXCLUDE_FILES.get_value(args)
 
-        # TODO: exclude dirs
+        if Argument.EXCLUDE_DIRS.has_value(args):
+            instance.exclude_dirs = Argument.EXCLUDE_DIRS.get_value(args)
 
         return instance
 
