@@ -178,7 +178,11 @@ class Argument(Enum):
         return '--{}'.format(self._name)
 
     def get_value(self, args):
-        return vars(args)[self._name]
+        return vars(args)[self.args_name]
 
     def has_value(self, args):
-        return self._name in vars(args)
+        return self.args_name in vars(args) and bool(vars(args)[self.args_name])
+
+    @property
+    def args_name(self):
+        return self._name.replace('-', '_')
