@@ -2,15 +2,15 @@ import logging
 import os
 import subprocess
 
-from backbacker.command import SystemCommand, CliCommand, Argument
+from backbacker import command
 
 
 __author__ = 'Christof Pieloth'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
-class PgSqlDumpGZip(SystemCommand):
+class PgSqlDumpGZip(command.SystemCommand):
     """Does a PostgreSQL database dump and gzips the output."""
 
     def __init__(self):
@@ -47,21 +47,22 @@ class PgSqlDumpGZip(SystemCommand):
         # database and output
         pg_dump += ' ' + self.db_name
         pg_dump += ' > ' + dest
-        log.info(pg_dump)
+        logger.info(pg_dump)
 
         subprocess.check_call([pg_dump], shell=True)
 
 
-class PgSqlDumpGzipCliCommand(CliCommand):
+class PgSqlDumpGzipCliCommand(command.CliCommand):
 
     @classmethod
     def _add_arguments(cls, parser):
-        parser.add_argument(Argument.DST_DIR.long_arg, help='Destination directory for dump for dump.', required=True)
-        parser.add_argument(Argument.DB_NAME.long_arg, help='Database name.', required=True)
-        parser.add_argument(Argument.DB_USER.long_arg, help='Database user.', required=True)
-        parser.add_argument(Argument.DB_PASSWD.long_arg, help='Password for database user.', required=True)
-        parser.add_argument(Argument.DB_SCHEMA.long_arg, help='Database schema.')
-        parser.add_argument(Argument.DB_TABLE.long_arg, help='Database table.')
+        parser.add_argument(command.Argument.DST_DIR.long_arg, required=True,
+                            help='Destination directory for dump for dump.')
+        parser.add_argument(command.Argument.DB_NAME.long_arg, help='Database name.', required=True)
+        parser.add_argument(command.Argument.DB_USER.long_arg, help='Database user.', required=True)
+        parser.add_argument(command.Argument.DB_PASSWD.long_arg, help='Password for database user.', required=True)
+        parser.add_argument(command.Argument.DB_SCHEMA.long_arg, help='Database schema.')
+        parser.add_argument(command.Argument.DB_TABLE.long_arg, help='Database table.')
 
     @classmethod
     def _name(cls):
@@ -74,14 +75,14 @@ class PgSqlDumpGzipCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = PgSqlDumpGZip()
-        instance.dst_dir = Argument.DST_DIR.get_value(args)
-        instance.db_name = Argument.DB_NAME.get_value(args)
-        instance.db_user = Argument.DB_USER.get_value(args)
-        instance.db_passwd = Argument.DB_PASSWD.get_value(args)
+        instance.dst_dir = command.Argument.DST_DIR.get_value(args)
+        instance.db_name = command.Argument.DB_NAME.get_value(args)
+        instance.db_user = command.Argument.DB_USER.get_value(args)
+        instance.db_passwd = command.Argument.DB_PASSWD.get_value(args)
 
-        if Argument.DB_SCHEMA.has_value(args):
-            instance.db_schema = Argument.DB_SCHEMA.get_value(args)
-        if Argument.DB_TABLE.has_value(args):
-            instance.db_table = Argument.DB_TABLE.get_value(args)
+        if command.Argument.DB_SCHEMA.has_value(args):
+            instance.db_schema = command.Argument.DB_SCHEMA.get_value(args)
+        if command.Argument.DB_TABLE.has_value(args):
+            instance.db_table = command.Argument.DB_TABLE.get_value(args)
 
         return instance

@@ -2,15 +2,15 @@ import logging
 import os
 from subprocess import call
 
-from backbacker.command import SystemCommand, CliCommand, Argument
+from backbacker import command
 
 
 __author__ = 'Christof Pieloth'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
-class MountSamba(SystemCommand):
+class MountSamba(command.SystemCommand):
     """Mounts a samba network share."""
 
     def __init__(self):
@@ -46,7 +46,7 @@ class MountSamba(SystemCommand):
             raise RuntimeError('Error calling: {}'.format(' '.join(cmd)))
 
 
-class UMount(SystemCommand):
+class UMount(command.SystemCommand):
     """Unmounts a mounting point."""
 
     def __init__(self):
@@ -70,13 +70,13 @@ class UMount(SystemCommand):
             raise RuntimeError('Error calling: {}'.format(' '.join(cmd)))
 
 
-class MountSambaCliCommand(CliCommand):
+class MountSambaCliCommand(command.CliCommand):
 
     @classmethod
     def _add_arguments(cls, parser):
-        parser.add_argument(Argument.CONFIG_FILE.long_arg, help='Config file for .credentials.', required=True)
-        parser.add_argument(Argument.URL.long_arg, help='URL of the samba share.', required=True)
-        parser.add_argument(Argument.DST_DIR.long_arg, help='Mount directory.', required=True)
+        parser.add_argument(command.Argument.CONFIG_FILE.long_arg, help='Config file for .credentials.', required=True)
+        parser.add_argument(command.Argument.URL.long_arg, help='URL of the samba share.', required=True)
+        parser.add_argument(command.Argument.DST_DIR.long_arg, help='Mount directory.', required=True)
 
     @classmethod
     def _name(cls):
@@ -89,17 +89,17 @@ class MountSambaCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = MountSamba()
-        instance.cfg = Argument.CONFIG_FILE.get_value(args)
-        instance.url = Argument.URL.get_value(args)
-        instance.dst = Argument.DST_DIR.get_value(args)
+        instance.cfg = command.Argument.CONFIG_FILE.get_value(args)
+        instance.url = command.Argument.URL.get_value(args)
+        instance.dst = command.Argument.DST_DIR.get_value(args)
         return instance
 
 
-class UmountCliCommand(CliCommand):
+class UmountCliCommand(command.CliCommand):
 
     @classmethod
     def _add_arguments(cls, parser):
-        parser.add_argument(Argument.DIR.long_arg, help='Director to unmount.', required=True)
+        parser.add_argument(command.Argument.DIR.long_arg, help='Director to unmount.', required=True)
 
     @classmethod
     def _name(cls):
@@ -112,5 +112,5 @@ class UmountCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = UMount()
-        instance.dir = Argument.DIR.get_value(args)
+        instance.dir = command.Argument.DIR.get_value(args)
         return instance

@@ -7,31 +7,30 @@ def register_sub_commands(subparser):
 
     :param subparser: A argparse subparser.
     """
-    from backbacker.commands.backup_rotation import BackupRotationCliCommand
-    from backbacker.commands.compress import GZipCliCommand
-    from backbacker.commands.example import ExampleCliCommand
-    from backbacker.commands.file_sync import RobocopyCliCommand, RsyncCliCommand
-    from backbacker.commands.git import GitBundleCliCommand
-    from backbacker.commands.git import GitCloneCliCommand
-    from backbacker.commands.github import GithubBundleCliCommand
-    from backbacker.commands.mount import MountSambaCliCommand, UmountCliCommand
-    from backbacker.commands.mv_timestamp import MoveTimestampCliCommand
-    from backbacker.commands.mysql import MySqlDumpGzipCliCommand
-    from backbacker.commands.pgsql import PgSqlDumpGzipCliCommand
-    from backbacker.commands.service import ServiceStartCliCommand, ServiceStopCliCommand
+    from backbacker.commands import backup_rotation
+    from backbacker.commands import compress
+    from backbacker.commands import example
+    from backbacker.commands import file_sync
+    from backbacker.commands import git
+    from backbacker.commands import github
+    from backbacker.commands import mount
+    from backbacker.commands import mv_timestamp
+    from backbacker.commands import mysql
+    from backbacker.commands import pgsql
+    from backbacker.commands import service
 
-    BackupRotationCliCommand.init_subparser(subparser)
-    ExampleCliCommand.init_subparser(subparser)
-    GitBundleCliCommand.init_subparser(subparser)
-    GitCloneCliCommand.init_subparser(subparser)
-    GithubBundleCliCommand.init_subparser(subparser)
-    GZipCliCommand.init_subparser(subparser)
-    MountSambaCliCommand.init_subparser(subparser)
-    UmountCliCommand.init_subparser(subparser)
-    MoveTimestampCliCommand.init_subparser(subparser)
-    MySqlDumpGzipCliCommand.init_subparser(subparser)
-    PgSqlDumpGzipCliCommand.init_subparser(subparser)
-    RobocopyCliCommand.init_subparser(subparser)
-    RsyncCliCommand.init_subparser(subparser)
-    ServiceStartCliCommand.init_subparser(subparser)
-    ServiceStopCliCommand.init_subparser(subparser)
+    backup_rotation.BackupRotationCliCommand.init_subparser(subparser)
+    example.ExampleCliCommand.init_subparser(subparser)
+    file_sync.RsyncCliCommand.init_subparser(subparser)
+    file_sync.RobocopyCliCommand.init_subparser(subparser)
+    git.GitBundleCliCommand.init_subparser(subparser)
+    git.GitCloneCliCommand.init_subparser(subparser)
+    github.GithubBundleCliCommand.init_subparser(subparser)
+    compress.GZipCliCommand.init_subparser(subparser)
+    mount.MountSambaCliCommand.init_subparser(subparser)
+    mount.UmountCliCommand.init_subparser(subparser)
+    mv_timestamp.MoveTimestampCliCommand.init_subparser(subparser)
+    mysql.MySqlDumpGzipCliCommand.init_subparser(subparser)
+    pgsql.PgSqlDumpGzipCliCommand.init_subparser(subparser)
+    service.ServiceStartCliCommand.init_subparser(subparser)
+    service.ServiceStopCliCommand.init_subparser(subparser)

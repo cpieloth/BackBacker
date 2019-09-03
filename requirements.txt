@@ -1,3 +1,4 @@
 # Runtime requirements
+# NOTE: Keep setup.py in sync.
 # requests required by backbacker.commands.github
 requests==2.20.*

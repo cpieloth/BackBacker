@@ -6,7 +6,7 @@ import sys
 
 __author__ = 'christof.pieloth'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def init_logging():
@@ -120,7 +120,7 @@ class BatchCmd(SubCommand):
 
             if rc > 0:
                 error_count += 1
-                log.error('Error executing command: %s. Returned with: %d', command, rc)
+                logger.error('Error executing command: %s. Returned with: %d', command, rc)
                 if args.ignore_errors:
                     continue
                 else:

@@ -4,24 +4,24 @@ from glob import glob
 import os
 import sys
 
-from backbacker.command import Command, CliCommand, Argument
-from backbacker.constants import Constants
+from backbacker import command
+from backbacker import constants
 
 
 __author__ = 'Gunnar Nitsche'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
-class BackupRotation(Command):
+class BackupRotation(command.Command):
     """Deletes old backups using a timestamp as rotation condition."""
 
-    DATE_PREFIX_SEP = Constants.DATE_PREFIX_SEPARATOR
+    DATE_PREFIX_SEP = constants.DATE_PREFIX_SEPARATOR
 
     def __init__(self):
         super().__init__()
         self._dir = None
-        self.date_pattern = Constants.FILE_DATE_FORMAT
+        self.date_pattern = constants.FILE_DATE_FORMAT
         self._keep_backups = sys.maxsize
 
     @property
@@ -69,15 +69,15 @@ class BackupRotation(Command):
                 os.remove(dfile)
 
 
-class BackupRotationCliCommand(CliCommand):
+class BackupRotationCliCommand(command.CliCommand):
 
     @classmethod
     def _add_arguments(cls, parser):
-        parser.add_argument(Argument.DIR.long_arg, required=True,
+        parser.add_argument(command.Argument.DIR.long_arg, required=True,
                             help='Directory which contains the backups with a date prefix.')
-        parser.add_argument(Argument.DATE_FORMAT.long_arg, default=Constants.FILE_DATE_FORMAT,
+        parser.add_argument(command.Argument.DATE_FORMAT.long_arg, default=constants.FILE_DATE_FORMAT,
                             help='Date format of the date prefix.')
-        parser.add_argument(Argument.ROTATE.long_arg, type=int, default=5,
+        parser.add_argument(command.Argument.ROTATE.long_arg, type=int, default=5,
                             help='Number of backups to keep.')
 
     @classmethod
@@ -91,9 +91,9 @@ class BackupRotationCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = BackupRotation()
-        instance.dir = Argument.DIR.get_value(args)
-        if Argument.DATE_FORMAT.has_value(args):
-            instance.date_pattern = Argument.DATE_FORMAT.get_value(args)
-        if Argument.ROTATE.has_value(args):
-            instance.keep_backups = Argument.ROTATE.get_value(args)
+        instance.dir = command.Argument.DIR.get_value(args)
+        if command.Argument.DATE_FORMAT.has_value(args):
+            instance.date_pattern = command.Argument.DATE_FORMAT.get_value(args)
+        if command.Argument.ROTATE.has_value(args):
+            instance.keep_backups = command.Argument.ROTATE.get_value(args)
         return instance

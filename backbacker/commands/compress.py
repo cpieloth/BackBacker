@@ -2,15 +2,15 @@ import logging
 import os
 import tarfile
 
-from backbacker.command import Command, CliCommand, Argument
+from backbacker import command
 
 
 __author__ = 'Christof Pieloth'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
-class GZip(Command):
+class GZip(command.Command):
     """Compresses a folder to a tar.gz archive."""
 
     def __init__(self):
@@ -53,12 +53,12 @@ class GZip(Command):
                 tar.close()
 
 
-class GZipCliCommand(CliCommand):
+class GZipCliCommand(command.CliCommand):
 
     @classmethod
     def _add_arguments(cls, parser):
-        parser.add_argument(Argument.SRC_DIR.long_arg, help='Folder to compress.', required=True)
-        parser.add_argument(Argument.DST_DIR.long_arg, required=True,
+        parser.add_argument(command.Argument.SRC_DIR.long_arg, help='Folder to compress.', required=True)
+        parser.add_argument(command.Argument.DST_DIR.long_arg, required=True,
                             help='Destination directory to store tar.gz.')
 
     @classmethod
@@ -72,6 +72,6 @@ class GZipCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = GZip()
-        instance.src_dir = Argument.SRC_DIR.get_value(args)
-        instance.dst_dir = Argument.DST_DIR.get_value(args)
+        instance.src_dir = command.Argument.SRC_DIR.get_value(args)
+        instance.dst_dir = command.Argument.DST_DIR.get_value(args)
         return instance

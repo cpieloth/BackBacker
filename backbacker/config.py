@@ -4,19 +4,18 @@ import os
 __author__ = 'Christof Pieloth'
 
 
-class Config(object):
+class Config:
     __instance = None
 
     def __new__(cls):
         if cls.__instance is None:
             cls.__instance = object.__new__(cls)
-            cls.__instance.__initialized = False
+            cls.__instance.__init__(False)
         return cls.__instance
 
-    def __init__(self):
-        if not self.__initialized:
+    def __init__(self, initialized=True):
+        if not initialized:
             self._log = _CfgLogging()
-            self.__initialized = True
 
     def parse_cfg(self, parser):
         self.log.parse_cfg(parser)
@@ -33,14 +32,14 @@ class Config(object):
         if fname:
             cfg_parser = configparser.ConfigParser()
             files = cfg_parser.read(fname)
-            if not files or len(files) == 0:
+            if not files:
                 raise IOError('Error on reading config file: {}'.format(fname))
             cfg.parse_cfg(cfg_parser)
 
         return cfg
 
 
-class _CfgLogging(object):
+class _CfgLogging:
 
     CFG_SECTION = 'logging'
 

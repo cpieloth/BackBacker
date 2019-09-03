@@ -2,15 +2,15 @@ import logging
 import os
 import subprocess
 
-from backbacker.command import SystemCommand, CliCommand, Argument
+from backbacker import command
 
 
 __author__ = 'Christof Pieloth'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
-class MySqlDumpGZip(SystemCommand):
+class MySqlDumpGZip(command.SystemCommand):
     """Does a MySQL database dump and gzips the output."""
 
     CMD_GZIP = 'gzip'
@@ -33,7 +33,7 @@ class MySqlDumpGZip(SystemCommand):
     def is_available(self):
         success = super().is_available()
         # TODO(cpieloth): Use command of compress module.
-        success = success and SystemCommand.check_version(MySqlDumpGZip.CMD_GZIP)
+        success = success and command.SystemCommand.check_version(MySqlDumpGZip.CMD_GZIP)
         return success
 
     def _execute_command(self):
@@ -47,14 +47,14 @@ class MySqlDumpGZip(SystemCommand):
         subprocess.check_call([mysqldump + ' | ' + gzip], shell=True)
 
 
-class MySqlDumpGzipCliCommand(CliCommand):
+class MySqlDumpGzipCliCommand(command.CliCommand):
 
     @classmethod
     def _add_arguments(cls, parser):
-        parser.add_argument(Argument.DST_DIR.long_arg, required=True, help='Destination directory for dump.')
-        parser.add_argument(Argument.DB_NAME.long_arg, required=True, help='Database name to dump.')
-        parser.add_argument(Argument.DB_USER.long_arg, required=True, help='Database user.')
-        parser.add_argument(Argument.DB_PASSWD.long_arg, required=True, help='Password for database user.')
+        parser.add_argument(command.Argument.DST_DIR.long_arg, required=True, help='Destination directory for dump.')
+        parser.add_argument(command.Argument.DB_NAME.long_arg, required=True, help='Database name to dump.')
+        parser.add_argument(command.Argument.DB_USER.long_arg, required=True, help='Database user.')
+        parser.add_argument(command.Argument.DB_PASSWD.long_arg, required=True, help='Password for database user.')
 
     @classmethod
     def _name(cls):
@@ -67,8 +67,8 @@ class MySqlDumpGzipCliCommand(CliCommand):
     @classmethod
     def _instance(cls, args):
         instance = MySqlDumpGZip()
-        instance.dst_dir = Argument.DST_DIR.get_value(args)
-        instance.db_name = Argument.DB_NAME.get_value(args)
-        instance.db_user = Argument.DB_USER.get_value(args)
-        instance.db_passwd = Argument.DB_PASSWD.get_value(args)
+        instance.dst_dir = command.Argument.DST_DIR.get_value(args)
+        instance.db_name = command.Argument.DB_NAME.get_value(args)
+        instance.db_user = command.Argument.DB_USER.get_value(args)
+        instance.db_passwd = command.Argument.DB_PASSWD.get_value(args)
         return instance

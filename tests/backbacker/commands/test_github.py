@@ -22,4 +22,3 @@ class GithubBundleTestCase(unittest.TestCase):
         github_clone.execute()
 
         self.assertTrue(os.path.isfile(os.path.join(self._dst_dir, 'BackBacker.git.bundle')))
-

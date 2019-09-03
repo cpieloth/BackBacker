@@ -7,9 +7,10 @@ from backbacker.command import SystemCommand, CliCommand, Argument
 
 __author__ = 'Christof Pieloth'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
+# pylint: disable=W0223
 class FileSync(SystemCommand, metaclass=abc.ABCMeta):
     """
     Abstract base class for file sync commands, which provides an interface on API level.
@@ -50,6 +51,7 @@ class FileSync(SystemCommand, metaclass=abc.ABCMeta):
             raise TypeError('exclude_files must be a list!')
 
 
+# pylint: disable=W0223
 class FileSyncCliCommand(CliCommand, metaclass=abc.ABCMeta):
     """Abstract base class for file sync commands, which provides an interface on CLI level."""
 
@@ -104,13 +106,13 @@ class Robocopy(FileSync):
             cmd.append(self.EXCLUDE_DIR)
             cmd.append(exclude)
 
-        log.info('execute: %s', cmd)
+        logger.info('execute: %s', cmd)
         rc = subprocess.call(cmd)
         # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy
         # https://ss64.com/nt/robocopy-exit.html
         if rc >= 16:
             raise RuntimeError('Error, no files were copied!')
-        elif rc >= 4:
+        if rc >= 4:
             raise RuntimeError('Check output, mismatch or some files are not copied!')
 
     @classmethod
@@ -120,7 +122,6 @@ class Robocopy(FileSync):
 
         :return True 'cmd /?' raises no exception
         """
-        import subprocess
         try:
             subprocess.Popen([cmd, '/?'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             return True
@@ -209,7 +210,7 @@ class Rsync(FileSync):
         cmd.append(self.src_dir)
         cmd.append(self.dst_dir)
 
-        log.info('execute: %s', cmd)
+        logger.info('execute: %s', cmd)
         subprocess.check_call(cmd)
 
 

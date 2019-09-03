@@ -146,7 +146,7 @@ class CheckCodeCustomCmd(CustomCommand):
     def run(self):
         from pylint.lint import Run
         args = ['--rcfile', os.path.join(working_dir, 'tools', 'pylintrc'), os.path.join(working_dir, api_name)]
-        return Run(args, exit=False).linter.msg_status
+        return Run(args, do_exit=False).linter.msg_status
 
 
 class CheckStyleCodeCustomCmd(CustomCommand):

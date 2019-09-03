@@ -4,17 +4,17 @@ A concrete command implements the back-up logic.
 """
 
 import abc
+import enum
 import logging
-from enum import Enum
 
-from backbacker.sub_commands import SubCommand
+import backbacker.sub_commands
 
 __author__ = 'Christof Pieloth'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
-class Command(abc.ABC):
+class Command(abc.ABC):  # pylint: disable=too-few-public-methods
     """
     A command is a basic and often an atomic functionality for a backup job, e.g. copying a file.
     Implementations can be used for API access.
@@ -76,13 +76,10 @@ class SystemCommand(Command, metaclass=abc.ABCMeta):
             return False
 
 
-class Task(Command, metaclass=abc.ABCMeta):
+class Task(Command, metaclass=abc.ABCMeta):  # pylint: disable=too-few-public-methods
     """
     A task combines more than one command or task to one unit.
     """
-
-    def __init__(self):
-        super().__init__()
 
     def _pre_execute(self):
         """
@@ -115,7 +112,7 @@ class Task(Command, metaclass=abc.ABCMeta):
         pass
 
 
-class CliCommand(SubCommand, metaclass=abc.ABCMeta):
+class CliCommand(backbacker.sub_commands.SubCommand, metaclass=abc.ABCMeta):
     """Wraps a Command to a CLI sub-command."""
 
     @classmethod
@@ -136,12 +133,12 @@ class CliCommand(SubCommand, metaclass=abc.ABCMeta):
         try:
             instance.execute()
             return 0
-        except Exception as ex:
-            log.error(ex)
+        except Exception as ex:  # pylint: disable=broad-except
+            logger.error(ex)
             return 1
 
 
-class Argument(Enum):
+class Argument(enum.Enum):
     SRC_DIR = 'src_dir'
     DST_DIR = 'dst_dir'
     DIR = 'dir'

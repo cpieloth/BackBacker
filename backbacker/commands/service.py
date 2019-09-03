@@ -1,19 +1,19 @@
 import logging
 import subprocess
 
-from backbacker.command import SystemCommand, CliCommand
+from backbacker import command
 
 
 __author__ = 'Christof Pieloth'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
-class Service(SystemCommand):
-    def __init__(self, command):
+class Service(command.SystemCommand):
+    def __init__(self, service_command):
         super().__init__('service')
         self.service = ''
-        self._command = command
+        self._command = service_command
 
     @property
     def command(self):
@@ -43,7 +43,7 @@ class ServiceStop(Service):
         Service.__init__(self, 'stop')
 
 
-class ServiceStartCliCommand(CliCommand):
+class ServiceStartCliCommand(command.CliCommand):
 
     @classmethod
     def _add_arguments(cls, parser):
@@ -64,7 +64,7 @@ class ServiceStartCliCommand(CliCommand):
         return instance
 
 
-class ServiceStopCliCommand(CliCommand):
+class ServiceStopCliCommand(command.CliCommand):
 
     @classmethod
     def _add_arguments(cls, parser):

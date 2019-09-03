@@ -20,17 +20,6 @@ install_requires = [
 ]
 
 
-# development environment dependencies
-dev_requires = [
-    'coverage',
-    'pep257',
-    'pycodestyle',
-    'pylint==1.9.*',
-    'recommonmark',
-    'Sphinx==1.7.*'
-]
-
-
 setup(
     cmdclass=dict(setup_commands.custom_commands),
 
@@ -73,12 +62,6 @@ setup(
     packages=find_packages(exclude=['build*', 'docs', 'tests*', 'tools*', 'venv*']),
 
     install_requires=install_requires,
-
-    tests_require=dev_requires,
-
-    extras_require={
-        'dev': dev_requires,
-    },
 
     test_suite='tests',
 
