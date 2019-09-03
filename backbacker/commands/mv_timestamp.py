@@ -19,7 +19,7 @@ class MoveTimestamp(command.Command):
         super().__init__()
         self._src_dir = None
         self._dst_dir = None
-        self.datefmt = constants.Constants.FILE_DATE_FORMAT
+        self.datefmt = constants.FILE_DATE_FORMAT
 
     @property
     def src_dir(self):
@@ -47,8 +47,8 @@ class MoveTimestamp(command.Command):
             date_str = datetime.now().strftime(self.datefmt)
         except Exception:
             logger.exception('Could not create date string for %s! Using default format %s',
-                             self.datefmt, constants.Constants.FILE_DATE_FORMAT)
-            date_str = datetime.now().strftime(constants.Constants.FILE_DATE_FORMAT)
+                             self.datefmt, constants.FILE_DATE_FORMAT)
+            date_str = datetime.now().strftime(constants.FILE_DATE_FORMAT)
 
         # Collecting file to avoid conflict if src_dir eq. dest_dir.
         files = []
@@ -60,7 +60,7 @@ class MoveTimestamp(command.Command):
         errors = 0
         for file_in in files:
             fname = os.path.basename(file_in)
-            file_out = os.path.join(self.dst_dir, date_str + constants.Constants.DATE_PREFIX_SEPARATOR + fname)
+            file_out = os.path.join(self.dst_dir, date_str + constants.DATE_PREFIX_SEPARATOR + fname)
             try:
                 # Using shutil.move() instead of os.rename() to enable operation over different filesystems.
                 shutil.move(file_in, file_out)
@@ -80,7 +80,7 @@ class MoveTimestampCliCommand(command.CliCommand):
                             help='Source directory which should be moved.')
         parser.add_argument(command.Argument.DST_DIR.long_arg, help='Destination directory.', required=True)
         parser.add_argument(command.Argument.DATE_FORMAT.long_arg, help='Date format for the timestamp prefix.',
-                            default=constants.Constants.FILE_DATE_FORMAT)
+                            default=constants.FILE_DATE_FORMAT)
 
     @classmethod
     def _name(cls):

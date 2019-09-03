@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 class BackupRotation(command.Command):
     """Deletes old backups using a timestamp as rotation condition."""
 
-    DATE_PREFIX_SEP = constants.Constants.DATE_PREFIX_SEPARATOR
+    DATE_PREFIX_SEP = constants.DATE_PREFIX_SEPARATOR
 
     def __init__(self):
         super().__init__()
         self._dir = None
-        self.date_pattern = constants.Constants.FILE_DATE_FORMAT
+        self.date_pattern = constants.FILE_DATE_FORMAT
         self._keep_backups = sys.maxsize
 
     @property
@@ -75,7 +75,7 @@ class BackupRotationCliCommand(command.CliCommand):
     def _add_arguments(cls, parser):
         parser.add_argument(command.Argument.DIR.long_arg, required=True,
                             help='Directory which contains the backups with a date prefix.')
-        parser.add_argument(command.Argument.DATE_FORMAT.long_arg, default=constants.Constants.FILE_DATE_FORMAT,
+        parser.add_argument(command.Argument.DATE_FORMAT.long_arg, default=constants.FILE_DATE_FORMAT,
                             help='Date format of the date prefix.')
         parser.add_argument(command.Argument.ROTATE.long_arg, type=int, default=5,
                             help='Number of backups to keep.')
