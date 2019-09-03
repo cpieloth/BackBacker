@@ -7,7 +7,7 @@ from backbacker.command import SystemCommand, CliCommand, Argument
 
 __author__ = 'Christof Pieloth'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 # pylint: disable=W0223
@@ -106,7 +106,7 @@ class Robocopy(FileSync):
             cmd.append(self.EXCLUDE_DIR)
             cmd.append(exclude)
 
-        log.info('execute: %s', cmd)
+        logger.info('execute: %s', cmd)
         rc = subprocess.call(cmd)
         # https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/robocopy
         # https://ss64.com/nt/robocopy-exit.html
@@ -210,7 +210,7 @@ class Rsync(FileSync):
         cmd.append(self.src_dir)
         cmd.append(self.dst_dir)
 
-        log.info('execute: %s', cmd)
+        logger.info('execute: %s', cmd)
         subprocess.check_call(cmd)
 
 
