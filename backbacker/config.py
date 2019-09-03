@@ -4,7 +4,7 @@ import os
 __author__ = 'Christof Pieloth'
 
 
-class Config():
+class Config:
     __instance = None
 
     def __new__(cls):
@@ -40,7 +40,7 @@ class Config():
         return cfg
 
 
-class _CfgLogging():
+class _CfgLogging:
 
     CFG_SECTION = 'logging'
 
