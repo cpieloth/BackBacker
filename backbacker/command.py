@@ -45,7 +45,7 @@ class SystemCommand(Command, metaclass=abc.ABCMeta):
 
     def is_available(self):
         """Checks if this command is available on the system, uses argument --version."""
-        return SystemCommand.check_version(self.cmd)
+        return self.check_version(self.cmd)
 
     def execute(self):
         if not self.is_available():
@@ -62,8 +62,8 @@ class SystemCommand(Command, metaclass=abc.ABCMeta):
         """
         raise NotImplementedError('This method must be implemented by each SystemCommand.')
 
-    @staticmethod
-    def check_version(cmd):
+    @classmethod
+    def check_version(cls, cmd):
         """
         Checks if  'cmd --version' is callable.
 
@@ -164,6 +164,8 @@ class Argument(enum.Enum):
     ROTATE = 'rotate'
     MIRROR = 'mirror'
     SHELL = 'shell'
+    EXCLUDE_FILES = 'exclude-files'
+    EXCLUDE_DIRS = 'exclude-directories'
 
     def __init__(self, name):
         self._name = name
@@ -173,7 +175,11 @@ class Argument(enum.Enum):
         return '--{}'.format(self._name)
 
     def get_value(self, args):
-        return vars(args)[self._name]
+        return vars(args)[self.args_name]
 
     def has_value(self, args):
-        return self._name in vars(args)
+        return self.args_name in vars(args) and bool(vars(args)[self.args_name])
+
+    @property
+    def args_name(self):
+        return self._name.replace('-', '_')

@@ -9,17 +9,14 @@ __author__ = 'christof.pieloth'
 logger = logging.getLogger(__name__)
 
 
-def init_logging(cfg):
+def init_logging():
     """Initializes the logging."""
-    from backbacker import config
-    if not cfg:
-        logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
-    elif cfg.log_type == config.Config.ARG_LOG_TYPE_CONSOLE:
-        logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=cfg.log_format,
-                            datefmt=cfg.log_datefmt)
-    elif cfg.log_type == config.Config.ARG_LOG_TYPE_FILE:
-        logging.basicConfig(level=logging.DEBUG, filename=cfg.log_file, format=cfg.log_format,
-                            datefmt=cfg.log_datefmt)
+    import backbacker.config
+    cfg = backbacker.config.Config()
+    if cfg.log.type == cfg.log.TYPE_CONSOLE:
+        logging.basicConfig(level=logging.DEBUG, stream=sys.stdout, format=cfg.log.format, datefmt=cfg.log.datefmt)
+    elif cfg.log.type == cfg.log.TYPE_FILE:
+        logging.basicConfig(level=logging.DEBUG, filename=cfg.log.file, format=cfg.log.format, datefmt=cfg.log.datefmt)
 
 
 class SubCommand(abc.ABC):
@@ -108,16 +105,18 @@ class BatchCmd(SubCommand):
     @classmethod
     def exec(cls, args):
         """Execute the command."""
-        from backbacker import backbacker
+        from backbacker.backbacker import main
+        from backbacker.config import Config
 
-        init_logging(args.config)
+        Config.read_config(args.config)
+        init_logging()
 
         commands = cls.read_batch_file(args.batch_file)
         error_count = 0
         for command in commands:
             argv = ['nop']
             argv.extend(command.split(' '))
-            rc = backbacker.main(argv)
+            rc = main(argv)
 
             if rc > 0:
                 error_count += 1
@@ -134,11 +133,12 @@ class BatchCmd(SubCommand):
         commands = list()
         with open(fname, 'r') as file:
             for line in file:
-                if line[0] == '#':
+                stripped = line.strip()
+                if not stripped:  # skip empty lines
                     continue
-
-                commands.append(line.strip())
-
+                if stripped.startswith('#'):  # skip comments
+                    continue
+                commands.append(stripped)
         return commands
 
 
