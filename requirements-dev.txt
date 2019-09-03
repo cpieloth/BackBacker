@@ -2,7 +2,7 @@
 -r requirements.txt
 coverage
 pep257
-pylint==2.1.*
+pylint==2.3.*
 pycodestyle
 recommonmark
 Sphinx==1.8.*
