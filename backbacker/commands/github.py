@@ -43,23 +43,26 @@ class GithubBundle(command.Command):
     def collect_repository_urls(cls, username):
         import requests
 
-        # https://developer.github.com/v3/repos/#list-user-repositories
+        # https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28
         request_url = 'https://api.github.com/users/{}/repos'.format(urllib.parse.quote(username))
 
+        # https://docs.github.com/en/rest/about-the-rest-api/api-versions?apiVersion=2022-11-2
+        request_headers = {'X-GitHub-Api-Version': '2022-11-28'}
+
         while request_url:
-            response = requests.get(request_url)
+            response = requests.get(request_url, headers=request_headers)
             if not response.ok:
-                raise IOError('Unsuccessful request: {}'.format(request_url))
+                raise IOError('Unsuccessful request: {}, {}'.format(request_url, response.text))
 
             for repo_dict in response.json():
-                yield (repo_dict['name'], repo_dict['git_url'])
+                yield repo_dict['name'], repo_dict['clone_url']
 
+            # https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-2
             if 'next' in response.links:
                 request_url = response.links['next']['url']
             else:
                 break
         else:  # no-break
-            # https://developer.github.com/v3/#pagination
             logger.error('Link header contains empty next URL.')
 
     def clone_and_bundle(self, name, url):
