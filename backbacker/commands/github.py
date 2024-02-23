@@ -43,7 +43,7 @@ class GithubBundle(command.Command):
     def collect_repository_urls(cls, username):
         import requests
 
-        # https://developer.github.com/v3/repos/#list-user-repositories
+        # https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28
         request_url = 'https://api.github.com/users/{}/repos'.format(urllib.parse.quote(username))
 
         while request_url:
@@ -52,7 +52,7 @@ class GithubBundle(command.Command):
                 raise IOError('Unsuccessful request: {}'.format(request_url))
 
             for repo_dict in response.json():
-                yield (repo_dict['name'], repo_dict['git_url'])
+                yield repo_dict['name'], repo_dict['clone_url']
 
             if 'next' in response.links:
                 request_url = response.links['next']['url']
